@@ -3,6 +3,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Shenyu 是一个强大的 AI 对话平台，支持多种 AI 模型和可扩展的插件系统。
+重点是其创新地采用了问卷式交互方式来创造AI Agent，有效避免了对话式交互头脑放空的问题。
+AI Agent的配置也是公开展示的，方便prompt调优
 
 ## 特性
 
