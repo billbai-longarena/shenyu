@@ -1,0 +1,68 @@
+{
+    "name": "@shenyu/frontend",
+    "version": "1.0.0",
+    "private": false,
+    "description": "Frontend for Shenyu - A powerful AI conversation platform",
+    "type": "module",
+    "main": "dist/shenyu-frontend.umd.js",
+    "module": "dist/shenyu-frontend.es.js",
+    "types": "dist/types/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "keywords": [
+        "ai",
+        "chat",
+        "vue3",
+        "typescript",
+        "websocket",
+        "streaming",
+        "deepseek",
+        "multi-model"
+    ],
+    "homepage": "https://github.com/sales-nail/shenyu",
+    "bugs": {
+        "url": "https://github.com/sales-nail/shenyu/issues"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sales-nail/shenyu.git"
+    },
+    "license": "MIT",
+    "author": "Shenyu Team",
+    "scripts": {
+        "dev": "vite --host --force",
+        "build": "vite build",
+        "preview": "vite preview",
+        "type-check": "vue-tsc --noEmit",
+        "prepublishOnly": "npm run type-check && npm run build"
+    },
+    "dependencies": {
+        "@element-plus/icons-vue": "^2.3.1",
+        "@types/markdown-it": "^14.1.2",
+        "element-plus": "^2.9.3",
+        "markdown-it": "^14.1.0",
+        "marked": "^15.0.6",
+        "node-fetch": "^3.3.2",
+        "pinia": "^2.3.0",
+        "vue": "^3.3.4",
+        "vue-router": "^4.2.5",
+        "ws": "^8.18.0"
+    },
+    "devDependencies": {
+        "@tsconfig/node22": "^22.0.0",
+        "@types/node": "^20.10.7",
+        "@vitejs/plugin-vue": "^4.5.1",
+        "@vue/tsconfig": "^0.4.0",
+        "npm-run-all2": "^6.1.1",
+        "typescript": "~5.3.3",
+        "vite": "^4.5.1",
+        "vue-tsc": "^1.8.25"
+    },
+    "peerDependencies": {
+        "vue": "^3.3.4"
+    },
+    "publishConfig": {
+        "access": "public"
+    }
+}

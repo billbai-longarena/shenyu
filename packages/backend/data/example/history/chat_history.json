@@ -1,0 +1,48 @@
+[
+    {
+        "id": "example-chat-1",
+        "timestamp": "2025-02-10T03:28:00.000Z",
+        "model": "deepseek",
+        "messages": [
+            {
+                "role": "user",
+                "content": "你好，请介绍一下自己。"
+            },
+            {
+                "role": "assistant",
+                "content": "你好！我是一个AI助手，可以帮助你回答问题、完成任务，并进行友好的对话交流。"
+            },
+            {
+                "role": "user",
+                "content": "你能做些什么？"
+            },
+            {
+                "role": "assistant",
+                "content": "我可以：\n1. 回答各种问题\n2. 协助编程开发\n3. 提供建议和分析\n4. 帮助学习和研究\n5. 参与创意讨论\n\n你有什么具体的问题或需求吗？"
+            }
+        ],
+        "settings": {
+            "temperature": 0.7,
+            "max_tokens": 2000
+        }
+    },
+    {
+        "id": "example-chat-2",
+        "timestamp": "2025-02-10T03:30:00.000Z",
+        "model": "deepseek",
+        "messages": [
+            {
+                "role": "user",
+                "content": "如何使用这个平台？"
+            },
+            {
+                "role": "assistant",
+                "content": "使用这个平台很简单：\n\n1. 选择合适的AI模型\n2. 在输入框中输入你的问题或需求\n3. 点击发送按钮或按回车键\n4. 等待AI响应\n\n平台支持多种AI模型，你可以根据需要切换不同的模型。所有的对话历史都会被保存，方便你随时查看和继续之前的对话。"
+            }
+        ],
+        "settings": {
+            "temperature": 0.7,
+            "max_tokens": 2000
+        }
+    }
+]

@@ -1,0 +1,68 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [created]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm run install:all
+      
+    - name: Type check
+      run: |
+        npm run type-check -w @shenyu/frontend
+        npm run build -w @shenyu/backend
+
+    - name: Run tests
+      run: npm test
+
+    - name: Build check
+      run: npm run build
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'created'
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Install dependencies
+      run: npm run install:all
+
+    - name: Build
+      run: npm run build
+
+    - name: Publish frontend
+      run: npm publish
+      working-directory: packages/frontend
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    - name: Publish backend
+      run: npm publish
+      working-directory: packages/backend
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

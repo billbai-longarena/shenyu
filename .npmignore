@@ -1,0 +1,27 @@
+# Source files
+src/
+tests/
+cypress/
+__tests__/
+
+# Config files
+.env
+.env.*
+*.config.js
+*.config.ts
+tsconfig*.json
+vite.config.ts
+vitest.config.ts
+
+# Development files
+.vscode/
+.idea/
+.git/
+.github/
+.gitignore
+.DS_Store
+
+# Build artifacts
+coverage/
+node_modules/
+*.log

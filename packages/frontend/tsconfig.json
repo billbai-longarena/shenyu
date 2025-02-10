@@ -1,0 +1,41 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "strict": true,
+        "jsx": "preserve",
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "composite": true,
+        "sourceMap": true,
+        "declarationMap": true,
+        "declaration": true,
+        "declarationDir": "./dist/types",
+        "types": [
+            "vite/client",
+            "vitest",
+            "element-plus/global"
+        ]
+    },
+    "include": [
+        "src/**/*",
+        "src/**/*.ts",
+        "src/**/*.d.ts",
+        "src/**/*.tsx",
+        "src/**/*.vue"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ],
+    "references": [
+        {
+            "path": "../backend"
+        }
+    ]
+}

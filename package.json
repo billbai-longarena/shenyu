@@ -1,0 +1,53 @@
+{
+  "name": "shenyu-workspace",
+  "version": "1.0.0",
+  "private": false,
+  "description": "A powerful AI conversation platform with multiple model support and extensible plugin system",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "keywords": [
+    "ai",
+    "chat",
+    "vue3",
+    "typescript",
+    "websocket",
+    "streaming",
+    "deepseek",
+    "multi-model"
+  ],
+  "homepage": "https://github.com/sales-nail/shenyu",
+  "bugs": {
+    "url": "https://github.com/sales-nail/shenyu/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sales-nail/shenyu.git"
+  },
+  "license": "MIT",
+  "author": "Shenyu Team",
+  "scripts": {
+    "dev:frontend": "./scripts/start-frontend.sh",
+    "dev:backend": "./scripts/start-backend.sh",
+    "build": "npm run build -w @shenyu/frontend && npm run build -w @shenyu/backend",
+    "build:frontend": "npm run build -w @shenyu/frontend",
+    "build:backend": "npm run build -w @shenyu/backend",
+    "clean": "npm run clean -w @shenyu/frontend && npm run clean -w @shenyu/backend",
+    "prepare": "npm run prepare -w @shenyu/frontend && npm run prepare -w @shenyu/backend",
+    "install:all": "npm install && npm install -w @shenyu/frontend && npm install -w @shenyu/backend",
+    "version": "npm version patch --workspaces && git add .",
+    "publish": "npm publish --workspaces --access public",
+    "prepublish": "npm run build"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "packages",
+    "scripts",
+    "README.md",
+    "README.en.md",
+    "LICENSE"
+  ]
+}

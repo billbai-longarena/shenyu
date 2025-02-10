@@ -1,0 +1,66 @@
+/* 通用布局样式 */
+.page-container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    background-color: #ffffff;
+    position: relative;
+    overflow: hidden;
+}
+
+.content-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Element Plus 样式覆盖 */
+.el-tabs.full-height {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.el-tabs.full-height :deep(.el-tabs__header) {
+    margin: 0;
+}
+
+.el-tabs.full-height :deep(.el-tabs__nav-wrap) {
+    padding: 0 20px;
+    background-color: #f5f7fa;
+    border-bottom: 1px solid #dcdfe6;
+}
+
+.el-tabs.full-height :deep(.el-tabs__content) {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.el-tabs.full-height :deep(.el-tab-pane) {
+    height: 100%;
+    position: relative;
+}
+
+/* 通用内容样式 */
+.tab-content {
+    height: 100%;
+    padding: 20px;
+}
+
+.empty-state {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scrollable-content {
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+}

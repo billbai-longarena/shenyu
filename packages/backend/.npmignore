@@ -1,0 +1,37 @@
+# Source files
+src/
+tests/
+__tests__/
+*.test.ts
+*.spec.ts
+
+# Config files
+.env
+.env.*
+.env.example
+*.config.js
+*.config.ts
+tsconfig*.json
+jest.config.js
+
+# Development files
+.vscode/
+.idea/
+.git/
+.github/
+.gitignore
+.DS_Store
+
+# Build artifacts
+coverage/
+node_modules/
+*.log
+
+# Data directories
+data/
+data/histories/
+data/users/
+data/example/
+
+# Documentation
+docs/
