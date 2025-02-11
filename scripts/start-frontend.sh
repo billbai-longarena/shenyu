@@ -5,9 +5,32 @@ set -e
 
 # 默认端口
 DEFAULT_PORT=8080
+BACKEND_PORT=3001
 PORT=${PORT:-$DEFAULT_PORT}
 
+# 检查后端服务是否运行
+check_backend() {
+    echo "Checking backend service..."
+    for i in {1..5}; do
+        if curl -s http://localhost:$BACKEND_PORT > /dev/null; then
+            echo "Backend service is running on port $BACKEND_PORT"
+            return 0
+        fi
+        echo "Waiting for backend service... (attempt $i/5)"
+        sleep 2
+    done
+    echo "Warning: Backend service not detected on port $BACKEND_PORT"
+    read -p "Do you want to continue anyway? (y/N) " response
+    if [[ ! "$response" =~ ^[Yy]$ ]]; then
+        echo "Please start the backend service first with: npm run dev:backend"
+        exit 1
+    fi
+}
+
 echo "Starting frontend development server on port $PORT..."
+
+# 检查后端服务
+check_backend
 
 # 切换到前端目录
 cd "$(dirname "$0")/.."

@@ -36,13 +36,54 @@ git clone https://github.com/your-username/shenyu.git
 cd shenyu
 ```
 
-2. Configure environment variables
+2. Install Dependencies
+```bash
+# Install all dependencies (including frontend and backend)
+npm install
+npm run setup
+```
+
+3. Configure environment variables
 ```bash
 # Backend configuration
 cd packages/backend
 cp .env.example .env
 # Edit .env file with your API keys
 ```
+
+### Troubleshooting
+
+1. Dependency Installation Issues
+- If you encounter dependency installation errors, try installing separately:
+```bash
+cd packages/backend && npm install
+cd ../frontend && npm install
+```
+- Ensure Node.js version >= 18 and npm version >= 9
+
+2. Port Occupation Issues
+- Default ports: Frontend 8080, Backend 3001
+- Startup scripts will automatically detect and attempt to release occupied ports
+- You can also specify different ports via environment variables:
+```bash
+PORT=3002 npm run dev:backend
+PORT=8081 npm run dev:frontend
+```
+
+3. Backend Service Issues
+- Ensure .env file is configured correctly
+- Verify API keys are valid
+- Check backend logs for detailed error messages
+
+4. Frontend Service Issues
+- Ensure backend service is running and accessible
+- Check browser console for error messages
+- If page loading is abnormal, try clearing browser cache
+
+5. WebSocket Connection Issues
+- Ensure firewall is not blocking WebSocket connections
+- Verify backend service is running properly
+- Check if WebSocket port (3001) is accessible
 
 ### Development
 
@@ -51,7 +92,8 @@ cp .env.example .env
 1. Install Dependencies
 ```bash
 # Run in project root directory
-npm run install:all
+npm install
+npm run setup
 ```
 
 2. Configure Backend Environment

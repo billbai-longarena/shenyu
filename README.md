@@ -38,13 +38,54 @@ git clone https://github.com/billbai-longarena/shenyu.git
 cd shenyu
 ```
 
-2. 配置环境变量
+2. 安装依赖
+```bash
+# 安装所有依赖（包括前端和后端）
+npm install
+npm run setup
+```
+
+3. 配置环境变量
 ```bash
 # 后端配置
 cd packages/backend
 cp .env.example .env
 # 编辑 .env 文件，填入您的 API 密钥
 ```
+
+### 故障排除
+
+1. 依赖安装问题
+- 如果遇到依赖安装错误，尝试单独安装：
+```bash
+cd packages/backend && npm install
+cd ../frontend && npm install
+```
+- 确保Node.js版本 >= 18，npm版本 >= 9
+
+2. 端口占用问题
+- 默认端口：前端8080，后端3001
+- 启动脚本会自动检测并尝试释放被占用的端口
+- 也可以通过环境变量指定其他端口：
+```bash
+PORT=3002 npm run dev:backend
+PORT=8081 npm run dev:frontend
+```
+
+3. 后端服务问题
+- 确保.env文件配置正确
+- 检查API密钥是否有效
+- 查看后端日志输出的详细错误信息
+
+4. 前端服务问题
+- 确保后端服务已启动并可访问
+- 检查浏览器控制台是否有错误信息
+- 如果页面加载异常，尝试清除浏览器缓存
+
+5. WebSocket连接问题
+- 确保防火墙未阻止WebSocket连接
+- 检查后端服务是否正常运行
+- 验证WebSocket端口（3001）是否可访问
 
 ### 开发
 
@@ -53,7 +94,8 @@ cp .env.example .env
 1. 安装依赖
 ```bash
 # 在项目根目录下运行
-npm run install:all
+npm install
+npm run setup
 ```
 
 2. 配置后端环境

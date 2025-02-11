@@ -34,11 +34,9 @@
     "build:frontend": "npm run build -w @shenyu/frontend",
     "build:backend": "npm run build -w @shenyu/backend",
     "clean": "npm run clean -w @shenyu/frontend && npm run clean -w @shenyu/backend",
-    "prepare": "npm run prepare -w @shenyu/frontend && npm run prepare -w @shenyu/backend",
-    "install:all": "npm install && npm install -w @shenyu/frontend && npm install -w @shenyu/backend",
+    "setup": "cd packages/backend && npm install && cd ../frontend && npm install && cd ../..",
     "version": "npm version patch --workspaces && git add .",
-    "publish": "npm publish --workspaces --access public",
-    "prepublish": "npm run build"
+    "publish": "npm publish --workspaces --access public"
   },
   "publishConfig": {
     "access": "public"
