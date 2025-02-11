@@ -48,6 +48,52 @@ cp .env.example .env
 
 ### 开发
 
+#### Windows
+
+1. 安装依赖
+```bash
+# 在项目根目录下运行
+npm run install:all
+```
+
+2. 配置后端环境
+```bash
+# 进入后端目录
+cd packages/backend
+# 创建.env文件（如果不存在）
+copy .env.example .env
+# 编辑.env文件，填入必要的API密钥
+# KIMI_API_KEY=your_api_key_here
+# PORT=3001
+# HOST=localhost
+```
+
+3. 启动后端服务
+```bash
+# 在项目根目录下运行
+npm run dev -w @shenyu/backend
+```
+
+4. 启动前端开发服务器
+```bash
+# 新开一个终端，在项目根目录下运行
+npm run dev -w @shenyu/frontend
+```
+
+服务启动后：
+- 前端访问地址：http://localhost:8080
+- 后端服务地址：http://localhost:3001
+- WebSocket服务：ws://localhost:3001
+
+注意事项：
+- 确保Node.js版本 >= 18
+- 确保npm版本 >= 9
+- 后端服务必须运行在3001端口
+- 如果遇到端口占用，请先结束占用端口的进程
+- 首次运行时需要配置API密钥才能正常使用AI模型服务
+
+#### Linux/macOS
+
 项目提供了便捷的启动脚本，默认端口配置如下：
 
 - 前端：8080

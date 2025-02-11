@@ -46,6 +46,52 @@ cp .env.example .env
 
 ### Development
 
+#### Windows
+
+1. Install Dependencies
+```bash
+# Run in project root directory
+npm run install:all
+```
+
+2. Configure Backend Environment
+```bash
+# Enter backend directory
+cd packages/backend
+# Create .env file (if not exists)
+copy .env.example .env
+# Edit .env file with necessary API keys
+# KIMI_API_KEY=your_api_key_here
+# PORT=3001
+# HOST=localhost
+```
+
+3. Start Backend Service
+```bash
+# Run in project root directory
+npm run dev -w @shenyu/backend
+```
+
+4. Start Frontend Development Server
+```bash
+# Open a new terminal, run in project root directory
+npm run dev -w @shenyu/frontend
+```
+
+After services start:
+- Frontend URL: http://localhost:8080
+- Backend URL: http://localhost:3001
+- WebSocket Service: ws://localhost:3001
+
+Important Notes:
+- Ensure Node.js version >= 18
+- Ensure npm version >= 9
+- Backend service must run on port 3001
+- If port is occupied, terminate the process using that port first
+- API key configuration is required for first-time setup to use AI model services
+
+#### Linux/macOS
+
 The project provides convenient startup scripts with default port configuration:
 
 - Frontend: 8080
