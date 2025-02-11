@@ -19,6 +19,10 @@ coverage
 !.env.example
 *.local
 
+# Backend specific
+packages/backend/.env
+packages/backend/data/
+
 # Build files
 /build
 *.tsbuildinfo
