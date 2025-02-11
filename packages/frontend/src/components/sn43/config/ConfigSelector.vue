@@ -4,16 +4,16 @@
       <h2 class="config-title">输入区域</h2>
       <div class="json-controls">
         <el-select 
-          v-model="selectedFile" 
+          v-model="selectedFilename" 
           placeholder="选择配置文件"
           @focus="fetchJsonFiles"
           :disabled="isConfigModified || isEditing"
         >
           <el-option
             v-for="file in jsonFiles"
-            :key="file"
-            :label="file.replace('.json', '')"
-            :value="file"
+            :key="file.filename"
+            :label="file.filename.replace('.json', '')"
+            :value="file.filename"
           />
         </el-select>
         <el-button 
@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useJsonFiles } from '../../../composables/useJsonFiles'
 import { useConfig } from '../../../composables/useConfig'
@@ -55,17 +55,28 @@ const emit = defineEmits<{
 const { jsonFiles, fetchJsonFiles } = useJsonFiles()
 
 // 本地状态
-const selectedFile = ref(props.modelValue)
+const selectedFilename = ref<string>('')
 
-// 监听selectedFile的变化
-watch(() => selectedFile.value, (newValue) => {
+// 监听selectedFilename的变化
+watch(() => selectedFilename.value, (newValue) => {
   emit('update:model-value', newValue)
 })
 
 // 监听props.modelValue的变化
-watch(() => props.modelValue, (newValue) => {
-  selectedFile.value = newValue
+watch(() => props.modelValue, async (newValue) => {
+  if (newValue && jsonFiles.value.length === 0) {
+    // 如果有初始值但文件列表为空，先获取文件列表
+    await fetchJsonFiles()
+  }
+  selectedFilename.value = newValue
 }, { immediate: true })
+
+// 组件挂载时获取文件列表
+onMounted(async () => {
+  if (props.modelValue) {
+    await fetchJsonFiles()
+  }
+})
 
 // 初始化配置相关功能
 const { importConfig } = useConfig(
@@ -80,13 +91,17 @@ const { importConfig } = useConfig(
 
 // 加载选中的JSON配置
 const loadConfig = async () => {
-  if (!selectedFile.value) {
+  if (!selectedFilename.value) {
     ElMessage.warning('请先选择配置文件')
     return
   }
 
   try {
-    const response = await fetch(`/${selectedFile.value}`, {
+    const file = jsonFiles.value.find(f => f.filename === selectedFilename.value)
+    if (!file) {
+      throw new Error('找不到选中的文件')
+    }
+    const response = await fetch(`/${file.encodedFilename}`, {
       headers: {
         'Cache-Control': 'no-cache'
       }
