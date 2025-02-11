@@ -24,7 +24,7 @@ jobs:
         cache: 'npm'
 
     - name: Install dependencies
-      run: npm run install:all
+      run: npm run setup
       
     - name: Type check
       run: |
@@ -50,7 +50,7 @@ jobs:
         registry-url: 'https://registry.npmjs.org'
 
     - name: Install dependencies
-      run: npm run install:all
+      run: npm run setup
 
     - name: Build
       run: npm run build
