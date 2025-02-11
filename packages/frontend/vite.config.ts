@@ -35,13 +35,13 @@ export default defineConfig({
         // 开发环境中的文件列表API
         server.middlewares.use('/json-files-list.json', (req, res) => {
           try {
-            const publicDir = path.resolve(__dirname, 'public')
-            const files = fs.readdirSync(publicDir)
+            const itemCNDir = path.resolve(process.cwd(), 'public/item_CN')
+            const files = fs.readdirSync(itemCNDir)
             const jsonFiles = files
               .filter(file => file.endsWith('.json'))
               .map(file => ({
                 filename: file,
-                encodedFilename: encodeURIComponent(file)
+                encodedFilename: `item_CN/${encodeURIComponent(file)}`
               }))
 
             res.setHeader('Content-Type', 'application/json')

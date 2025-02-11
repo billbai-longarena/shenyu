@@ -2,14 +2,14 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 export function generateFileList(): void {
-    const publicDir = path.resolve(process.cwd(), 'public')
-    const files = fs.readdirSync(publicDir)
+    const itemCNDir = path.resolve(process.cwd(), 'public/item_CN')
+    const files = fs.readdirSync(itemCNDir)
     const jsonFiles = files
         .filter(file => file.endsWith('.json'))
         .map(file => ({
             filename: file,
-            // 对文件名进行URL编码，以处理中文字符
-            encodedFilename: encodeURIComponent(file)
+            // 添加item_CN路径前缀并进行URL编码
+            encodedFilename: `item_CN/${encodeURIComponent(file)}`
         }))
 
     // 确保dist目录存在

@@ -20,17 +20,7 @@ export function useJsonFiles() {
                 throw new Error('Invalid response format')
             }
 
-            // 验证文件是否可访问
-            await Promise.all(
-                files.map(async (file) => {
-                    const response = await fetch(`/${file.encodedFilename}`)
-                    if (!response.ok) {
-                        throw new Error(`无法访问文件：${file.filename}`)
-                    }
-                })
-            )
-
-            // 使用原始文件名（非编码）更新列表
+            // 直接使用文件列表，不进行额外的可访问性检查
             jsonFiles.value = files.map(file => file.filename)
         } catch (error) {
             console.error('Error accessing json files:', error)
