@@ -1,16 +1,25 @@
-# Shenyu
+# Shenyu [English] | [中文](README.md)
 
-A powerful AI conversation platform with multiple model support and extensible plugin system.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+A powerful AI conversation platform with multiple model support and extensible plugin system. 
+The key innovation is its questionnaire-style interaction approach for creating AI Agents, effectively avoiding the mind-blank issues common in conversational interactions.
+The AI Agent configurations are publicly displayed for easy prompt optimization.
+
+## Demo
+http://139.224.248.148/sn43
+Basic demo server
 
 ## Features
 
-- Multi-model support
-- Real-time streaming responses
-- History management
-- Plugin system
-- User data persistence
-- Customizable prompts
-- WebSocket support
+- 🚀 Multiple AI model support (DeepSeek, Kimi, Aliyun, etc.)
+- 💬 Real-time streaming responses
+- 🔌 Extensible plugin system
+- 📝 Conversation history persistence
+- 🌐 WebSocket long connection support
+- 🔄 Smart concurrency control
+- 📊 Built-in performance testing tools
+- 🎨 Elegant user interface
 
 ## Quick Start
 
@@ -109,26 +118,41 @@ shenyu/
 └── scripts/         # Utility scripts
 ```
 
-## API Documentation
+## Documentation
 
-See [API Documentation](docs/api/chat-completions.md) for detailed API reference.
+- [Development Guide](docs/guide/index.md)
+- [API Documentation](docs/api/chat-completions.md)
+- [Component Documentation](docs/components/execution-panel.md)
+- [Changelog](docs/changelog.md)
+
+## Plugin Development
+
+Shenyu supports extending AI model support through its plugin system. Check out the [Plugin Development Guide](docs/guide/plugin-development.md) to learn how to develop your own model plugin.
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### Development Workflow
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+We welcome any form of contribution! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to participate in project development.
 
 ## Security
 
-For security concerns, please see our [Security Policy](SECURITY.md).
+If you discover a security vulnerability, please check our [Security Policy](SECURITY.md) for reporting procedures.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see [LICENSE](LICENSE) for details
+
+## Acknowledgments
+
+Thanks to all developers who have contributed to this project!
+
+## Contact Us
+
+- Submit Issues
+- Project Discussion
+- Email Contact
+
+## Status Badges
+
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/billbai-longarena/shenyu/ci.yml?branch=main)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/billbai-longarena/shenyu)
+![GitHub](https://img.shields.io/github/license/billbai-longarena/shenyu)
