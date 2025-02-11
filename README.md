@@ -1,4 +1,6 @@
-# Shenyu [中文] | [English](README.en.md)
+# Shenyu [中文] | [English](README.en.md) 
+
+[![Build Status](https://github.com/billbai-longarena/shenyu/workflows/CI/badge.svg)](https://github.com/billbai-longarena/shenyu/actions)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
