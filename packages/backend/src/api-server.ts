@@ -9,20 +9,31 @@ server.listen(port, () => {
 });
 
 // 优雅关闭
-process.on('SIGTERM', () => {
-    console.log('SIGTERM received. Closing server...');
-    server.close(() => {
-        console.log('Server closed');
-        process.exit(0);
-    });
-});
+const gracefulShutdown = () => {
+    console.log('Closing server...');
+    // 获取WebSocket服务器实例
+    const wss = app.get('wss');
+    if (wss) {
+        // 关闭所有WebSocket连接
+        wss.close(() => {
+            console.log('WebSocket server closed');
+            // 关闭HTTP服务器
+            server.close(() => {
+                console.log('HTTP server closed');
+                process.exit(0);
+            });
+        });
+    } else {
+        // 如果没有WebSocket服务器，直接关闭HTTP服务器
+        server.close(() => {
+            console.log('HTTP server closed');
+            process.exit(0);
+        });
+    }
+};
 
-process.on('SIGINT', () => {
-    console.log('SIGINT received. Closing server...');
-    server.close(() => {
-        console.log('Server closed');
-        process.exit(0);
-    });
-});
+// 处理终止信号
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
 
 export default server;

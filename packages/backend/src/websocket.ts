@@ -460,12 +460,28 @@ export class WebSocketServer {
         return normalClients.size;
     }
 
-    public close() {
+    public close(callback?: () => void) {
         if (this.pingInterval) {
             clearInterval(this.pingInterval);
             this.pingInterval = null;
         }
-        this.wss.close();
+
+        // 关闭所有客户端连接
+        this.clients.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.close();
+            }
+        });
+
+        // 清空客户端集合
+        this.clients.clear();
+        this.ipToClients.clear();
+
+        // 关闭WebSocket服务器
+        this.wss.close(() => {
+            console.log('All WebSocket connections closed');
+            if (callback) callback();
+        });
     }
 }
 
