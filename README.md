@@ -1,248 +1,248 @@
-# Shenyu [中文] | [English](README.en.md) 
+# Shenyu [English] | [中文](README.zh.md)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Shenyu 是一个强大的 AI 对话平台，支持多种 AI 模型和可扩展的插件系统。
-重点是其创新地采用了问卷式交互方式来创造AI Agent，有效避免了对话式交互头脑放空的问题。
-AI Agent的配置也是公开展示的，方便prompt调优
+A powerful AI conversation platform with multiple model support and extensible plugin system. 
+The key innovation is its questionnaire-style interaction approach for creating AI Agents, effectively avoiding the mind-blank issues common in conversational interactions.
+The AI Agent configurations are publicly displayed for easy prompt optimization.
 
 ## Demo
 http://139.224.248.148/sn43
-丐中丐服务器
+Basic demo server
 
-## 特性
+## Features
 
-- 🚀 支持多种 AI 模型（DeepSeek、Kimi、阿里云等）
-- 💬 实时流式响应
-- 🔌 可扩展的插件系统
-- 📝 对话历史记录持久化
-- 🌐 WebSocket 长连接支持
-- 🔄 智能并发控制
-- 📊 内置性能测试工具
-- 🎨 优雅的用户界面
+- 🚀 Multiple AI model support (DeepSeek, Kimi, Aliyun, etc.)
+- 💬 Real-time streaming responses
+- 🔌 Extensible plugin system
+- 📝 Conversation history persistence
+- 🌐 WebSocket long connection support
+- 🔄 Smart concurrency control
+- 📊 Built-in performance testing tools
+- 🎨 Elegant user interface
 
-## 快速开始
+## Quick Start
 
-### 环境要求
+### Prerequisites
 
-- Node.js >= 18
-- npm >= 9
+- Node.js >= 18.0.0
+- npm >= 7.0.0
 
-### 安装
+### Installation
 
-1. 克隆仓库
+1. Clone the repository
 ```bash
-git clone https://github.com/billbai-longarena/shenyu.git
+git clone https://github.com/your-username/shenyu.git
 cd shenyu
 ```
 
-2. 安装依赖
+2. Install Dependencies
 ```bash
-# 安装所有依赖（包括前端和后端）
+# Install all dependencies (including frontend and backend)
 npm install
 npm run setup
 ```
 
-3. 配置环境变量
+3. Configure environment variables
 ```bash
-# 后端配置
+# Backend configuration
 cd packages/backend
 cp .env.example .env
-# 编辑 .env 文件，填入您的 API 密钥
+# Edit .env file with your API keys
 ```
 
-### 故障排除
+### Troubleshooting
 
-1. 依赖安装问题
-- 如果遇到依赖安装错误，尝试单独安装：
+1. Dependency Installation Issues
+- If you encounter dependency installation errors, try installing separately:
 ```bash
 cd packages/backend && npm install
 cd ../frontend && npm install
 ```
-- 确保Node.js版本 >= 18，npm版本 >= 9
+- Ensure Node.js version >= 18 and npm version >= 9
 
-2. 端口占用问题
-- 默认端口：前端8080，后端3001
-- 启动脚本会自动检测并尝试释放被占用的端口
-- 也可以通过环境变量指定其他端口：
+2. Port Occupation Issues
+- Default ports: Frontend 8080, Backend 3001
+- Startup scripts will automatically detect and attempt to release occupied ports
+- You can also specify different ports via environment variables:
 ```bash
 PORT=3002 npm run dev:backend
 PORT=8081 npm run dev:frontend
 ```
 
-3. 后端服务问题
-- 确保.env文件配置正确
-- 检查API密钥是否有效
-- 查看后端日志输出的详细错误信息
+3. Backend Service Issues
+- Ensure .env file is configured correctly
+- Verify API keys are valid
+- Check backend logs for detailed error messages
 
-4. 前端服务问题
-- 确保后端服务已启动并可访问
-- 检查浏览器控制台是否有错误信息
-- 如果页面加载异常，尝试清除浏览器缓存
+4. Frontend Service Issues
+- Ensure backend service is running and accessible
+- Check browser console for error messages
+- If page loading is abnormal, try clearing browser cache
 
-5. WebSocket连接问题
-- 确保防火墙未阻止WebSocket连接
-- 检查后端服务是否正常运行
-- 验证WebSocket端口（3001）是否可访问
+5. WebSocket Connection Issues
+- Ensure firewall is not blocking WebSocket connections
+- Verify backend service is running properly
+- Check if WebSocket port (3001) is accessible
 
-### 开发
+### Development
 
 #### Windows
 
-1. 安装依赖
+1. Install Dependencies
 ```bash
-# 在项目根目录下运行
+# Run in project root directory
 npm install
 npm run setup
 ```
 
-2. 配置后端环境
+2. Configure Backend Environment
 ```bash
-# 进入后端目录
+# Enter backend directory
 cd packages/backend
-# 创建.env文件（如果不存在）
+# Create .env file (if not exists)
 copy .env.example .env
-# 编辑.env文件，填入必要的API密钥
+# Edit .env file with necessary API keys
 # KIMI_API_KEY=your_api_key_here
 # PORT=3001
 # HOST=localhost
 ```
 
-3. 启动后端服务
+3. Start Backend Service
 ```bash
-# 在项目根目录下运行
+# Run in project root directory
 npm run dev -w @shenyu/backend
 ```
 
-4. 启动前端开发服务器
+4. Start Frontend Development Server
 ```bash
-# 新开一个终端，在项目根目录下运行
+# Open a new terminal, run in project root directory
 npm run dev -w @shenyu/frontend
 ```
 
-服务启动后：
-- 前端访问地址：http://localhost:8080
-- 后端服务地址：http://localhost:3001
-- WebSocket服务：ws://localhost:3001
+After services start:
+- Frontend URL: http://localhost:8080
+- Backend URL: http://localhost:3001
+- WebSocket Service: ws://localhost:3001
 
-注意事项：
-- 确保Node.js版本 >= 18
-- 确保npm版本 >= 9
-- 后端服务必须运行在3001端口
-- 如果遇到端口占用，请先结束占用端口的进程
-- 首次运行时需要配置API密钥才能正常使用AI模型服务
+Important Notes:
+- Ensure Node.js version >= 18
+- Ensure npm version >= 9
+- Backend service must run on port 3001
+- If port is occupied, terminate the process using that port first
+- API key configuration is required for first-time setup to use AI model services
 
 #### Linux/macOS
 
-项目提供了便捷的启动脚本，默认端口配置如下：
+The project provides convenient startup scripts with default port configuration:
 
-- 前端：8080
-- 后端：3001
+- Frontend: 8080
+- Backend: 3001
 
-1. 启动后端服务
+1. Start backend server
 ```bash
 ./scripts/start-backend.sh
-# 或指定其他端口
+# Or specify a different port
 PORT=3002 ./scripts/start-backend.sh
 ```
 
-2. 启动前端开发服务器
+2. Start frontend development server
 ```bash
-# 新开一个终端
+# In a new terminal
 ./scripts/start-frontend.sh
-# 或指定其他端口
+# Or specify a different port
 PORT=8081 ./scripts/start-frontend.sh
 ```
 
-这些脚本会自动：
-- 检查端口占用情况并提供友好提示
-- 安装依赖
-- 加载环境变量
-- 启动开发服务器
+These scripts will automatically:
+- Check port availability and provide friendly prompts
+- Install dependencies
+- Load environment variables
+- Start development servers
 
-注意：
-- 如果需要同时运行多个实例，请使用不同的端口
-- 修改前端端口后，需要相应修改后端的CORS配置
-- 建议在开发时保持默认端口，除非有特殊需求
+Notes:
+- Use different ports when running multiple instances
+- When changing frontend port, remember to update backend CORS configuration
+- It's recommended to keep default ports during development unless necessary
 
-### 生产部署
+### Production Deployment
 
-1. 构建前端
+1. Build frontend
 ```bash
 cd packages/frontend
 npm run build
 ```
 
-2. 构建后端
+2. Build backend
 ```bash
 cd packages/backend
 npm run build
 ```
 
-3. 启动服务
+3. Start services
 ```bash
-# 启动前端
+# Start frontend
 cd packages/frontend
 npm run preview
 
-# 启动后端
+# Start backend
 cd packages/backend
 npm start
 ```
 
-## 项目结构
+## Project Structure
 
 ```
 shenyu/
 ├── packages/
-│   ├── frontend/     # 前端项目
-│   │   ├── src/     # 源码
-│   │   ├── public/  # 静态资源
-│   │   └── dist/    # 构建输出
-│   └── backend/     # 后端项目
-│       ├── src/     # TypeScript 源码
-│       └── dist/    # 构建输出
-├── docs/            # 项目文档
-└── scripts/         # 工具脚本
+│   ├── frontend/     # Frontend project
+│   │   ├── src/     # Source code
+│   │   ├── public/  # Static assets
+│   │   └── dist/    # Build output
+│   └── backend/     # Backend project
+│       ├── src/     # TypeScript source
+│       └── dist/    # Build output
+├── docs/            # Documentation
+└── scripts/         # Utility scripts
 ```
 
-## 文档
+## Documentation
 
-- [开发指南](docs/guide/index.md)
-- [API 文档](docs/api/chat-completions.md)
-- [组件文档](docs/components/execution-panel.md)
-- [状态管理最佳实践](docs/guide/state-management-best-practices.md) [中文]
-- [双语文档维护指南](docs/guide/bilingual-docs-best-practices.md) [中文]
-- [新增大模型最佳实践](docs/guide/add-model-best-practices.md) [中文]
-- [更新日志](docs/changelog.md)
+- [Development Guide](docs/guide/index.md)
+- [API Documentation](docs/api/chat-completions.md)
+- [Component Documentation](docs/components/execution-panel.md)
+- [State Management Best Practices](docs/guide/state-management-best-practices.en.md) [English]
+- [Bilingual Documentation Guide](docs/guide/bilingual-docs-best-practices.en.md) [English]
+- [Best Practices for Adding New Models](docs/guide/add-model-best-practices.en.md) [English]
+- [Changelog](docs/changelog.en.md) [English]
 
-## 插件开发
+## Plugin Development
 
-Shenyu 支持通过插件系统扩展 AI 模型支持。查看[插件开发指南](docs/guide/plugin-development.md)了解如何开发自己的模型插件。
+Shenyu supports extending AI model support through its plugin system. Check out the [Plugin Development Guide](docs/guide/plugin-development.md) to learn how to develop your own model plugin.
 
-## 贡献指南
+## Contributing
 
-我们欢迎任何形式的贡献！请查看 [CONTRIBUTING.md](CONTRIBUTING.md) 了解如何参与项目开发。
+We welcome any form of contribution! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to participate in project development.
 
-## 安全
+## Security
 
-如果您发现了安全漏洞，请查看我们的 [安全策略](SECURITY.md) 了解如何报告。
+If you discover a security vulnerability, please check our [Security Policy](SECURITY.md) for reporting procedures.
 
-## 许可证
+## License
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 了解详情
+This project is licensed under the MIT License - see [LICENSE](LICENSE) for details
 
-## 致谢
+## Acknowledgments
 
-感谢所有为这个项目做出贡献的开发者！
+Thanks to all developers who have contributed to this project!
 
-## 联系我们
+## Contact Us
 
-- 提交 Issue
-- 项目讨论区
-- 邮件联系
+- Submit Issues
+- Project Discussion
+- Email Contact
 
-## 状态徽章
+## Status Badges
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/billbai-longarena/shenyu/ci.yml?branch=main)
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/billbai-longarena/shenyu)
