@@ -4,7 +4,7 @@
     <div class="config-section" :style="{ width: leftWidth + '%' }">
       <div class="config-section-content">
         <div class="config-inputs-container">
-          <h2 class="admin-title">用户输入配置</h2>
+          <h2 class="admin-title">{{ t('configPanel.userInputConfig') }}</h2>
           
           <!-- 配置操作按钮 -->
           <div class="config-actions">
@@ -12,13 +12,13 @@
               type="danger"
               @click="exportConfig"
             >
-              保存并导出
+              {{ t('configPanel.saveExport') }}
             </el-button>
             <el-button 
               type="primary"
               @click="fileInput?.click()"
             >
-              导入JSON
+              {{ t('configPanel.importJson') }}
             </el-button>
           </div>
           
@@ -41,11 +41,11 @@
                 @click="insertPlaceholder(String(key))"
                 :disabled="lastFocusedIndex === null"
               >
-                插入
+                {{ t('configPanel.insert') }}
               </el-button>
               <el-input 
                 v-model="adminInputs[key]"
-                :placeholder="`请输入${key}`"
+                :placeholder="t('configPanel.inputPlaceholder') + key"
                 @input="(value: string) => handleAdminInput(String(key), value)"
               />
               <el-button
@@ -53,7 +53,7 @@
                 link
                 @click="deleteAdminInput(String(key))"
               >
-                删除
+                {{ t('configPanel.delete') }}
               </el-button>
             </div>
           </div>
@@ -63,12 +63,12 @@
             class="add-input-button"
             @click="addUserInput"
           >
-            增加用户输入
+            {{ t('configPanel.addUserInput') }}
           </el-button>
 
           <!-- 预览区域 -->
           <div class="preview-section">
-            <h3 class="preview-title">提示词预览</h3>
+            <h3 class="preview-title">{{ t('configPanel.previewTitle') }}</h3>
             <div class="preview-content" ref="previewContent">
               <div class="messages">
                 <div class="message">
@@ -98,7 +98,7 @@
     <!-- 右侧提示词区域 -->
     <div class="prompt-section" :style="{ width: (100 - leftWidth) + '%' }">
       <div class="prompt-config">
-        <h2 class="admin-title">提示词配置</h2>
+        <h2 class="admin-title">{{ t('configPanel.promptConfig') }}</h2>
         
         <!-- 提示词输入区域 -->
         <div v-for="(prompt, index) in promptBlocks" :key="`prompt-${index}`" class="prompt-container">
@@ -110,14 +110,14 @@
               @click="insertPromptBlock(index)"
               :disabled="lastFocusedIndex === null || !canInsertPromptBlock(index, lastFocusedIndex)"
             >
-              插入
+              {{ t('configPanel.insert') }}
             </el-button>
             <div class="prompt-input-wrapper">
               <el-input
                 v-model="prompt.text"
                 type="textarea"
                 :rows="4"
-                placeholder="请输入提示词"
+                :placeholder="t('configPanel.inputPromptPlaceholder')"
                 class="prompt-input"
                 @focus="handlePromptFocus(index)"
                 @input="emit('config-modified')"
@@ -129,14 +129,14 @@
                   class="preview-button"
                   @click="previewPrompt(index)"
                 >
-                  预览提示词
+                  {{ t('configPanel.previewPrompt') }}
                 </el-button>
                 <el-button
                   type="danger"
                   link
                   @click="deletePromptBlock(index)"
                 >
-                  删除
+                  {{ t('configPanel.delete') }}
                 </el-button>
               </div>
             </div>
@@ -148,7 +148,7 @@
           class="add-prompt-button"
           @click="addPromptBlock"
         >
-          增加提示词块
+          {{ t('configPanel.addPromptBlock') }}
         </el-button>
       </div>
     </div>
@@ -162,6 +162,7 @@ import { Loading } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useConfig } from '../../composables/useConfig'
 import { usePrompt } from '../../composables/usePrompt'
+import { useLanguage } from '../../composables/useLanguage'
 
 interface Props {
   adminInputs: { [key: string]: string }
@@ -185,6 +186,9 @@ interface Emits {
 }
 
 const emit = defineEmits<Emits>()
+
+// 获取翻译函数
+const { t } = useLanguage()
 
 const fileInput = ref<HTMLInputElement | null>(null)
 // 配置marked选项
@@ -351,7 +355,7 @@ const handleFileUpload = (event: Event) => {
       emit('config-modified')
     } catch (error) {
       console.error('导入配置失败:', error)
-      ElMessage.error('配置文件格式错误')
+      ElMessage.error(t('configPanel.importError'))
     }
     
     // 清空文件输入框
@@ -365,12 +369,12 @@ const handleFileUpload = (event: Event) => {
 // 插入提示词块占位符
 const insertPromptBlock = (index: number) => {
   if (lastFocusedIndex.value === null) {
-    ElMessage.warning('请先点击要插入的提示词输入框')
+    ElMessage.warning(t('configPanel.insertWarning'))
     return
   }
 
   if (!canInsertPromptBlock(index, lastFocusedIndex.value)) {
-    ElMessage.warning('只能在当前提示词块下方的输入框中插入占位符')
+    ElMessage.warning(t('configPanel.insertBlockWarning'))
     return
   }
 
@@ -382,11 +386,15 @@ const insertPromptBlock = (index: number) => {
 // 删除管理员输入框
 const deleteAdminInput = async (key: string) => {
   try {
-    await ElMessageBox.confirm('确定要删除这个输入框吗？', '确认删除', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
+    await ElMessageBox.confirm(
+      t('configPanel.deleteInputConfirm'),
+      t('configPanel.deleteConfirm'),
+      {
+        confirmButtonText: t('configPanel.confirm'),
+        cancelButtonText: t('configPanel.cancel'),
+        type: 'warning'
+      }
+    )
 
     // 删除管理员输入框
     const newAdminInputs = Object.fromEntries(
@@ -404,12 +412,12 @@ const deleteAdminInput = async (key: string) => {
     // 触发配置修改事件
     emit('config-modified')
 
-    ElMessage.success('删除成功')
+    ElMessage.success(t('configPanel.deleteSuccess'))
   } catch (error) {
     // 用户取消删除操作，不做任何处理
     if (error !== 'cancel') {
       console.error('删除输入框时发生错误:', error)
-      ElMessage.error('删除失败：' + (error as Error).message)
+      ElMessage.error(t('configPanel.deleteError') + (error as Error).message)
     }
   }
 }

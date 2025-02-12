@@ -36,10 +36,10 @@
             v-model="userInput"
             type="textarea"
             :rows="3"
-            placeholder="请输入消息..."
+            :placeholder="t('chat.inputPlaceholder')"
             @keyup.enter.exact="sendMessage"
           />
-          <el-button type="primary" @click="sendMessage">发送</el-button>
+          <el-button type="primary" @click="sendMessage">{{ t('chat.sendButton') }}</el-button>
         </div>
       </div>
     </div>
@@ -47,8 +47,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, inject, type Ref } from 'vue'
+import { ref, nextTick, inject, onMounted, onUnmounted, type Ref } from 'vue'
 import { useStreamResponse } from '../../composables/useStreamResponse'
+import { useLanguage } from '../../composables/useLanguage'
 import type { Message, ChatHistory } from '../../types/chat'
 import type { ModelType } from '../../api/api-deepseekStream'
 import HistoryPanel from '../../components/HistoryPanel.vue'
@@ -60,6 +61,7 @@ const currentMessages = ref<Message[]>([])
 const messagesContainer = ref<HTMLDivElement | null>(null)
 const historyPanel = ref()
 const selectedModel = inject<Ref<ModelType>>('selectedModel', ref('kimi'))
+const { t } = useLanguage()
 
 // 初始化流式响应
 const { isStreaming, handleStreamResponse } = useStreamResponse()
@@ -166,6 +168,21 @@ const startNewChat = () => {
   currentMessages.value = []
   userInput.value = ''
 }
+
+// 监听语言切换事件
+const handleLanguageChange = (event: CustomEvent) => {
+  if (event.detail?.shouldStartNewChat) {
+    startNewChat()
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('language-changed', handleLanguageChange as EventListener)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('language-changed', handleLanguageChange as EventListener)
+})
 </script>
 
 <style scoped>

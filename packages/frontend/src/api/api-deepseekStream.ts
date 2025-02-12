@@ -1,6 +1,6 @@
 import type { Message } from '../types/chat';
 
-export type ModelType = 'deepseek' | 'kimi' | 'yiwan' | 'siliconDeepseek' | 'baiduDeepseek' | 'qwen-turbo-latest' | 'alideepseekv3' | 'alideepseekr1';
+export type ModelType = 'deepseek' | 'kimi' | 'yiwan' | 'siliconDeepseek' | 'baiduDeepseek' | 'qwen-turbo-latest' | 'alideepseekv3' | 'alideepseekr1' | 'volcesDeepseek';
 
 import { SpeedTestButtonWebSocket } from '../services/speedTestButton.websocket.js';
 import { ExecuteButtonWebSocket } from '../services/executeButton.websocket.js';
@@ -104,7 +104,7 @@ export async function RequestAI(
                                         model,
                                         timestamp: new Date().toISOString()
                                     });
-                                    
+
                                     // 解析错误信息
                                     let displayError = errorMsg;
                                     try {
@@ -115,7 +115,7 @@ export async function RequestAI(
                                     } catch (e) {
                                         // 如果不是JSON格式，使用原始错误信息
                                     }
-                                    
+
                                     onChunk(`[ERROR] ${displayError}`);
                                     reject(new Error(displayError));
                                     break;

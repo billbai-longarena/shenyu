@@ -5,7 +5,7 @@
         <span class="input-label">{{ getAdminInputValue(String(key)) }}</span>
         <el-input 
           v-model="localUserInputs[key]"
-          :placeholder="'请输入' + key"
+          :placeholder="t('inputPanel.inputPlaceholder') + key"
           @input="updateUserInputs"
         />
       </div>
@@ -15,6 +15,9 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useLanguage } from '../../../composables/useLanguage'
+
+const { t } = useLanguage()
 
 const props = defineProps<{
   userInputs: { [key: string]: string }

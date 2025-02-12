@@ -1,7 +1,7 @@
 <template>
   <div class="output-panel">
     <div class="output-header">
-      <h2 class="output-title">输出结果</h2>
+      <h2 class="output-title">{{ t('outputPanel.title') }}</h2>
       <el-button
         v-if="renderedBlocks.length > 0"
         type="primary"
@@ -9,7 +9,7 @@
         :icon="CopyDocumentIcon"
         @click="copyOutputResult"
       >
-        复制结果
+        {{ t('outputPanel.copyResult') }}
       </el-button>
     </div>
     <div class="output-content" ref="outputContent">
@@ -33,6 +33,7 @@ import { ref, computed, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Document as CopyDocumentIcon } from '@element-plus/icons-vue'
 import { marked } from 'marked'
+import { useLanguage } from '../../../composables/useLanguage'
 
 interface BlockStatus {
   status: 'pending' | 'streaming' | 'completed' | 'error'
@@ -43,6 +44,8 @@ const props = defineProps<{
   blockContents: string[]
   blockStatuses: BlockStatus[]
 }>()
+
+const { t } = useLanguage()
 
 // 计算属性：渲染后的块内容
 const renderedBlocks = computed(() => {
@@ -75,14 +78,14 @@ const copyOutputResult = async () => {
         document.body.removeChild(textarea)
       } catch (err) {
         document.body.removeChild(textarea)
-        throw new Error('复制失败')
+        throw new Error(t('outputPanel.copyError'))
       }
     }
     
-    ElMessage.success('复制成功')
+    ElMessage.success(t('outputPanel.copySuccess'))
   } catch (error) {
     console.error('复制失败:', error)
-    ElMessage.error('复制失败')
+    ElMessage.error(t('outputPanel.copyError'))
   }
 }
 

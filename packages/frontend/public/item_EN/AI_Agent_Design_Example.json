@@ -1,0 +1,11 @@
+{
+    "adminInputs": {
+        "inputB1": "Animal 1 <def>cat</def>",
+        "inputB2": "Animal 2 <def>dog</def>",
+        "inputB3": "Animal 3 "
+    },
+    "promptBlocks": [
+        "List one breed for each of the following animals, only output the breed name, do not output other unrelated information. ${inputB1}     ${inputB2}  ${inputB3}",
+        "Which one do you like the most: ${promptBlock1} Output result directly, no explanation needed"
+    ]
+}

@@ -213,6 +213,9 @@ shenyu/
 - [开发指南](docs/guide/index.md)
 - [API 文档](docs/api/chat-completions.md)
 - [组件文档](docs/components/execution-panel.md)
+- [状态管理最佳实践](docs/guide/state-management-best-practices.md) [中文]
+- [双语文档维护指南](docs/guide/bilingual-docs-best-practices.md) [中文]
+- [新增大模型最佳实践](docs/guide/add-model-best-practices.md) [中文]
 - [更新日志](docs/changelog.md)
 
 ## 插件开发

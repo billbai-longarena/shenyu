@@ -1,26 +1,44 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-export function generateFileList(): void {
+function generateFileList(): void {
+    // 处理中文文件列表
     const itemCNDir = path.resolve(process.cwd(), 'public/item_CN')
-    const files = fs.readdirSync(itemCNDir)
-    const jsonFiles = files
-        .filter(file => file.endsWith('.json'))
+    const cnFiles = fs.readdirSync(itemCNDir)
+    const cnJsonFiles = cnFiles
+        .filter(file => file.endsWith('.json') && file !== 'json-files-list.json')
         .map(file => ({
             filename: file,
-            // 添加item_CN路径前缀并进行URL编码
             encodedFilename: `item_CN/${encodeURIComponent(file)}`
         }))
 
-    // 确保dist目录存在
-    const distDir = path.resolve(process.cwd(), 'dist')
-    if (!fs.existsSync(distDir)) {
-        fs.mkdirSync(distDir)
-    }
+    // 处理英文文件列表
+    const itemENDir = path.resolve(process.cwd(), 'public/item_EN')
+    const enFiles = fs.readdirSync(itemENDir)
+    const enJsonFiles = enFiles
+        .filter(file => file.endsWith('.json') && file !== 'json-files-list.json')
+        .map(file => ({
+            filename: file,
+            encodedFilename: `item_EN/${encodeURIComponent(file)}`
+        }))
 
-    // 写入文件列表
+    // 直接写入到各自的目录
     fs.writeFileSync(
-        path.join(distDir, 'json-files-list.json'),
-        JSON.stringify(jsonFiles, null, 2)
+        path.join(itemCNDir, 'json-files-list.json'),
+        JSON.stringify(cnJsonFiles, null, 2)
+    )
+    fs.writeFileSync(
+        path.join(itemENDir, 'json-files-list.json'),
+        JSON.stringify(enJsonFiles, null, 2)
     )
 }
+
+// 当作为脚本直接运行时执行
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+    console.log('Generating file lists...')
+    generateFileList()
+    console.log('File lists generated successfully')
+}
+
+export { generateFileList }

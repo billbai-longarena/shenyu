@@ -12,7 +12,7 @@
     <div class="content-panel">
       <!-- 顶部标签页 -->
       <el-tabs v-model="activeTab" class="full-height">
-        <el-tab-pane label="用户界面" name="user">
+        <el-tab-pane :label="t('sn43.userInterface')" name="user">
           <UserInterface
             :user-inputs="userInputs"
             :admin-inputs="adminInputs"
@@ -31,7 +31,7 @@
           />
         </el-tab-pane>
         
-        <el-tab-pane label="后台配置" name="admin">
+        <el-tab-pane :label="t('sn43.adminConfig')" name="admin">
           <ConfigPanel
             :admin-inputs="adminInputs"
             :user-inputs="userInputs"
@@ -54,13 +54,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, watch } from 'vue'
 import type { ChatHistory } from '../../types/chat'
 import HistoryPanel from '../../components/HistoryPanel.vue'
 import UserInterface from '../../components/sn43/UserInterface.vue'
 import ConfigPanel from '../../components/sn43/ConfigPanel.vue'
 import { ElMessage } from 'element-plus'
 import '../../assets/styles/layout.css'
+import { useJsonFiles } from '../../composables/useJsonFiles'
+import { useLanguage } from '../../composables/useLanguage'
+
+const { getDefaultFile, fetchJsonFiles } = useJsonFiles()
+const { currentLanguage, t } = useLanguage()
 
 // 状态定义
 const activeTab = ref('user')
@@ -74,14 +79,50 @@ const outputResult = ref('')
 const previewText = ref('')
 const isPreviewLoading = ref(false)
 const isConfigModified = ref(false)
-const selectedJsonFile = ref('高血压快速配药器.json')
+const selectedJsonFile = ref('')
 
 // 组件加载时初始化
-onMounted(() => {
+onMounted(async () => {
   // 初始化一个空的提示词块
   if (promptBlocks.length === 0) {
     promptBlocks.push({ text: '' })
   }
+  
+  try {
+    // 获取文件列表
+    await fetchJsonFiles()
+    // 设置默认文件
+    if (!selectedJsonFile.value) {
+      selectedJsonFile.value = getDefaultFile.value
+    }
+  } catch (error) {
+    console.error('Failed to initialize file list:', error)
+  }
+})
+
+// 监听语言变化事件
+const handleLanguageChange = async (event: Event) => {
+  const customEvent = event as CustomEvent<{lang: string; shouldStartNewChat: boolean}>
+  try {
+    if (customEvent.detail?.shouldStartNewChat) {
+      await startNewChat()
+    } else {
+      // 重新获取文件列表
+      await fetchJsonFiles()
+      // 重置选中的文件为当前语言的默认文件
+      selectedJsonFile.value = getDefaultFile.value
+    }
+  } catch (error) {
+    console.error('Failed to handle language change:', error)
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('language-changed', handleLanguageChange)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('language-changed', handleLanguageChange)
 })
 
 // 更新函数
@@ -200,12 +241,12 @@ const selectHistory = async (history: ChatHistory) => {
     historyPanel.value?.updateOrCreateHistory(history.messages)
   } catch (error) {
     console.error('Failed to parse history:', error)
-    ElMessage.error('恢复历史记录失败')
+    ElMessage.error(t('sn43.restoreHistoryError'))
   }
 }
 
 // 开启新对话
-const startNewChat = () => {
+const startNewChat = async () => {
   console.log('Starting new chat')
   
   // 重置编辑状态
@@ -218,12 +259,20 @@ const startNewChat = () => {
   outputResult.value = ''
   previewText.value = ''
   inputCounter.value = 0
-  selectedJsonFile.value = '高血压快速配药器.json'
+  
+  try {
+    // 重新获取文件列表并设置默认文件
+    await fetchJsonFiles()
+    selectedJsonFile.value = getDefaultFile.value
+  } catch (error) {
+    console.error('Failed to set default file:', error)
+    selectedJsonFile.value = ''
+  }
   
   // 重置配置修改状态
   isConfigModified.value = false
   
-  ElMessage.success('已开启新对话')
+  ElMessage.success(t('sn43.newChatSuccess'))
 }
 </script>
 

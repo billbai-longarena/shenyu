@@ -53,6 +53,7 @@ import InputPanel from './input/InputPanel.vue'
 import ExecutionPanel from './execution/ExecutionPanel.vue'
 import OutputPanel from './output/OutputPanel.vue'
 import { useExecuteButton } from '../../composables/useExecuteButton.js'
+import { useLanguage } from '../../composables/useLanguage'
 import { ElMessage } from 'element-plus'
 
 // Props定义
@@ -67,7 +68,7 @@ const props = withDefaults(defineProps<{
   selectedJsonFile?: string
 }>(), {
   inputCounter: 0,
-  selectedJsonFile: '高血压快速配药器.json'
+  selectedJsonFile: ''
 })
 
 // Emits定义
@@ -79,6 +80,9 @@ const emit = defineEmits<{
   (e: 'update:inputCounter', value: number): void
   (e: 'update:selectedJsonFile', value: string): void
 }>()
+
+// 获取翻译函数
+const { t } = useLanguage()
 
 // 执行相关
 const { 
@@ -132,7 +136,7 @@ const executeUserInputs = async () => {
     }
   } catch (error) {
     console.error('执行错误:', error)
-    ElMessage.error('执行失败')
+    ElMessage.error(t('userInterface.executionError'))
   }
 }
 </script>

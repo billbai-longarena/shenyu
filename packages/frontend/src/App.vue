@@ -9,19 +9,19 @@
         >
           <el-menu-item index="/chat">
             <el-icon><ChatDotRound /></el-icon>
-            对话
+            {{ t('menu.chat') }}
           </el-menu-item>
           <el-menu-item index="/sn43">
             <el-icon><Grid /></el-icon>
-            智能体
+            {{ t('menu.agent') }}
           </el-menu-item>
           <el-menu-item index="/tab3" disabled>
             <el-icon><Grid /></el-icon>
-            功能3
+            {{ t('menu.feature3') }}
           </el-menu-item>
           <el-menu-item index="/tab4" disabled>
             <el-icon><Grid /></el-icon>
-            功能4
+            {{ t('menu.feature4') }}
           </el-menu-item>
         </el-menu>
 <div class="model-controls">
@@ -34,11 +34,11 @@
     @click="testModelSpeed"
     style="margin-right: 10px"
   >
-    测速
+    {{ t('controls.speedTest') }}
   </el-button>
           <el-select
             v-model="selectedModel"
-            placeholder="选择模型"
+            :placeholder="t('controls.modelSelect')"
             style="width: 300px"
           >
             <template #prefix>
@@ -72,7 +72,7 @@
           </el-select>
           <el-select
             v-model="selectedTemperature"
-            placeholder="选择参数"
+            :placeholder="t('controls.paramSelect')"
             style="width: 150px"
           >
             <el-option
@@ -87,8 +87,34 @@
             @click="saveAsDefault"
             :loading="isSaving"
           >
-            设为默认
+            {{ t('controls.setDefault') }}
           </el-button>
+          <el-tooltip
+            :content="t('github.tooltip')"
+            placement="bottom"
+          >
+            <a 
+              href="https://github.com/billbai-longarena/shenyu.git"
+              target="_blank"
+              style="text-decoration: none;"
+            >
+              <el-button
+                type="primary"
+                link
+              >
+                <el-icon><Share /></el-icon>
+                {{ t('github.viewOnGithub') }}
+              </el-button>
+            </a>
+          </el-tooltip>
+          <el-switch
+            v-model="isEnglish"
+            active-text="EN"
+            inactive-text="CN"
+            inline-prompt
+            @change="toggleLanguage"
+            style="margin-left: 10px"
+          />
         </div>
       </div>
     </el-header>
@@ -100,19 +126,27 @@
 </template>
 
 <script setup lang="ts">
-import { ChatDotRound, Grid, CircleClose } from '@element-plus/icons-vue'
+import { ChatDotRound, Grid, CircleClose, Share } from '@element-plus/icons-vue'
 import { ref, watch, computed, onMounted, onUnmounted, provide } from 'vue'
 import { setTemperature, RequestAI, setModel } from './api/api-deepseekStream'
 import type { ModelType } from './api/api-deepseekStream'
 import { useModelConfig } from './composables/useModelConfig'
 import { useModelDefaults } from './composables/useModelDefaults'
 import { useClientCount } from './composables/useClientCount'
+import { useLanguage } from './composables/useLanguage'
 
 let pollTimer: number | null = null
 const { clientCount, fetchClientCount, initWebSocket, closeWebSocket } = useClientCount()
 const { loadDefaults, saveDefaults } = useModelDefaults()
 const { getModelMaxTokens } = useModelConfig()
+const { t, currentLanguage, loadDefaultLanguage, toggleLanguage } = useLanguage()
 const isSaving = ref(false)
+const isEnglish = ref(currentLanguage.value === 'en')
+
+// 监听语言变化
+watch(currentLanguage, (newValue) => {
+  isEnglish.value = newValue === 'en'
+})
 
 // 保存为默认配置
 const saveAsDefault = async () => {
@@ -134,10 +168,13 @@ const loadDefaultSettings = async () => {
 }
 
 onMounted(() => {
-    loadDefaultSettings().then(() => {
-        // 确保在加载默认设置后设置初始模型
-        setModel(selectedModel.value)
-    })
+    Promise.all([
+        loadDefaultSettings().then(() => {
+            // 确保在加载默认设置后设置初始模型
+            setModel(selectedModel.value)
+        }),
+        loadDefaultLanguage()
+    ])
     // 初始化WebSocket连接
     initWebSocket()
     // 启动定时器，每1秒获取一次客户端数量作为备份机制
@@ -168,28 +205,29 @@ const modelOptions = ref<ModelOption[]>([
   { label: 'kimi-8k', value: 'kimi', speed: { status: 'none' } },  
   { label: 'deepseek V3', value: 'deepseek', speed: { status: 'none' } },
   { label: '零一万物', value: 'yiwan', speed: { status: 'none' } },
-  { label: '硅基流动DeepseekV3', value: 'siliconDeepseek', speed: { status: 'none' } },
-  { label: '百度DeepSeekV3', value: 'baiduDeepseek', speed: { status: 'none' } },
+  //{ label: '硅基流动DeepseekV3', value: 'siliconDeepseek', speed: { status: 'none' } },
+ // { label: '百度DeepSeekV3', value: 'baiduDeepseek', speed: { status: 'none' } },
   { label: 'Qwen 2.5 Plus', value: 'qwen-turbo-latest', speed: { status: 'none' } },
   { label: 'Ali DeepSeekV3', value: 'alideepseekv3', speed: { status: 'none' } },
-  { label: 'Ali DeepSeek R1', value: 'alideepseekr1', speed: { status: 'none' } }
+  { label: 'Ali DeepSeek R1', value: 'alideepseekr1', speed: { status: 'none' } },
+  { label: '火山DeepseekV3', value: 'volcesDeepseek', speed: { status: 'none' } }
 ])
 
 const temperatureOptions = computed(() => {
   if (selectedModel.value === 'kimi') {
     return [
-      { label: '保守', value: 0.1 },
-      { label: '平衡', value: 0.5 },
-      { label: '创造', value: 0.9 }
+      { label: t('modelParams.conservative'), value: 0.1 },
+      { label: t('modelParams.balanced'), value: 0.5 },
+      { label: t('modelParams.creative'), value: 0.9 }
     ]
   } else if (selectedModel.value === 'deepseek' || selectedModel.value === 'siliconDeepseek' || 
       selectedModel.value === 'baiduDeepseek' || selectedModel.value === 'alideepseekv3' || 
-      selectedModel.value === 'alideepseekr1') {
+      selectedModel.value === 'alideepseekr1' || selectedModel.value === 'volcesDeepseek') {
     return [
-      { label: '代码生成/数学解题', value: 0 },
-      { label: '数据抽取/分析', value: 1 },
-      { label: '通用对话和翻译', value: 1.3 },
-      { label: '创意类写作/诗歌创作', value: 1.5 }
+      { label: t('modelParams.codeGen'), value: 0 },
+      { label: t('modelParams.dataExtract'), value: 1 },
+      { label: t('modelParams.generalChat'), value: 1.3 },
+      { label: t('modelParams.creativeWriting'), value: 1.5 }
     ]
   } else {
     return [
@@ -321,7 +359,7 @@ watch(selectedModel, (newValue) => {
     selectedTemperature.value = 0.5  // kimi使用平衡的temperature
   } else if (newValue === 'deepseek' || newValue === 'siliconDeepseek' || 
       newValue === 'baiduDeepseek' || newValue === 'alideepseekv3' || 
-      newValue === 'alideepseekr1') {
+      newValue === 'alideepseekr1' || newValue === 'volcesDeepseek') {
     selectedTemperature.value = 1  // deepseek系列使用通用对话模式
   } else {
     selectedTemperature.value = 0.5  // 其他模型使用较保守的temperature

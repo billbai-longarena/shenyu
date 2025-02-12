@@ -1,12 +1,12 @@
 <template>
   <div class="config-selector">
     <div class="config-header">
-      <h2 class="config-title">输入区域</h2>
+      <h2 class="config-title">{{ t('configSelector.title') }}</h2>
       <div class="json-controls">
         <el-select 
           v-model="selectedFilename" 
-          placeholder="选择配置文件"
-          @focus="fetchJsonFiles"
+          :placeholder="t('configSelector.selectPlaceholder')"
+          @click="onSelectClick"
           :disabled="isConfigModified || isEditing"
         >
           <el-option
@@ -20,17 +20,20 @@
           type="primary" 
           @click="loadConfig"
           :disabled="isConfigModified || isEditing"
-        >载入</el-button>
+        >{{ t('configSelector.loadButton') }}</el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import { ElMessage } from 'element-plus'
-import { useJsonFiles } from '../../../composables/useJsonFiles'
+import { useJsonFiles, type JsonFile } from '../../../composables/useJsonFiles'
 import { useConfig } from '../../../composables/useConfig'
+import { useLanguage } from '../../../composables/useLanguage'
+
+const { t, currentLanguage } = useLanguage()
 
 const props = defineProps<{
   modelValue: string
@@ -71,10 +74,86 @@ watch(() => props.modelValue, async (newValue) => {
   selectedFilename.value = newValue
 }, { immediate: true })
 
-// 组件挂载时获取文件列表
-onMounted(async () => {
-  if (props.modelValue) {
+// 监听语言变化事件
+const handleLanguageChange = async (event: Event) => {
+  const customEvent = event as CustomEvent<'en' | 'zh'>
+  const newLang = customEvent.detail
+  console.log('[ConfigSelector] 收到语言变化事件', {
+    新语言: newLang,
+    当前选中文件: selectedFilename.value,
+    文件列表长度: jsonFiles.value.length
+  })
+  
+  try {
+    // 先清空当前选择
+    if (selectedFilename.value) {
+      console.log('[ConfigSelector] 清空当前选择')
+      selectedFilename.value = ''
+      emit('update:model-value', '')
+    }
+
+    console.log('[ConfigSelector] 开始获取新语言的文件列表')
     await fetchJsonFiles()
+    console.log('[ConfigSelector] 文件列表获取成功', {
+      新文件列表长度: jsonFiles.value.length,
+      文件列表: jsonFiles.value.map(f => f.filename)
+    })
+  } catch (error) {
+    console.error('[ConfigSelector] 获取文件列表失败:', error)
+    ElMessage.error(t('configSelector.loadError'))
+  }
+}
+
+// 监听语言变化（通过watch和自定义事件两种方式）
+watch(currentLanguage, async (newLang, oldLang) => {
+  console.log('[ConfigSelector] 语言变化监听触发', {
+    旧语言: oldLang,
+    新语言: newLang,
+    当前选中文件: selectedFilename.value,
+    文件列表长度: jsonFiles.value.length
+  })
+  
+  try {
+    // 先清空当前选择
+    if (selectedFilename.value) {
+      console.log('[ConfigSelector] 清空当前选择')
+      selectedFilename.value = ''
+      emit('update:model-value', '')
+    }
+
+    console.log('[ConfigSelector] 开始获取新语言的文件列表')
+    await fetchJsonFiles()
+    console.log('[ConfigSelector] 文件列表获取成功', {
+      新文件列表长度: jsonFiles.value.length,
+      文件列表: jsonFiles.value.map(f => f.filename)
+    })
+  } catch (error) {
+    console.error('[ConfigSelector] 获取文件列表失败:', error)
+    ElMessage.error(t('configSelector.loadError'))
+  }
+}, { immediate: true })
+
+// 添加和移除事件监听器
+onMounted(() => {
+  window.addEventListener('language-changed', handleLanguageChange)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('language-changed', handleLanguageChange)
+})
+
+// 点击下拉框时获取最新文件列表
+const onSelectClick = async () => {
+  if (!jsonFiles.value.length) {
+    await fetchJsonFiles()
+  }
+}
+
+// 监听文件列表变化
+watch(jsonFiles, () => {
+  // 如果当前选中的文件不在新的文件列表中，清空选择
+  if (selectedFilename.value && !jsonFiles.value.find((f: JsonFile) => f.filename === selectedFilename.value)) {
+    selectedFilename.value = ''
   }
 })
 
@@ -92,31 +171,34 @@ const { importConfig } = useConfig(
 // 加载选中的JSON配置
 const loadConfig = async () => {
   if (!selectedFilename.value) {
-    ElMessage.warning('请先选择配置文件')
+    ElMessage.warning(t('configSelector.selectFirst'))
     return
   }
 
   try {
-    const file = jsonFiles.value.find(f => f.filename === selectedFilename.value)
+    const file = jsonFiles.value.find((f: JsonFile) => f.filename === selectedFilename.value)
     if (!file) {
-      throw new Error('找不到选中的文件')
+      throw new Error(t('configSelector.fileNotFound'))
     }
-    const response = await fetch(`/${file.encodedFilename}`, {
+    const timestamp = new Date().getTime()
+    const response = await fetch(`/${file.encodedFilename}?t=${timestamp}`, {
       headers: {
-        'Cache-Control': 'no-cache'
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
       }
     })
     if (!response.ok) {
-      throw new Error('加载配置失败')
+      throw new Error(t('configSelector.loadError'))
     }
 
     const config = await response.json()
     importConfig(config)
-    ElMessage.success('配置加载成功')
+    ElMessage.success(t('configSelector.loadSuccess'))
     emit('config-loaded')
   } catch (error) {
     console.error('加载配置失败:', error)
-    ElMessage.error('加载配置失败')
+    ElMessage.error(t('configSelector.loadError'))
   }
 }
 </script>

@@ -211,6 +211,9 @@ shenyu/
 - [Development Guide](docs/guide/index.md)
 - [API Documentation](docs/api/chat-completions.md)
 - [Component Documentation](docs/components/execution-panel.md)
+- [State Management Best Practices](docs/guide/state-management-best-practices.en.md) [English]
+- [Bilingual Documentation Guide](docs/guide/bilingual-docs-best-practices.en.md) [English]
+- [Best Practices for Adding New Models](docs/guide/add-model-best-practices.en.md) [English]
 - [Changelog](docs/changelog.md)
 
 ## Plugin Development

@@ -20,7 +20,7 @@ export function useModelDefaults() {
         try {
             const url = '/model-defaults.json';
             console.log('[useModelDefaults] 请求URL:', url);
-            
+
             const response = await fetch(url, {
                 headers: {
                     'Cache-Control': 'no-cache, no-store, must-revalidate',
@@ -28,13 +28,13 @@ export function useModelDefaults() {
                     'Expires': '0'
                 }
             });
-            
+
             console.log('[useModelDefaults] 响应状态:', response.status);
             console.log('[useModelDefaults] 响应头:', Object.fromEntries(response.headers.entries()));
             if (!response.ok) {
                 throw new Error(`加载默认配置失败: HTTP ${response.status}`);
             }
-            
+
             const data = await response.json();
             console.log('[useModelDefaults] 加载的配置:', data);
             return data;
@@ -97,52 +97,63 @@ export function useModelDefaults() {
             // 验证更新
             console.log('\n[useModelDefaults] ====== 开始验证配置更新 ======');
             console.log('[useModelDefaults] 发送验证请求...');
-            
-            // 等待一段时间再验证，给服务器时间处理文件
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            const publicResponse = await fetch('/model-defaults.json', {
-                method: 'GET',
-                headers: {
-                    'Cache-Control': 'no-cache, no-store, must-revalidate',
-                    'Pragma': 'no-cache',
-                    'Expires': '0',
-                    'If-None-Match': '',  // 忽略 ETag
-                    'If-Modified-Since': ''  // 忽略最后修改时间
+
+            // 等待更长时间并尝试多次验证
+            const maxRetries = 3;
+            for (let i = 0; i < maxRetries; i++) {
+                console.log(`[useModelDefaults] 验证尝试 ${i + 1}/${maxRetries}`);
+
+                // 每次尝试之间等待更长时间
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                const publicResponse = await fetch('/model-defaults.json', {
+                    method: 'GET',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0',
+                        'If-None-Match': '',  // 忽略 ETag
+                        'If-Modified-Since': ''  // 忽略最后修改时间
+                    }
+                });
+
+                console.log('[useModelDefaults] 验证请求状态:', publicResponse.status);
+                console.log('[useModelDefaults] 验证响应头:', Object.fromEntries(publicResponse.headers.entries()));
+
+                if (!publicResponse.ok) {
+                    console.warn(`[useModelDefaults] 验证请求 ${i + 1} 失败:`, publicResponse.status);
+                    if (i === maxRetries - 1) {
+                        throw new Error(`验证请求失败: HTTP ${publicResponse.status}`);
+                    }
+                    continue;
                 }
-            });
-            
-            console.log('[useModelDefaults] 验证请求状态:', publicResponse.status);
-            console.log('[useModelDefaults] 验证响应头:', Object.fromEntries(publicResponse.headers.entries()));
 
-            if (!publicResponse.ok) {
-                console.warn('[useModelDefaults] 本地配置文件验证失败:', publicResponse.status);
-                console.warn('本地配置文件更新失败，但服务器配置已保存');
-                throw new Error(`验证请求失败: HTTP ${publicResponse.status}`);
+                const verifyData = await publicResponse.json();
+                console.log(`[useModelDefaults] 验证 ${i + 1} 读取的配置:`, verifyData);
+
+                // 详细的配置比较
+                console.log('\n[useModelDefaults] ====== 配置比较 ======');
+                console.log('期望的配置:', JSON.stringify(config, null, 2));
+                console.log('实际的配置:', JSON.stringify(verifyData, null, 2));
+
+                // 验证配置是否真的更新了
+                const modelMatch = verifyData.defaultModel === config.defaultModel;
+                const tempMatch = verifyData.defaultTemperature === config.defaultTemperature;
+
+                console.log('模型匹配:', modelMatch);
+                console.log('温度匹配:', tempMatch);
+
+                if (modelMatch && tempMatch) {
+                    console.log(`[useModelDefaults] 验证 ${i + 1} 成功 - 文件已正确更新`);
+                    break;
+                }
+
+                if (i === maxRetries - 1) {
+                    console.warn('[useModelDefaults] 所有验证尝试都失败 - 文件内容与期望不符');
+                    throw new Error('配置验证失败：文件内容与期望不符');
+                }
             }
 
-            const verifyData = await publicResponse.json();
-            console.log('[useModelDefaults] 验证读取的配置:', verifyData);
-            
-            // 详细的配置比较
-            console.log('\n[useModelDefaults] ====== 配置比较 ======');
-            console.log('期望的配置:', JSON.stringify(config, null, 2));
-            console.log('实际的配置:', JSON.stringify(verifyData, null, 2));
-            
-            // 验证配置是否真的更新了
-            const modelMatch = verifyData.defaultModel === config.defaultModel;
-            const tempMatch = verifyData.defaultTemperature === config.defaultTemperature;
-            
-            console.log('模型匹配:', modelMatch);
-            console.log('温度匹配:', tempMatch);
-            
-            if (!modelMatch || !tempMatch) {
-                console.warn('[useModelDefaults] 配置验证失败 - 文件内容与期望不符:',
-                    '\n期望:', config,
-                    '\n实际:', verifyData);
-                throw new Error('配置验证失败：文件内容与期望不符');
-            }
-            
             console.log('[useModelDefaults] 配置验证成功 - 文件已正确更新');
 
             ElMessage.success('默认配置已保存');

@@ -152,6 +152,22 @@ let API_CONFIGS: Record<ModelType, ModelConfig> = {
                 creative: 1.0
             }
         }
+    },
+    'volcesDeepseek': {
+        apiKey: process.env.VOLCES_API_KEY || '',
+        url: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
+        model: 'ep-20250212110141-mvgts',
+        maxTokens: 8096,
+        temperatureRange: {
+            min: 0,
+            max: 2.0,
+            default: 1,
+            presets: {
+                conservative: 0.5,
+                balanced: 1.0,
+                creative: 1.5
+            }
+        }
     }
 };
 
@@ -284,6 +300,22 @@ function createConfigs(): Record<ModelType, ModelConfig> {
                     creative: 1.0
                 }
             }
+        },
+        'volcesDeepseek': {
+            apiKey: process.env.VOLCES_API_KEY || '',
+            url: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
+            model: 'ep-20250212110141-mvgts',
+            maxTokens: 8096,
+            temperatureRange: {
+                min: 0,
+                max: 2.0,
+                default: 1,
+                presets: {
+                    conservative: 0.5,
+                    balanced: 1.0,
+                    creative: 1.5
+                }
+            }
         }
     };
 }
@@ -376,6 +408,10 @@ class ModelService {
             case 'alideepseekv3':
             case 'alideepseekr1':
                 // 阿里云API使用原始格式
+                headers['Authorization'] = `Bearer ${config.apiKey}`;
+                break;
+            case 'volcesDeepseek':
+                // 火山API使用原始格式
                 headers['Authorization'] = `Bearer ${config.apiKey}`;
                 break;
             default:

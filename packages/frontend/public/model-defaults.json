@@ -1,33 +1,4 @@
 {
-    "defaultModel": "kimi",
-    "defaultTemperature": 0.5,
-    "modelConfigs": {
-        "kimi": {
-            "max_tokens": 4096
-        },
-        "deepseek": {
-            "max_tokens": 8191
-        },
-        "yiwan": {
-            "max_tokens": 4096
-        },
-        "siliconDeepseek": {
-            "max_tokens": 4095
-        },
-        "tencentDeepseek": {
-            "max_tokens": 8191
-        },
-        "baiduDeepseek": {
-            "max_tokens": 4095
-        },
-        "qwen-turbo-latest": {
-            "max_tokens": 6144
-        },
-        "alideepseekv3": {
-            "max_tokens": 8191
-        },
-        "alideepseekr1": {
-            "max_tokens": 8191
-        }
-    }
+    "defaultModel": "volcesDeepseek",
+    "defaultTemperature": 1
 }

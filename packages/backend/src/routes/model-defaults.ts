@@ -32,7 +32,7 @@ router.use((req, res, next) => {
 router.post('/save', async (req, res) => {
     console.log('\n[Model Defaults] ====== 开始处理保存请求 ======');
     console.log('[Model Defaults] 收到保存请求体:', JSON.stringify(req.body, null, 2));
-    
+
     try {
         const { defaultModel, defaultTemperature } = req.body;
         console.log('[Model Defaults] 解析的数据:', { defaultModel, defaultTemperature });
@@ -60,38 +60,33 @@ router.post('/save', async (req, res) => {
         });
 
         // 路径解析
-        const projectRoot = path.resolve(process.cwd(), '..');  // 回到项目根目录
-        const publicPath = path.join(projectRoot, 'public');
-        const distPublicPath = path.join(projectRoot, 'dist/public');
-        const configPath = path.join(distPublicPath, 'model-defaults.json');
-        
+        const rootDir = path.resolve(__dirname, '../../../..');  // 从当前文件位置向上4级到达项目根目录
+        const publicPath = path.join(rootDir, 'packages/frontend/public');
+        const configPath = path.join(publicPath, 'model-defaults.json');
+
         console.log('\n[Model Defaults] ====== 路径信息 ======');
-        console.log('[Model Defaults] 项目根目录:', projectRoot);
         console.log('[Model Defaults] Public目录:', publicPath);
-        console.log('[Model Defaults] Dist Public目录:', distPublicPath);
         console.log('[Model Defaults] 配置文件路径:', configPath);
 
         // 目录检查
         const dirPath = path.dirname(configPath);
         console.log('\n[Model Defaults] ====== 目录检查 ======');
         console.log('[Model Defaults] 目标目录路径:', dirPath);
-        
+
         try {
             // 检查和创建目录
-            for (const dir of [publicPath, distPublicPath]) {
-                const dirExists = fs.existsSync(dir);
-                console.log(`[Model Defaults] 目录 ${dir} 是否存在:`, dirExists);
-                
-                if (!dirExists) {
-                    await mkdir(dir, { recursive: true });
-                    console.log(`[Model Defaults] 已创建目录: ${dir}`);
-                }
-                
-                // 检查目录权限
-                await access(dir, fs.constants.W_OK);
-                const dirStats = await stat(dir);
-                console.log(`[Model Defaults] 目录 ${dir} 权限:`, dirStats.mode.toString(8));
+            const dirExists = fs.existsSync(publicPath);
+            console.log(`[Model Defaults] 目录 ${publicPath} 是否存在:`, dirExists);
+
+            if (!dirExists) {
+                await mkdir(publicPath, { recursive: true });
+                console.log(`[Model Defaults] 已创建目录: ${publicPath}`);
             }
+
+            // 检查目录权限
+            await access(publicPath, fs.constants.W_OK);
+            const dirStats = await stat(publicPath);
+            console.log(`[Model Defaults] 目录权限:`, dirStats.mode.toString(8));
             console.log('[Model Defaults] 目录权限检查通过');
         } catch (mkdirError) {
             console.error('[Model Defaults] 目录操作失败:', mkdirError);
@@ -121,24 +116,23 @@ router.post('/save', async (req, res) => {
 
         // 写入配置文件
         try {
-            // 同时写入到两个位置
+            // 写入配置文件
             await writeFile(configPath, configContent);
-            await writeFile(path.join(publicPath, 'model-defaults.json'), configContent);
-            console.log('[Model Defaults] 文件写入成功（两个位置）');
+            console.log('[Model Defaults] 文件写入成功');
 
             // 验证写入
             const writtenContent = await readFile(configPath, 'utf8');
             console.log('[Model Defaults] 验证写入的内容:', writtenContent);
-            
+
             if (writtenContent.trim() !== configContent.trim()) {
                 throw new Error('文件内容验证失败');
             }
-            
+
             // 检查文件权限
             const fileStats = await stat(configPath);
             console.log('[Model Defaults] 文件权限:', fileStats.mode.toString(8));
             console.log('[Model Defaults] 文件所有者:', fileStats.uid, '组:', fileStats.gid);
-            
+
             console.log('[Model Defaults] 文件内容验证通过');
         } catch (writeError) {
             console.error('[Model Defaults] 写入文件失败:', writeError);
@@ -147,12 +141,12 @@ router.post('/save', async (req, res) => {
         }
 
         console.log('[Model Defaults] 配置已成功保存到:', configPath);
-        res.json({ 
+        res.json({
             message: '配置已保存',
             path: configPath,
             content: configContent
         });
-        
+
         console.log('[Model Defaults] ====== 请求处理完成 ======\n');
     } catch (error) {
         console.error('[Model Defaults] 处理请求失败:', error);

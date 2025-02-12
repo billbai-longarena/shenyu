@@ -31,8 +31,9 @@
     "license": "MIT",
     "author": "Shenyu Team",
     "scripts": {
-        "dev": "vite --host --force",
-        "build": "vite build",
+        "generate-file-list": "node --loader ts-node/esm ./scripts/generate-file-list.ts",
+        "dev": "npm run generate-file-list && vite --host --force",
+        "build": "npm run generate-file-list && vite build",
         "preview": "vite preview",
         "type-check": "vue-tsc --noEmit",
         "prepare": "npm run type-check",
@@ -47,6 +48,7 @@
         "node-fetch": "^3.3.2",
         "pinia": "^2.3.0",
         "vue": "^3.3.4",
+        "vue-i18n": "^9.14.2",
         "vue-router": "^4.2.5",
         "ws": "^8.18.0"
     },
@@ -56,6 +58,7 @@
         "@vitejs/plugin-vue": "^4.5.1",
         "@vue/tsconfig": "^0.4.0",
         "npm-run-all2": "^6.1.1",
+        "ts-node": "^10.9.2",
         "typescript": "~5.3.3",
         "vite": "^4.5.1",
         "vitest": "^1.2.2",

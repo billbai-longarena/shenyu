@@ -19,7 +19,7 @@
           :key="index"
           class="block-status-item"
         >
-          <span class="block-index">Block {{index + 1}}</span>
+          <span class="block-index">{{ t('executionPanel.blockPrefix') }}{{index + 1}}</span>
           <el-tag 
             :type="getStatusType(block.status)"
             size="small"
@@ -37,6 +37,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useLanguage } from '../../../composables/useLanguage'
 
 interface BlockStatus {
   status: 'pending' | 'streaming' | 'completed' | 'error'
@@ -56,15 +57,17 @@ const emit = defineEmits<{
   (e: 'execute'): void
 }>()
 
+const { t } = useLanguage()
+
 // 计算按钮文本
 const buttonText = computed(() => {
   if (props.isEditing) {
-    return '重写'
+    return t('executionPanel.rewrite')
   }
   if (!props.hasUserInputs) {
-    return '请先载入模板'
+    return t('executionPanel.loadTemplate')
   }
-  return '执行'
+  return t('executionPanel.execute')
 })
 
 // 计算按钮是否禁用
@@ -96,11 +99,11 @@ const getStatusType = (status: BlockStatus['status']) => {
 // 获取状态文本
 const getStatusText = (status: BlockStatus['status']) => {
   switch (status) {
-    case 'pending': return '等待中'
-    case 'streaming': return '处理中'
-    case 'completed': return '已完成'
-    case 'error': return '错误'
-    default: return '未知'
+    case 'pending': return t('executionPanel.waiting')
+    case 'streaming': return t('executionPanel.processing')
+    case 'completed': return t('executionPanel.completed')
+    case 'error': return t('executionPanel.error')
+    default: return t('executionPanel.unknown')
   }
 }
 

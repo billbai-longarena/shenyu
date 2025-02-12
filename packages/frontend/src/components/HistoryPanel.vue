@@ -10,7 +10,7 @@
             />
             <el-alert
                 v-else-if="syncing"
-                title="同步中..."
+                :title="t('historyPanel.syncing')"
                 type="info"
                 :closable="false"
                 show-icon
@@ -18,7 +18,7 @@
         </div>
         <div class="new-chat-button">
             <el-button type="primary" @click="onStartNewChat" style="width: 100%">
-                开启新对话
+                {{ t('historyPanel.newChat') }}
             </el-button>
         </div>
         <div class="history-list">
@@ -44,20 +44,20 @@
         <!-- 删除所有记录按钮 -->
         <div v-if="chatHistory.length > 0" class="clear-all-button">
             <el-button type="danger" @click="confirmClearAll" style="width: 100%">
-                删除所有记录
+                {{ t('historyPanel.deleteAll') }}
             </el-button>
         </div>
 
         <!-- 编辑历史记录对话框 -->
         <el-dialog
             v-model="editDialogVisible"
-            title="编辑历史记录"
+            :title="t('historyPanel.editTitle')"
             width="30%">
-            <el-input v-model="editingTitle" placeholder="请输入新的标题" />
+            <el-input v-model="editingTitle" :placeholder="t('historyPanel.inputTitle')" />
             <template #footer>
                 <span class="dialog-footer">
-                    <el-button @click="editDialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="saveHistoryEdit">确定</el-button>
+                    <el-button @click="editDialogVisible = false">{{ t('historyPanel.cancel') }}</el-button>
+                    <el-button type="primary" @click="saveHistoryEdit">{{ t('historyPanel.confirm') }}</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -65,13 +65,13 @@
         <!-- 删除确认对话框 -->
         <el-dialog
             v-model="deleteDialogVisible"
-            title="确认删除"
+            :title="t('historyPanel.deleteConfirm')"
             width="30%">
-            <span>确定要删除这条历史记录吗？</span>
+            <span>{{ t('historyPanel.deleteMessage') }}</span>
             <template #footer>
                 <span class="dialog-footer">
-                    <el-button @click="deleteDialogVisible = false">取消</el-button>
-                    <el-button type="danger" @click="deleteHistory">确定</el-button>
+                    <el-button @click="deleteDialogVisible = false">{{ t('historyPanel.cancel') }}</el-button>
+                    <el-button type="danger" @click="deleteHistory">{{ t('historyPanel.confirm') }}</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -79,13 +79,13 @@
         <!-- 清除所有记录确认对话框 -->
         <el-dialog
             v-model="clearAllDialogVisible"
-            title="确认删除"
+            :title="t('historyPanel.deleteConfirm')"
             width="30%">
-            <span>确定要删除所有历史记录吗？此操作不可恢复。</span>
+            <span>{{ t('historyPanel.deleteAllMessage') }}</span>
             <template #footer>
                 <span class="dialog-footer">
-                    <el-button @click="clearAllDialogVisible = false">取消</el-button>
-                    <el-button type="danger" @click="clearAllConfirmed">确定</el-button>
+                    <el-button @click="clearAllDialogVisible = false">{{ t('historyPanel.cancel') }}</el-button>
+                    <el-button type="danger" @click="clearAllConfirmed">{{ t('historyPanel.confirm') }}</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -118,6 +118,7 @@
 import { ref, onMounted } from 'vue'
 import { Edit, Delete } from '@element-plus/icons-vue'
 import { useHistory } from '../composables/useHistory'
+import { useLanguage } from '../composables/useLanguage'
 import type { ChatHistory, Message } from '../types/chat'
 
 /**
@@ -140,6 +141,9 @@ const emit = defineEmits<{
     /** 更新历史记录时触发 */
     (e: 'update', history: ChatHistory): void
 }>()
+
+// 获取翻译函数
+const { t } = useLanguage()
 
 // 添加选中状态的ref
 const selectedHistoryId = ref<number | null>(null)
@@ -208,7 +212,7 @@ const updateOrCreateHistory = (messages: Message[]) => {
         // 创建新的历史记录
         // 从消息中获取第一条，它应该包含完整的对话内容
         const firstMessage = messages[0]
-        let title = '新对话'
+        let title = t('historyPanel.defaultTitle')
         
         if (firstMessage && typeof firstMessage.content === 'string') {
             // 如果内容是JSON格式，尝试解析获取inputA1
