@@ -214,7 +214,7 @@ const modelOptions = ref<ModelOption[]>([
 ])
 
 const temperatureOptions = computed(() => {
-  if (selectedModel.value === 'kimi') {
+  if (selectedModel.value === 'kimi'|| selectedModel.value === 'volcesDeepseek') {
     return [
       { label: t('modelParams.conservative'), value: 0.1 },
       { label: t('modelParams.balanced'), value: 0.5 },
@@ -222,9 +222,9 @@ const temperatureOptions = computed(() => {
     ]
   } else if (selectedModel.value === 'deepseek' || selectedModel.value === 'siliconDeepseek' || 
       selectedModel.value === 'baiduDeepseek' || selectedModel.value === 'alideepseekv3' || 
-      selectedModel.value === 'alideepseekr1' || selectedModel.value === 'volcesDeepseek') {
+      selectedModel.value === 'alideepseekr1' ) {
     return [
-      { label: t('modelParams.codeGen'), value: 0 },
+    { label: t('modelParams.codeGen'), value: 0 },
       { label: t('modelParams.dataExtract'), value: 1 },
       { label: t('modelParams.generalChat'), value: 1.3 },
       { label: t('modelParams.creativeWriting'), value: 1.5 }
@@ -355,11 +355,11 @@ watch(selectedModel, (newValue) => {
   setModel(newValue)
   
   // 更新temperature
-  if (newValue === 'kimi') {
+  if (newValue === 'kimi'|| newValue === 'volcesDeepseek') {
     selectedTemperature.value = 0.5  // kimi使用平衡的temperature
   } else if (newValue === 'deepseek' || newValue === 'siliconDeepseek' || 
       newValue === 'baiduDeepseek' || newValue === 'alideepseekv3' || 
-      newValue === 'alideepseekr1' || newValue === 'volcesDeepseek') {
+      newValue === 'alideepseekr1' ) {
     selectedTemperature.value = 1  // deepseek系列使用通用对话模式
   } else {
     selectedTemperature.value = 0.5  // 其他模型使用较保守的temperature
@@ -427,6 +427,7 @@ watch(selectedTemperature, (newValue) => {
   width: 100%;
   display: flex;
 }
+
 
 .el-main > * {
   flex: 1;

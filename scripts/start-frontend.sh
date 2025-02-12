@@ -51,7 +51,7 @@ fi
 
 # 生成初始文件列表
 echo "Generating initial file list..."
-npx ts-node scripts/generate-file-list.ts
+npm run generate-file-list
 
 # 启动前端开发服务器
 NODE_ENV=development PORT=$PORT npm run dev

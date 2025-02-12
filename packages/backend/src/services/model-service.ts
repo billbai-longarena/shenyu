@@ -160,12 +160,12 @@ let API_CONFIGS: Record<ModelType, ModelConfig> = {
         maxTokens: 8096,
         temperatureRange: {
             min: 0,
-            max: 2.0,
-            default: 1,
+            max: 1.0,
+            default: 0.7,
             presets: {
-                conservative: 0.5,
-                balanced: 1.0,
-                creative: 1.5
+                conservative: 0.3,
+                balanced: 0.7,
+                creative: 1.0
             }
         }
     }
@@ -308,12 +308,12 @@ function createConfigs(): Record<ModelType, ModelConfig> {
             maxTokens: 8096,
             temperatureRange: {
                 min: 0,
-                max: 2.0,
-                default: 1,
+                max: 1.0,
+                default: 0.7,
                 presets: {
-                    conservative: 0.5,
-                    balanced: 1.0,
-                    creative: 1.5
+                    conservative: 0.3,
+                    balanced: 0.7,
+                    creative: 1.0
                 }
             }
         }
