@@ -1,7 +1,5 @@
 # Shenyu [中文] | [English](README.en.md) 
 
-[![Build Status](https://github.com/billbai-longarena/shenyu/workflows/CI/badge.svg)](https://github.com/billbai-longarena/shenyu/actions)
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Shenyu 是一个强大的 AI 对话平台，支持多种 AI 模型和可扩展的插件系统。
