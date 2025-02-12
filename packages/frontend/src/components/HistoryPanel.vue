@@ -239,6 +239,7 @@ const updateOrCreateHistory = (messages: Message[]) => {
         }
         addHistory(newHistory)
         editingHistory.value = newHistory
+        selectedHistoryId.value = newHistory.id
         emit('update', newHistory)
     }
 }

@@ -185,8 +185,9 @@ const handleExecutionComplete = (messages: any[]) => {
     }
   }
   
-  // 更新历史记录
+  // 更新历史记录并设置编辑状态
   historyPanel.value?.updateOrCreateHistory(messages)
+  isEditing.value = true
 }
 
 // 选择历史记录
