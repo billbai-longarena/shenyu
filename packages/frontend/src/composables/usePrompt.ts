@@ -224,9 +224,17 @@ export function usePrompt(props: PromptProps, emit: PromptEmits) {
                 placeholder +
                 currentText.slice(selectionEnd)
 
+            // 保存当前焦点索引和滚动位置
+            const currentFocusIndex = lastFocusedIndex.value
+            const currentScrollTop = textarea.scrollTop
+
             // 更新文本
-            const newBlocks = [...props.promptBlocks]
-            newBlocks[lastFocusedIndex.value] = { text: newText }
+            const newBlocks = props.promptBlocks.map((block, index) => {
+                if (index === currentFocusIndex) {
+                    return { text: newText }
+                }
+                return block
+            })
             emit('update:promptBlocks', newBlocks)
 
             // 等待DOM更新后设置光标位置
@@ -238,6 +246,10 @@ export function usePrompt(props: PromptProps, emit: PromptEmits) {
             if (updatedTextarea) {
                 updatedTextarea.focus()
                 updatedTextarea.setSelectionRange(newPosition, newPosition)
+                updatedTextarea.scrollTop = currentScrollTop
+
+                // 确保焦点索引保持不变
+                lastFocusedIndex.value = currentFocusIndex
             }
         } catch (error) {
             console.error('插入占位符时发生错误:', error)

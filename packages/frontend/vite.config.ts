@@ -32,24 +32,31 @@ export default defineConfig({
     {
       name: 'json-files',
       configureServer(server) {
-        // 开发环境中的文件列表API
-        server.middlewares.use('/json-files-list.json', (req, res) => {
-          try {
-            const itemCNDir = path.resolve(process.cwd(), 'public/item_CN')
-            const files = fs.readdirSync(itemCNDir)
-            const jsonFiles = files
-              .filter(file => file.endsWith('.json'))
-              .map(file => ({
-                filename: file,
-                encodedFilename: `item_CN/${encodeURIComponent(file)}`
-              }))
+        // 监听文件变化并更新文件列表
+        const updateFileList = async () => {
+          const { generateFileList } = await import('./scripts/generate-file-list')
+          generateFileList()
+        }
 
-            res.setHeader('Content-Type', 'application/json')
-            res.end(JSON.stringify(jsonFiles, null, 2))
-          } catch (error) {
-            console.error('Error reading public directory:', error)
-            res.statusCode = 500
-            res.end(JSON.stringify({ error: 'Failed to read directory' }))
+        // 在服务器启动时生成文件列表
+        updateFileList()
+
+        // 监听文件变化
+        server.watcher.on('add', (path) => {
+          if (path.includes('/public/item_CN/') || path.includes('/public/item_EN/')) {
+            updateFileList()
+          }
+        })
+
+        server.watcher.on('change', (path) => {
+          if (path.includes('/public/item_CN/') || path.includes('/public/item_EN/')) {
+            updateFileList()
+          }
+        })
+
+        server.watcher.on('unlink', (path) => {
+          if (path.includes('/public/item_CN/') || path.includes('/public/item_EN/')) {
+            updateFileList()
           }
         })
       },

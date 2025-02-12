@@ -214,7 +214,7 @@ shenyu/
 - [State Management Best Practices](docs/guide/state-management-best-practices.en.md) [English]
 - [Bilingual Documentation Guide](docs/guide/bilingual-docs-best-practices.en.md) [English]
 - [Best Practices for Adding New Models](docs/guide/add-model-best-practices.en.md) [English]
-- [Changelog](docs/changelog.md)
+- [Changelog](docs/changelog.en.md) [English]
 
 ## Plugin Development
 

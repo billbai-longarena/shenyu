@@ -96,12 +96,12 @@
     ></div>
 
     <!-- 右侧提示词区域 -->
-    <div class="prompt-section" :style="{ width: (100 - leftWidth) + '%' }">
+    <div class="prompt-section" ref="promptSection" :style="{ width: (100 - leftWidth) + '%' }">
       <div class="prompt-config">
         <h2 class="admin-title">{{ t('configPanel.promptConfig') }}</h2>
         
         <!-- 提示词输入区域 -->
-        <div v-for="(prompt, index) in promptBlocks" :key="`prompt-${index}`" class="prompt-container">
+        <div v-for="(prompt, index) in promptBlocks" :key="index" class="prompt-container">
           <div class="prompt-input-group">
             <el-button 
               type="primary" 
@@ -122,6 +122,7 @@
                 @focus="handlePromptFocus(index)"
                 @input="emit('config-modified')"
                 :ref="(el: any) => setPromptRef(el, index)"
+                @update:modelValue="(value) => updatePromptText(index, value)"
               />
               <div class="prompt-actions">
                 <el-button 
@@ -288,6 +289,7 @@ watch(() => props.adminInputs, (newAdminInputs) => {
   })
 }, { immediate: true, deep: true })
 
+const promptSection = ref<HTMLElement | null>(null)
 const { exportConfig, importConfig } = useConfig(props, emit)
 const { 
   lastFocusedIndex,
@@ -366,6 +368,25 @@ const handleFileUpload = (event: Event) => {
   reader.readAsText(file)
 }
 
+// 保存滚动位置
+const saveScrollPosition = () => {
+  return promptSection.value?.scrollTop || 0
+}
+
+// 恢复滚动位置
+const restoreScrollPosition = (position: number) => {
+  if (promptSection.value) {
+    promptSection.value.scrollTop = position
+  }
+}
+
+// 更新提示词文本
+const updatePromptText = (index: number, value: string) => {
+  const newBlocks = [...props.promptBlocks]
+  newBlocks[index] = { text: value }
+  emit('update:promptBlocks', newBlocks)
+}
+
 // 插入提示词块占位符
 const insertPromptBlock = (index: number) => {
   if (lastFocusedIndex.value === null) {
@@ -378,9 +399,13 @@ const insertPromptBlock = (index: number) => {
     return
   }
 
+  const scrollPosition = saveScrollPosition()
   insertPlaceholder(getPromptBlockPlaceholder(index))
   // 触发配置修改事件
   emit('config-modified')
+  nextTick(() => {
+    restoreScrollPosition(scrollPosition)
+  })
 }
 
 // 删除管理员输入框

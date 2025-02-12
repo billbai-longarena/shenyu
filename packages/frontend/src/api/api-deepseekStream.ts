@@ -159,10 +159,10 @@ export async function RequestAI(
                     };
                     pool.setListeners(ws!, listeners);
 
-                    // 设置60秒超时
+                    // 设置5分钟超时
                     const timeout = setTimeout(() => {
                         reject(new Error('Request timeout'));
-                    }, 60000);
+                    }, 300000);
 
                     // 发送请求
                     const request = {
