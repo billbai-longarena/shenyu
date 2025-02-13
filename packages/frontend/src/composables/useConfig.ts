@@ -115,24 +115,33 @@ export function useConfig(props: ConfigProps, emit: ConfigEmits) {
 
             const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
             const charDelay = 120; // 每个字符的延迟时间（毫秒）
+            const blockDelay = 200; // 每个块的延迟时间（毫秒）
 
             // 创建一个函数来处理文本的流式渲染
             const streamText = async (text: string, currentText: string = ''): Promise<string> => {
                 if (text === currentText) return text;
 
-                // 找到下一个完整的词或短语
-                let nextLength = currentText.length + 1;
-                while (nextLength < text.length) {
-                    const nextChar = text[nextLength];
-                    if (/[\s,.!?;:]/.test(nextChar)) {
-                        nextLength++;
-                        break;
-                    }
-                    nextLength++;
+                // 找到下一个完整的行或段落
+                let nextLength = currentText.length;
+                const remainingText = text.slice(currentText.length);
+
+                // 如果当前位置是换行符，直接返回整个文本
+                if (remainingText.startsWith('\n')) {
+                    return text;
                 }
 
+                // 找到下一个换行符
+                const nextNewline = remainingText.indexOf('\n');
+                if (nextNewline !== -1) {
+                    // 如果找到换行符，处理整个段落
+                    nextLength = currentText.length + nextNewline + 1;
+                    await delay(charDelay);
+                    return text.slice(0, nextLength);
+                }
+
+                // 如果没有换行符，处理剩余的所有文本
                 await delay(charDelay);
-                return text.slice(0, nextLength);
+                return text;
             };
 
             // 导入新配置
@@ -195,23 +204,12 @@ export function useConfig(props: ConfigProps, emit: ConfigEmits) {
 
             if (config.promptBlocks) {
                 const newPromptBlocks: { text: string }[] = [];
+                const texts: string[] = [];
 
+                // 首先收集所有文本
                 if (Array.isArray(config.promptBlocks)) {
-                    // 处理旧格式（数组）
-                    for (const text of config.promptBlocks) {
-                        let currentText = '';
-                        newPromptBlocks.push({ text: '' });
-
-                        // 流式渲染文本
-                        while (currentText !== text) {
-                            currentText = await streamText(text, currentText);
-                            newPromptBlocks[newPromptBlocks.length - 1].text = currentText;
-                            emit('update:promptBlocks', [...newPromptBlocks]);
-                            await delay(charDelay);
-                        }
-                    }
+                    texts.push(...config.promptBlocks);
                 } else {
-                    // 处理新格式（对象）
                     // 按照promptBlock1, promptBlock2...的顺序排序
                     const sortedKeys = Object.keys(config.promptBlocks)
                         .sort((a, b) => {
@@ -219,17 +217,31 @@ export function useConfig(props: ConfigProps, emit: ConfigEmits) {
                             const numB = parseInt(b.replace('promptBlock', ''));
                             return numA - numB;
                         });
+                    texts.push(...sortedKeys.map(key => config.promptBlocks[key]));
+                }
 
-                    for (const key of sortedKeys) {
-                        const text = config.promptBlocks[key];
-                        let currentText = '';
-                        newPromptBlocks.push({ text: '' });
+                // 初始化所有块
+                texts.forEach(() => newPromptBlocks.push({ text: '' }));
+                emit('update:promptBlocks', newPromptBlocks);
 
-                        // 流式渲染文本
-                        while (currentText !== text) {
-                            currentText = await streamText(text, currentText);
-                            newPromptBlocks[newPromptBlocks.length - 1].text = currentText;
-                            emit('update:promptBlocks', [...newPromptBlocks]);
+                // 然后逐个更新块的内容
+                for (let i = 0; i < texts.length; i++) {
+                    let currentText = '';
+                    const text = texts[i];
+
+                    while (currentText !== text) {
+                        currentText = await streamText(text, currentText);
+                        const updatedBlocks = newPromptBlocks.map((block, index) => {
+                            if (index === i) {
+                                return { text: currentText };
+                            }
+                            return { ...block };
+                        });
+                        emit('update:promptBlocks', updatedBlocks);
+                        // 在每个块更新完成后添加额外延迟
+                        if (currentText === text) {
+                            await delay(blockDelay);
+                        } else {
                             await delay(charDelay);
                         }
                     }

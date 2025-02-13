@@ -20,6 +20,7 @@ export interface LocaleMessages {
         executionError: string
     }
     configPanel: {
+        agentPromptTemplate: string
         agentTitle: string
         generateAgentButton: string
         generateAgentError: string

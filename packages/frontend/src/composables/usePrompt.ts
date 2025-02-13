@@ -71,10 +71,23 @@ export function usePrompt(props: PromptProps, emit: PromptEmits) {
                         const beforePromptBlock = result.substring(0, match.index)
                         const afterPromptBlock = result.substring(match.index + match[0].length)
 
-                        // 组合处理后的文本
-                        const promptBlockContent = processedBlockText.beforePromptBlock +
-                            (processedBlockText.promptBlockContent || '') +
-                            processedBlockText.afterPromptBlock
+                        // 组合处理后的文本，确保保留换行符
+                        let promptBlockContent = ''
+                        if (processedBlockText.beforePromptBlock) {
+                            promptBlockContent += processedBlockText.beforePromptBlock
+                        }
+                        if (processedBlockText.promptBlockContent) {
+                            if (promptBlockContent && !promptBlockContent.endsWith('\n')) {
+                                promptBlockContent += '\n'
+                            }
+                            promptBlockContent += processedBlockText.promptBlockContent
+                        }
+                        if (processedBlockText.afterPromptBlock) {
+                            if (promptBlockContent && !promptBlockContent.endsWith('\n')) {
+                                promptBlockContent += '\n'
+                            }
+                            promptBlockContent += processedBlockText.afterPromptBlock
+                        }
 
                         return {
                             beforePromptBlock,
@@ -168,8 +181,20 @@ export function usePrompt(props: PromptProps, emit: PromptEmits) {
                     }
                 )
 
-                // 添加后缀
-                const finalContent = beforePromptBlock + accumulatedContent + afterPromptBlock
+                // 添加后缀，确保换行符被正确处理
+                let finalContent = beforePromptBlock
+                if (accumulatedContent) {
+                    if (finalContent && !finalContent.endsWith('\n')) {
+                        finalContent += '\n'
+                    }
+                    finalContent += accumulatedContent
+                }
+                if (afterPromptBlock) {
+                    if (finalContent && !finalContent.endsWith('\n')) {
+                        finalContent += '\n'
+                    }
+                    finalContent += afterPromptBlock
+                }
                 emit('update:previewText', finalContent)
 
                 // 记录输出日志
