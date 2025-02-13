@@ -107,13 +107,14 @@ describe('useModelConfig', () => {
     })
 
     it('应该加载模型配置', async () => {
+        // 使用通用的mock配置，不依赖特定模型
         const mockConfig = {
             modelConfigs: {
-                deepseek: {
-                    maxTokens: 8191,
+                'test-model': {
+                    maxTokens: 4096,
                     temperatureRange: {
                         min: 0,
-                        max: 2.0,
+                        max: 1.0,
                         default: 0.7,
                         presets: {
                             conservative: 0.3,
@@ -160,13 +161,14 @@ describe('useModelConfig', () => {
     })
 
     it('应该使用缓存的配置', async () => {
+        // 使用通用的mock配置
         const mockConfig = {
             modelConfigs: {
-                deepseek: {
-                    maxTokens: 8191,
+                'test-model': {
+                    maxTokens: 4096,
                     temperatureRange: {
                         min: 0,
-                        max: 2.0,
+                        max: 1.0,
                         default: 0.7,
                         presets: {
                             conservative: 0.3,
@@ -195,10 +197,11 @@ describe('useModelConfig', () => {
     })
 
     it('应该返回默认maxTokens当模型不存在时', async () => {
+        // 使用通用的mock配置
         const mockConfig = {
             modelConfigs: {
-                deepseek: {
-                    maxTokens: 8191
+                'test-model': {
+                    maxTokens: 4096
                 }
             }
         }
@@ -218,8 +221,23 @@ describe('useModelConfig', () => {
     })
 
     it('应该正确处理不同环境的URL', async () => {
+        // 使用通用的mock配置
         const mockConfig = {
-            modelConfigs: {}
+            modelConfigs: {
+                'test-model': {
+                    maxTokens: 4096,
+                    temperatureRange: {
+                        min: 0,
+                        max: 1.0,
+                        default: 0.7,
+                        presets: {
+                            conservative: 0.3,
+                            balanced: 0.7,
+                            creative: 1.0
+                        }
+                    }
+                }
+            }
         }
 
         const mockFetch = vi.fn(() =>
