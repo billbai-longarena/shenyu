@@ -168,7 +168,7 @@
                 type="textarea"
                 :rows="4"
                 :placeholder="t('configPanel.inputPromptPlaceholder')"
-                class="prompt-input"
+                :class="['prompt-input', { 'invalid-prompt': prompt.text && !hasPlaceholder(prompt.text) }]"
                 @focus="handlePromptFocus(index)"
                 @input="(value) => {
                   updatePromptText(index, value);
@@ -184,8 +184,9 @@
                   link
                   class="preview-button"
                   @click="previewPrompt(index)"
+                  :disabled="!!(prompt.text && !hasPlaceholder(prompt.text))"
                 >
-                  {{ t('configPanel.preview') }}
+                  {{ prompt.text && !hasPlaceholder(prompt.text) ? t('configPanel.invalidPromptBlockPreview') : t('configPanel.preview') }}
                 </el-button>
                 <el-button
                   type="danger"
@@ -475,7 +476,8 @@ const {
   previewPrompt,
   getPromptBlockPlaceholder,
   canInsertPromptBlock,
-  deletePromptBlock
+  deletePromptBlock,
+  hasPlaceholder
 } = usePrompt(props, emit)
 
 // 处理管理员输入
@@ -942,5 +944,15 @@ const deleteAdminInput = async (key: string) => {
 :global(.resizing) {
   user-select: none;
   cursor: col-resize;
+}
+
+/* 无效提示词块样式 */
+.invalid-prompt :deep(textarea) {
+  color: red !important;
+}
+
+.preview-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 </style>

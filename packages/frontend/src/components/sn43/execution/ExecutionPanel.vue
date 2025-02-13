@@ -51,6 +51,7 @@ const props = defineProps<{
   isAllBlocksCompleted: boolean
   hasUserInputs: boolean
   isExecuting: boolean
+  promptBlocks: { text: string }[]
 }>()
 
 const emit = defineEmits<{
@@ -59,8 +60,21 @@ const emit = defineEmits<{
 
 const { t } = useLanguage()
 
+// 检查提示词块是否包含占位符
+const hasPlaceholder = (text: string): boolean => {
+  return /\${(inputB\d+|promptBlock\d+)}/.test(text);
+}
+
+// 检查所有提示词块是否有效
+const isAllBlocksValid = computed(() => {
+  return props.promptBlocks.every(block => !block.text || hasPlaceholder(block.text));
+})
+
 // 计算按钮文本
 const buttonText = computed(() => {
+  if (!isAllBlocksValid.value) {
+    return t('executionPanel.invalidPromptBlock')
+  }
   if (props.isEditing) {
     return t('executionPanel.rewrite')
   }
@@ -79,6 +93,11 @@ const isDisabled = computed(() => {
   
   // 如果正在执行中，禁用按钮
   if (props.isExecuting) {
+    return true;
+  }
+
+  // 如果有无效的提示词块，禁用按钮
+  if (!isAllBlocksValid.value) {
     return true;
   }
 

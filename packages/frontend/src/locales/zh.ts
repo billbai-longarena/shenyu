@@ -16,7 +16,8 @@ export const messages: LocaleMessages = {
         completed: '已完成',
         error: '错误',
         unknown: '未知',
-        blockPrefix: '区块 '
+        blockPrefix: '区块 ',
+        invalidPromptBlock: '有无效的提示词块'
     },
     userInterface: {
         executionError: '执行失败'
@@ -38,6 +39,7 @@ export const messages: LocaleMessages = {
         delete: '删除',
         previewPrompt: '预览提示词',
         preview: '预览',
+        invalidPromptBlockPreview: '有无效的提示词块',
         addUserInput: '增加用户输入',
         addPromptBlock: '增加提示词块',
         inputPromptPlaceholder: '请输入提示词',

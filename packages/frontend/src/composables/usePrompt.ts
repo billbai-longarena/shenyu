@@ -17,6 +17,11 @@ export function usePrompt(props: PromptProps, emit: PromptEmits) {
     const lastFocusedIndex = ref<number | null>(null)
     const promptRefs: any[] = []
 
+    // 检查文本是否包含有效的占位符
+    const hasPlaceholder = (text: string): boolean => {
+        return /\${(inputB\d+|promptBlock\d+)}/.test(text);
+    }
+
     // 提示词块焦点处理
     const handlePromptFocus = (index: number) => {
         console.log('Prompt focus:', index)
@@ -334,6 +339,7 @@ export function usePrompt(props: PromptProps, emit: PromptEmits) {
         previewPrompt,
         getPromptBlockPlaceholder,
         canInsertPromptBlock,
-        deletePromptBlock
+        deletePromptBlock,
+        hasPlaceholder
     }
 }

@@ -31,6 +31,7 @@
           :is-all-blocks-completed="isAllBlocksCompleted"
           :has-user-inputs="Object.keys(userInputs).length > 0"
           :is-executing="isExecuting"
+          :prompt-blocks="promptBlocks"
           @execute="executeUserInputs"
         />
       </div>

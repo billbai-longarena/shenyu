@@ -15,6 +15,7 @@ export interface LocaleMessages {
         error: string
         unknown: string
         blockPrefix: string
+        invalidPromptBlock: string
     }
     userInterface: {
         executionError: string
@@ -36,6 +37,7 @@ export interface LocaleMessages {
         delete: string
         previewPrompt: string
         preview: string
+        invalidPromptBlockPreview: string
         addUserInput: string
         addPromptBlock: string
         inputPromptPlaceholder: string

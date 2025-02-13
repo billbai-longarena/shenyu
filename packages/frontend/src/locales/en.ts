@@ -16,7 +16,8 @@ export const messages: LocaleMessages = {
         completed: 'Completed',
         error: 'Error',
         unknown: 'Unknown',
-        blockPrefix: 'Block '
+        blockPrefix: 'Block ',
+        invalidPromptBlock: 'Invalid Prompt Block'
     },
     userInterface: {
         executionError: 'Execution failed'
@@ -38,6 +39,7 @@ export const messages: LocaleMessages = {
         delete: 'Delete',
         previewPrompt: 'Preview Prompt',
         preview: 'Preview',
+        invalidPromptBlockPreview: 'Invalid Prompt Block',
         addUserInput: 'Add User Input',
         addPromptBlock: 'Add Prompt Block',
         inputPromptPlaceholder: 'Please enter prompt',
