@@ -215,6 +215,7 @@ shenyu/
 - [双语文档维护指南](docs/guide/bilingual-docs-best-practices.md) [中文]
 - [新增大模型最佳实践](docs/guide/add-model-best-practices.md) [中文]
 - [更新日志](docs/changelog.md)
+- [测试指南](docs/guide/testing-guide.md) [中文]
 
 ## 插件开发
 

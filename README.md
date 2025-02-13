@@ -215,6 +215,7 @@ shenyu/
 - [Bilingual Documentation Guide](docs/guide/bilingual-docs-best-practices.en.md) [English]
 - [Best Practices for Adding New Models](docs/guide/add-model-best-practices.en.md) [English]
 - [Changelog](docs/changelog.en.md) [English]
+- [Testing Guide](docs/guide/testing-guide.en.md) [English]
 
 ## Plugin Development
 
