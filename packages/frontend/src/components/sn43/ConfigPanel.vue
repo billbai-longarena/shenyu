@@ -209,7 +209,6 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch, nextTick, inject } from 'vue'
-import axios from 'axios'
 import { marked } from 'marked'
 import { Loading } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
