@@ -203,8 +203,8 @@ export function useConfig(props: ConfigProps, emit: ConfigEmits) {
             }
 
             if (config.promptBlocks) {
-                const newPromptBlocks: { text: string }[] = [];
                 const texts: string[] = [];
+                const allBlocks: { text: string }[] = [];
 
                 // 首先收集所有文本
                 if (Array.isArray(config.promptBlocks)) {
@@ -220,25 +220,22 @@ export function useConfig(props: ConfigProps, emit: ConfigEmits) {
                     texts.push(...sortedKeys.map(key => config.promptBlocks[key]));
                 }
 
-                // 初始化所有块
-                texts.forEach(() => newPromptBlocks.push({ text: '' }));
-                emit('update:promptBlocks', newPromptBlocks);
+                // 初始化所有块的内容
+                texts.forEach((text) => allBlocks.push({ text: '' }));
+                emit('update:promptBlocks', allBlocks);
 
-                // 然后逐个更新块的内容
+                // 逐个更新块的内容
                 for (let i = 0; i < texts.length; i++) {
                     let currentText = '';
                     const text = texts[i];
 
                     while (currentText !== text) {
                         currentText = await streamText(text, currentText);
-                        const updatedBlocks = newPromptBlocks.map((block, index) => {
-                            if (index === i) {
-                                return { text: currentText };
-                            }
-                            return { ...block };
-                        });
-                        emit('update:promptBlocks', updatedBlocks);
-                        // 在每个块更新完成后添加额外延迟
+                        // 更新当前块，保持其他块的内容不变
+                        allBlocks[i] = { text: currentText };
+                        // 创建新数组以触发响应式更新
+                        emit('update:promptBlocks', [...allBlocks]);
+
                         if (currentText === text) {
                             await delay(blockDelay);
                         } else {
