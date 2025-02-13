@@ -124,6 +124,7 @@ export async function RequestAI(
                                     setTimeout(() => {
                                         console.log('[WebSocket] 请求完成:', {
                                             model,
+                                            temperature: currentTemperature,
                                             totalMessages: receivedSequence,
                                             timestamp: new Date().toISOString()
                                         });

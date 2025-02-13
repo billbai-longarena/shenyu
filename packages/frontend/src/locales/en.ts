@@ -22,6 +22,12 @@ export const messages: LocaleMessages = {
         executionError: 'Execution failed'
     },
     configPanel: {
+        agentTitle: 'Agent Generator',
+        generateAgentButton: 'Generate AI Agent (Conservative Temperature)',
+        generateAgentError: 'Generation failed, please try again',
+        agentGenerator: 'Agent Generator',
+        agentInputPlaceholder: 'Please enter the functionality to design',
+        generateAgent: 'Generate AI Agent',
         userInputConfig: 'User Input Configuration',
         promptConfig: 'Prompt Configuration',
         previewTitle: 'Prompt Preview',
@@ -30,6 +36,7 @@ export const messages: LocaleMessages = {
         insert: 'Insert',
         delete: 'Delete',
         previewPrompt: 'Preview Prompt',
+        preview: 'Preview',
         addUserInput: 'Add User Input',
         addPromptBlock: 'Add Prompt Block',
         inputPromptPlaceholder: 'Please enter prompt',
@@ -42,7 +49,13 @@ export const messages: LocaleMessages = {
         importError: 'Invalid configuration file format',
         insertWarning: 'Please click the prompt input box first',
         insertBlockWarning: 'Can only insert placeholder in input boxes below the current prompt block',
-        inputPlaceholder: 'Please enter'
+        inputPlaceholder: 'Please enter',
+        pathInputPlaceholder: 'Please enter text containing json configuration',
+        generateControls: 'Generate Controls',
+        noValidJsonFound: 'No valid json content found',
+        generateError: 'Failed to generate controls',
+        controlsGenerated: 'Controls generated successfully',
+        invalidJsonStructure: 'Invalid json structure, must contain adminInputs and promptBlocks'
     },
     historyPanel: {
         syncing: 'Syncing...',

@@ -22,6 +22,12 @@ export const messages: LocaleMessages = {
         executionError: '执行失败'
     },
     configPanel: {
+        agentTitle: 'Agent生成器',
+        generateAgentButton: '生成AI智能体(温度用保守)',
+        agentInputPlaceholder: '请输入要设计的功能',
+        generateAgentError: '生成失败，请重试',
+        agentGenerator: 'Agent生成器',
+        generateAgent: '生成AI智能体',
         userInputConfig: '用户输入配置',
         promptConfig: '提示词配置',
         previewTitle: '提示词预览',
@@ -30,6 +36,7 @@ export const messages: LocaleMessages = {
         insert: '插入',
         delete: '删除',
         previewPrompt: '预览提示词',
+        preview: '预览',
         addUserInput: '增加用户输入',
         addPromptBlock: '增加提示词块',
         inputPromptPlaceholder: '请输入提示词',
@@ -42,7 +49,13 @@ export const messages: LocaleMessages = {
         importError: '配置文件格式错误',
         insertWarning: '请先点击要插入的提示词输入框',
         insertBlockWarning: '只能在当前提示词块下方的输入框中插入占位符',
-        inputPlaceholder: '请输入'
+        inputPlaceholder: '请输入',
+        pathInputPlaceholder: '请输入包含json配置的文本',
+        generateControls: '生成控件',
+        noValidJsonFound: '未找到有效的json内容',
+        generateError: '生成控件失败',
+        controlsGenerated: '控件生成成功',
+        invalidJsonStructure: 'json结构不正确，必须包含adminInputs和promptBlocks'
     },
     historyPanel: {
         syncing: '同步中...',

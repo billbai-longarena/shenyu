@@ -20,6 +20,12 @@ export interface LocaleMessages {
         executionError: string
     }
     configPanel: {
+        agentTitle: string
+        generateAgentButton: string
+        generateAgentError: string
+        agentGenerator: string
+        agentInputPlaceholder: string
+        generateAgent: string
         userInputConfig: string
         promptConfig: string
         previewTitle: string
@@ -28,6 +34,7 @@ export interface LocaleMessages {
         insert: string
         delete: string
         previewPrompt: string
+        preview: string
         addUserInput: string
         addPromptBlock: string
         inputPromptPlaceholder: string
@@ -41,6 +48,12 @@ export interface LocaleMessages {
         insertWarning: string
         insertBlockWarning: string
         inputPlaceholder: string
+        pathInputPlaceholder: string
+        generateControls: string
+        noValidJsonFound: string
+        generateError: string
+        controlsGenerated: string
+        invalidJsonStructure: string
     }
     historyPanel: {
         syncing: string

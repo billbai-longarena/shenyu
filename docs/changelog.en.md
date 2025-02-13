@@ -1,5 +1,24 @@
 # Changelog [English] | [中文](changelog.md)
 
+## 2025-02-13 JSON Configuration Format Optimization
+1. Updated promptBlocks Storage Format
+   - Changed promptBlocks from array format to object format
+   - New format uses promptBlock1, promptBlock2, etc. as keys
+   - Maintained backward compatibility with array format
+   - Unified export to new format
+
+2. Code Implementation Optimization
+   - Updated configuration handling logic in useConfig.ts
+   - Enhanced configuration validation mechanism for both formats
+   - Improved configuration import/export functionality
+   - Updated example configuration files to new format
+
+3. Backward Compatibility Assurance
+   - Maintained compatibility with existing configuration files
+   - Automatic format conversion during import
+   - Ensured all functionality works correctly
+   - Enhanced error handling mechanisms
+
 ## 2025-02-12 i18n Infrastructure Completed
 1. Completed Basic Infrastructure
    - Installed and configured vue-i18n

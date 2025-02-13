@@ -226,6 +226,7 @@ const temperatureOptions = computed(() => {
 const selectedModel = ref<ModelType>('kimi')
 provide('selectedModel', selectedModel)  // 提供给子组件使用
 const selectedTemperature = ref(0.7) // 默认为通用对话和翻译模式
+provide('selectedTemperature', selectedTemperature)  // 提供温度设置给子组件使用
 const isTesting = ref(false)
 
 // 获取速度对应的颜色

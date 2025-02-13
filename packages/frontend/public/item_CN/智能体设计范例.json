@@ -4,8 +4,8 @@
     "inputB2": "动物2 <def>狗</def>",
     "inputB3": "动物3 "
   },
-  "promptBlocks": [
-    "以下动物各列一个品种，只输出品种名称，不输出其他不相关的信息。 ${inputB1}     ${inputB2}  ${inputB3}",
-    "你最喜欢哪个：${promptBlock1} 直接输出结果，不需要解释"
-  ]
+  "promptBlocks": {
+    "promptBlock1": "以下动物各列一个品种，只输出品种名称，不输出其他不相关的信息。 ${inputB1}     ${inputB2}  ${inputB3}",
+    "promptBlock2": "你最喜欢哪个：${promptBlock1} 直接输出结果，不需要解释"
+  }
 }

@@ -194,7 +194,7 @@ export function usePrompt(props: PromptProps, emit: PromptEmits) {
     }
 
     // 插入占位符
-    const insertPlaceholder = async (key: string) => {
+    const insertPlaceholder = async (key: string, skipCursorControl: boolean = false) => {
         if (lastFocusedIndex.value === null) {
             ElMessage.warning('请先点击要插入的提示词输入框')
             return
@@ -205,51 +205,63 @@ export function usePrompt(props: PromptProps, emit: PromptEmits) {
             const currentText = props.promptBlocks[lastFocusedIndex.value].text || ''
             const input = promptRefs[lastFocusedIndex.value]
 
-            if (!input?.$el) {
-                throw new Error('未找到输入框元素')
-            }
-
-            // 获取textarea元素
-            const textarea = input.$el.querySelector('textarea')
-            if (!textarea) {
-                throw new Error('未找到textarea元素')
-            }
-
-            // 获取当前选择位置
-            const { selectionStart, selectionEnd } = textarea
-
-            // 在光标位置插入占位符
-            const newText =
-                currentText.slice(0, selectionStart) +
-                placeholder +
-                currentText.slice(selectionEnd)
-
-            // 保存当前焦点索引和滚动位置
-            const currentFocusIndex = lastFocusedIndex.value
-            const currentScrollTop = textarea.scrollTop
-
-            // 更新文本
-            const newBlocks = props.promptBlocks.map((block, index) => {
-                if (index === currentFocusIndex) {
-                    return { text: newText }
+            if (!skipCursorControl) {
+                if (!input?.$el) {
+                    throw new Error('未找到输入框元素')
                 }
-                return block
-            })
-            emit('update:promptBlocks', newBlocks)
 
-            // 等待DOM更新后设置光标位置
-            await nextTick()
-            const newPosition = selectionStart + placeholder.length
+                // 获取textarea元素
+                const textarea = input.$el.querySelector('textarea')
+                if (!textarea) {
+                    throw new Error('未找到textarea元素')
+                }
 
-            // 重新获取更新后的textarea并设置光标
-            const updatedTextarea = input.$el.querySelector('textarea')
-            if (updatedTextarea) {
-                updatedTextarea.focus()
-                updatedTextarea.setSelectionRange(newPosition, newPosition)
-                updatedTextarea.scrollTop = currentScrollTop
+                // 获取当前选择位置
+                const { selectionStart, selectionEnd } = textarea
 
-                // 确保焦点索引保持不变
-                lastFocusedIndex.value = currentFocusIndex
+                // 在光标位置插入占位符
+                const newText =
+                    currentText.slice(0, selectionStart) +
+                    placeholder +
+                    currentText.slice(selectionEnd)
+
+                // 保存当前焦点索引和滚动位置
+                const currentFocusIndex = lastFocusedIndex.value
+                const currentScrollTop = textarea.scrollTop
+
+                // 更新文本
+                const newBlocks = props.promptBlocks.map((block, index) => {
+                    if (index === currentFocusIndex) {
+                        return { text: newText }
+                    }
+                    return block
+                })
+                emit('update:promptBlocks', newBlocks)
+
+                // 等待DOM更新后设置光标位置
+                await nextTick()
+                const newPosition = selectionStart + placeholder.length
+
+                // 重新获取更新后的textarea并设置光标
+                const updatedTextarea = input.$el.querySelector('textarea')
+                if (updatedTextarea) {
+                    updatedTextarea.focus()
+                    updatedTextarea.setSelectionRange(newPosition, newPosition)
+                    updatedTextarea.scrollTop = currentScrollTop
+
+                    // 确保焦点索引保持不变
+                    lastFocusedIndex.value = currentFocusIndex
+                }
+            } else {
+                // 在流式渲染时，直接更新文本而不处理光标
+                const newText = currentText + placeholder
+                const newBlocks = props.promptBlocks.map((block, index) => {
+                    if (index === lastFocusedIndex.value) {
+                        return { text: newText }
+                    }
+                    return block
+                })
+                emit('update:promptBlocks', newBlocks)
             }
         } catch (error) {
             console.error('插入占位符时发生错误:', error)
