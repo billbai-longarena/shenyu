@@ -61,13 +61,7 @@ Add new model configuration in backend (`packages/backend/src/services/model-ser
     maxTokens: 8096,
     temperatureRange: {
         min: 0,
-        max: 2.0,
-        default: 1,
-        presets: {
-            conservative: 0.5,
-            balanced: 1.0,
-            creative: 1.5
-        }
+        max: 2.0
     }
 }
 ```
@@ -79,9 +73,7 @@ Key configuration parameters:
 - `maxTokens`: Maximum token count
 - `temperatureRange`: Temperature range configuration
   - `min`: Minimum temperature value
-  - `max`: Maximum temperature value
-  - `default`: Default temperature value
-  - `presets`: Preset temperature values (conservative, balanced, creative)
+  - `max`: Maximum temperature value (varies by model, e.g., kimi: 1.0, deepseek: 2.0)
 
 ### 4. Frontend Integration
 
@@ -98,12 +90,15 @@ const modelOptions = ref<ModelOption[]>([
 ]);
 ```
 
-Update temperature setting logic:
-
+Frontend provides three fixed temperature options:
 ```typescript
-if (selectedModel.value === 'new-model-name') {
-    selectedTemperature.value = 1  // Set default temperature
-}
+const temperatureOptions = computed(() => {
+  return [
+    { label: t('modelParams.conservative'), value: 0.1 },
+    { label: t('modelParams.balanced'), value: 0.5 },
+    { label: t('modelParams.creative'), value: 0.9 }
+  ]
+})
 ```
 
 ### 5. Testing and Validation
@@ -172,13 +167,7 @@ export type ModelType = 'existing-models' | 'volcesDeepseek';
     maxTokens: 8096,
     temperatureRange: {
         min: 0,
-        max: 2.0,
-        default: 1,
-        presets: {
-            conservative: 0.5,
-            balanced: 1.0,
-            creative: 1.5
-        }
+        max: 1.0
     }
 }
 ```
@@ -207,8 +196,9 @@ const modelOptions = ref<ModelOption[]>([
 - Ensure correct stream response handling
 
 3. Temperature Setting Issues
-- Validate temperature range configuration
-- Check preset values appropriateness
+- Frontend provides three fixed options (0.1/0.5/0.9)
+- Backend automatically handles temperature range limits based on model configuration
+- Different models may have different maximum temperatures (1.0 or 2.0), handled automatically by backend
 
 4. Performance Issues
 - Monitor response times

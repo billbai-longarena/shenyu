@@ -210,34 +210,17 @@ const modelOptions = ref<ModelOption[]>([
   { label: 'Qwen 2.5 Plus', value: 'qwen-turbo-latest', speed: { status: 'none' } },
   { label: 'Ali DeepSeekV3', value: 'alideepseekv3', speed: { status: 'none' } },
   { label: 'Ali DeepSeek R1', value: 'alideepseekr1', speed: { status: 'none' } },
-  { label: '火山DeepseekV3', value: 'volcesDeepseek', speed: { status: 'none' } }
+  { label: '火山DeepseekV3', value: 'volcesDeepseek', speed: { status: 'none' } },
+  { label: '腾讯云DeepseekV3', value: 'tencentDeepseek', speed: { status: 'none' } }
 ])
 
+//后端会根据模型的temperatureRange自动处理temperature范围
 const temperatureOptions = computed(() => {
-  if (selectedModel.value === 'kimi'|| selectedModel.value === 'volcesDeepseek') {
-    return [
-      { label: t('modelParams.conservative'), value: 0.1 },
-      { label: t('modelParams.balanced'), value: 0.5 },
-      { label: t('modelParams.creative'), value: 0.9 }
-    ]
-  } else if (selectedModel.value === 'deepseek' || selectedModel.value === 'siliconDeepseek' || 
-      selectedModel.value === 'baiduDeepseek' || selectedModel.value === 'alideepseekv3' || 
-      selectedModel.value === 'alideepseekr1' ) {
-    return [
-    { label: t('modelParams.codeGen'), value: 0 },
-      { label: t('modelParams.dataExtract'), value: 1 },
-      { label: t('modelParams.generalChat'), value: 1.3 },
-      { label: t('modelParams.creativeWriting'), value: 1.5 }
-    ]
-  } else {
-    return [
-      { label: '0.1', value: 0.1 },
-      { label: '0.3', value: 0.3 },
-      { label: '0.5', value: 0.5 },
-      { label: '0.7', value: 0.7 },
-      { label: '0.9', value: 0.9 }
-    ]
-  }
+  return [
+    { label: t('modelParams.conservative'), value: 0.1 },
+    { label: t('modelParams.balanced'), value: 0.5 },
+    { label: t('modelParams.creative'), value: 0.9 }
+  ]
 })
 
 const selectedModel = ref<ModelType>('kimi')

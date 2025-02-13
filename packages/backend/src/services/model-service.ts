@@ -8,168 +8,23 @@ interface ModelConfig {
     temperatureRange: {
         min: number;
         max: number;
-        default: number;
-        presets: {
-            conservative: number;
-            balanced: number;
-            creative: number;
-        };
     };
 }
 
-// 打印环境变量
-console.log('[ModelService] Environment variables:', {
+// 打印环境变量状态
+console.log('[ModelService] Environment variables status:', {
+    DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY ? 'exists' : 'missing',
+    SILICON_DEEPSEEK_API_KEY: process.env.SILICON_DEEPSEEK_API_KEY ? 'exists' : 'missing',
     KIMI_API_KEY: process.env.KIMI_API_KEY ? 'exists' : 'missing',
-    KIMI_API_KEY_VALUE: process.env.KIMI_API_KEY
+    YIWAN_API_KEY: process.env.YIWAN_API_KEY ? 'exists' : 'missing',
+    BAIDU_API_KEY: process.env.BAIDU_API_KEY ? 'exists' : 'missing',
+    ALIYUN_API_KEY: process.env.ALIYUN_API_KEY ? 'exists' : 'missing',
+    VOLCES_API_KEY: process.env.VOLCES_API_KEY ? 'exists' : 'missing',
+    TENCENT_API_KEY: process.env.TENCENT_API_KEY ? 'exists' : 'missing'
 });
 
 // API配置
-let API_CONFIGS: Record<ModelType, ModelConfig> = {
-    deepseek: {
-        apiKey: process.env.DEEPSEEK_API_KEY || '',
-        url: 'https://api.deepseek.com/chat/completions',
-        model: 'deepseek-chat',
-        maxTokens: 8191,
-        temperatureRange: {
-            min: 0,
-            max: 1.0,
-            default: 0.7,
-            presets: {
-                conservative: 0.3,
-                balanced: 0.7,
-                creative: 1.0
-            }
-        }
-    },
-    siliconDeepseek: {
-        apiKey: process.env.SILICON_DEEPSEEK_API_KEY || '',
-        url: 'https://api.siliconflow.cn/v1/chat/completions',
-        model: 'deepseek-ai/DeepSeek-V3',
-        maxTokens: 4096,
-        temperatureRange: {
-            min: 0,
-            max: 1.0,
-            default: 0.7,
-            presets: {
-                conservative: 0.3,
-                balanced: 0.7,
-                creative: 1.0
-            }
-        }
-    },
-    kimi: {
-        apiKey: process.env.KIMI_API_KEY || '',
-        url: 'https://api.moonshot.cn/v1/chat/completions',
-        model: 'moonshot-v1-8k',
-        maxTokens: 4096,
-        temperatureRange: {
-            min: 0.1,
-            max: 0.9,
-            default: 0.5,
-            presets: {
-                conservative: 0.1,
-                balanced: 0.5,
-                creative: 0.9
-            }
-        }
-    },
-    yiwan: {
-        apiKey: process.env.YIWAN_API_KEY || '',
-        url: 'https://api.lingyiwanwu.com/v1/chat/completions',
-        model: 'yi-lightning',
-        maxTokens: 8092,
-        temperatureRange: {
-            min: 0.1,
-            max: 0.9,
-            default: 0.3,
-            presets: {
-                conservative: 0.1,
-                balanced: 0.5,
-                creative: 0.9
-            }
-        }
-    },
-    baiduDeepseek: {
-        apiKey: process.env.BAIDU_API_KEY || '',
-        url: 'https://qianfan.baidubce.com/v2/chat/completions',
-        model: 'deepseek-v3',
-        maxTokens: 4092,
-        temperatureRange: {
-            min: 0,
-            max: 1.0,
-            default: 0.7,
-            presets: {
-                conservative: 0.3,
-                balanced: 0.7,
-                creative: 1.0
-            }
-        }
-    },
-    'qwen-turbo-latest': {
-        apiKey: process.env.ALIYUN_API_KEY || '',
-        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-        model: 'qwen-plus',
-        maxTokens: 8191,
-        temperatureRange: {
-            min: 0.1,
-            max: 0.9,
-            default: 0.3,
-            presets: {
-                conservative: 0.1,
-                balanced: 0.5,
-                creative: 0.9
-            }
-        }
-    },
-    'alideepseekv3': {
-        apiKey: process.env.ALIYUN_API_KEY || '',
-        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-        model: 'deepseek-v3',
-        maxTokens: 8191,
-        temperatureRange: {
-            min: 0,
-            max: 1.0,
-            default: 0.7,
-            presets: {
-                conservative: 0.3,
-                balanced: 0.7,
-                creative: 1.0
-            }
-        }
-    },
-    'alideepseekr1': {
-        apiKey: process.env.ALIYUN_API_KEY || '',
-        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
-        model: 'deepseek-r1',
-        maxTokens: 4191,
-        temperatureRange: {
-            min: 0,
-            max: 1.0,
-            default: 0.7,
-            presets: {
-                conservative: 0.3,
-                balanced: 0.7,
-                creative: 1.0
-            }
-        }
-    },
-    'volcesDeepseek': {
-        apiKey: process.env.VOLCES_API_KEY || '',
-        url: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
-        model: 'ep-20250212110141-mvgts',
-        maxTokens: 8096,
-        temperatureRange: {
-            min: 0,
-            max: 1.0,
-            default: 0.7,
-            presets: {
-                conservative: 0.3,
-                balanced: 0.7,
-                creative: 1.0
-            }
-        }
-    }
-};
+let API_CONFIGS: Record<ModelType, ModelConfig>;
 
 function createConfigs(): Record<ModelType, ModelConfig> {
     return {
@@ -180,13 +35,7 @@ function createConfigs(): Record<ModelType, ModelConfig> {
             maxTokens: 8191,
             temperatureRange: {
                 min: 0,
-                max: 1.0,
-                default: 0.7,
-                presets: {
-                    conservative: 0.3,
-                    balanced: 0.7,
-                    creative: 1.0
-                }
+                max: 2.0
             }
         },
         siliconDeepseek: {
@@ -196,13 +45,7 @@ function createConfigs(): Record<ModelType, ModelConfig> {
             maxTokens: 4096,
             temperatureRange: {
                 min: 0,
-                max: 1.0,
-                default: 0.7,
-                presets: {
-                    conservative: 0.3,
-                    balanced: 0.7,
-                    creative: 1.0
-                }
+                max: 2.0
             }
         },
         kimi: {
@@ -211,14 +54,8 @@ function createConfigs(): Record<ModelType, ModelConfig> {
             model: 'moonshot-v1-8k',
             maxTokens: 4096,
             temperatureRange: {
-                min: 0.1,
-                max: 0.9,
-                default: 0.5,
-                presets: {
-                    conservative: 0.1,
-                    balanced: 0.5,
-                    creative: 0.9
-                }
+                min: 0,
+                max: 1
             }
         },
         yiwan: {
@@ -227,14 +64,8 @@ function createConfigs(): Record<ModelType, ModelConfig> {
             model: 'yi-lightning',
             maxTokens: 8092,
             temperatureRange: {
-                min: 0.1,
-                max: 0.9,
-                default: 0.3,
-                presets: {
-                    conservative: 0.1,
-                    balanced: 0.5,
-                    creative: 0.9
-                }
+                min: 0,
+                max: 1
             }
         },
         baiduDeepseek: {
@@ -244,13 +75,7 @@ function createConfigs(): Record<ModelType, ModelConfig> {
             maxTokens: 4092,
             temperatureRange: {
                 min: 0,
-                max: 1.0,
-                default: 0.7,
-                presets: {
-                    conservative: 0.3,
-                    balanced: 0.7,
-                    creative: 1.0
-                }
+                max: 2.0
             }
         },
         'qwen-turbo-latest': {
@@ -259,14 +84,8 @@ function createConfigs(): Record<ModelType, ModelConfig> {
             model: 'qwen-plus',
             maxTokens: 8191,
             temperatureRange: {
-                min: 0.1,
-                max: 0.9,
-                default: 0.3,
-                presets: {
-                    conservative: 0.1,
-                    balanced: 0.5,
-                    creative: 0.9
-                }
+                min: 0,
+                max: 1
             }
         },
         'alideepseekv3': {
@@ -276,13 +95,7 @@ function createConfigs(): Record<ModelType, ModelConfig> {
             maxTokens: 8191,
             temperatureRange: {
                 min: 0,
-                max: 1.0,
-                default: 0.7,
-                presets: {
-                    conservative: 0.3,
-                    balanced: 0.7,
-                    creative: 1.0
-                }
+                max: 2.0
             }
         },
         'alideepseekr1': {
@@ -292,13 +105,7 @@ function createConfigs(): Record<ModelType, ModelConfig> {
             maxTokens: 4191,
             temperatureRange: {
                 min: 0,
-                max: 1.0,
-                default: 0.7,
-                presets: {
-                    conservative: 0.3,
-                    balanced: 0.7,
-                    creative: 1.0
-                }
+                max: 1.0
             }
         },
         'volcesDeepseek': {
@@ -308,13 +115,17 @@ function createConfigs(): Record<ModelType, ModelConfig> {
             maxTokens: 8096,
             temperatureRange: {
                 min: 0,
-                max: 1.0,
-                default: 0.7,
-                presets: {
-                    conservative: 0.3,
-                    balanced: 0.7,
-                    creative: 1.0
-                }
+                max: 1.0
+            }
+        },
+        'tencentDeepseek': {
+            apiKey: process.env.TENCENT_API_KEY || '',
+            url: 'https://api.lkeap.cloud.tencent.com/v1/chat/completions',
+            model: 'deepseek-v3',
+            maxTokens: 4096,
+            temperatureRange: {
+                min: 0,
+                max: 1.0
             }
         }
     };
@@ -334,9 +145,15 @@ class ModelService {
     }
 
     public reloadConfig(): void {
-        console.log('[ModelService] Reloading config with environment variables:', {
+        console.log('[ModelService] Reloading config with environment variables status:', {
+            DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY ? 'exists' : 'missing',
+            SILICON_DEEPSEEK_API_KEY: process.env.SILICON_DEEPSEEK_API_KEY ? 'exists' : 'missing',
             KIMI_API_KEY: process.env.KIMI_API_KEY ? 'exists' : 'missing',
-            KIMI_API_KEY_VALUE: process.env.KIMI_API_KEY
+            YIWAN_API_KEY: process.env.YIWAN_API_KEY ? 'exists' : 'missing',
+            BAIDU_API_KEY: process.env.BAIDU_API_KEY ? 'exists' : 'missing',
+            ALIYUN_API_KEY: process.env.ALIYUN_API_KEY ? 'exists' : 'missing',
+            VOLCES_API_KEY: process.env.VOLCES_API_KEY ? 'exists' : 'missing',
+            TENCENT_API_KEY: process.env.TENCENT_API_KEY ? 'exists' : 'missing'
         });
         API_CONFIGS = createConfigs();
     }
@@ -388,11 +205,6 @@ class ModelService {
             case 'kimi':
                 // kimi需要sk-前缀，但env中已经包含了sk-前缀
                 const kimiKey = config.apiKey.trim();
-                console.log('[ModelService] Debug KIMI token:', {
-                    originalApiKey: kimiKey,
-                    hasSkPrefix: kimiKey.startsWith('sk-'),
-                    length: kimiKey.length
-                });
                 headers['Authorization'] = `Bearer ${kimiKey}`;
                 break;
             case 'yiwan':
@@ -412,6 +224,10 @@ class ModelService {
                 break;
             case 'volcesDeepseek':
                 // 火山API使用原始格式
+                headers['Authorization'] = `Bearer ${config.apiKey}`;
+                break;
+            case 'tencentDeepseek':
+                // 腾讯云API使用原始格式
                 headers['Authorization'] = `Bearer ${config.apiKey}`;
                 break;
             default:

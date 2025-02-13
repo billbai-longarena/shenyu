@@ -61,13 +61,7 @@ export type ModelType = 'existing-models' | 'new-model-name';
     maxTokens: 8096,
     temperatureRange: {
         min: 0,
-        max: 2.0,
-        default: 1,
-        presets: {
-            conservative: 0.5,
-            balanced: 1.0,
-            creative: 1.5
-        }
+        max: 2.0
     }
 }
 ```
@@ -79,9 +73,7 @@ export type ModelType = 'existing-models' | 'new-model-name';
 - `maxTokens`: 最大token数量
 - `temperatureRange`: 温度范围配置
   - `min`: 最小温度值
-  - `max`: 最大温度值
-  - `default`: 默认温度值
-  - `presets`: 预设温度值（保守、平衡、创意）
+  - `max`: 最大温度值（不同模型可能不同，如kimi为1.0，deepseek为2.0）
 
 ### 4. 前端集成
 
@@ -98,12 +90,15 @@ const modelOptions = ref<ModelOption[]>([
 ]);
 ```
 
-更新温度设置逻辑：
-
+前端提供三个固定的temperature选项：
 ```typescript
-if (selectedModel.value === 'new-model-name') {
-    selectedTemperature.value = 1  // 设置默认温度
-}
+const temperatureOptions = computed(() => {
+  return [
+    { label: t('modelParams.conservative'), value: 0.1 },
+    { label: t('modelParams.balanced'), value: 0.5 },
+    { label: t('modelParams.creative'), value: 0.9 }
+  ]
+})
 ```
 
 ### 5. 测试验证
@@ -172,13 +167,7 @@ export type ModelType = 'existing-models' | 'volcesDeepseek';
     maxTokens: 8096,
     temperatureRange: {
         min: 0,
-        max: 2.0,
-        default: 1,
-        presets: {
-            conservative: 0.5,
-            balanced: 1.0,
-            creative: 1.5
-        }
+        max: 1.0
     }
 }
 ```
@@ -207,8 +196,9 @@ const modelOptions = ref<ModelOption[]>([
 - 确保流式响应处理正确
 
 3. 温度设置问题
-- 验证温度范围配置
-- 检查预设值是否合适
+- 前端提供三个固定选项(0.1/0.5/0.9)
+- 后端根据模型的temperatureRange自动处理范围限制
+- 不同模型的最大temperature可能不同(1.0或2.0)，由后端自动处理
 
 4. 性能问题
 - 监控响应时间
