@@ -21,7 +21,9 @@ export interface LocaleMessages {
         executionError: string
     }
     configPanel: {
-        agentPromptTemplate: string
+        agentPromptTemplate1: string
+        agentPromptTemplate2?: string
+        agentPromptTemplate3?: string
         agentTitle: string
         generateAgentButton: string
         generateAgentError: string

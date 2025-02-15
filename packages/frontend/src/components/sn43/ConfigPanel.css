@@ -1,0 +1,319 @@
+/* 布局相关样式 */
+.admin-interface-container {
+  display: flex;
+  height: 100%;
+}
+
+.agent-section {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  overflow: hidden;
+}
+
+.agent-section-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.config-section {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  overflow: hidden;
+}
+
+.config-section-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.prompt-section {
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+  overflow: hidden;
+}
+
+.prompt-config {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* 表单元素样式 */
+.path-input-section {
+  margin-bottom: 20px;
+}
+
+.path-input {
+  margin-bottom: 10px;
+}
+
+.generate-button {
+  width: 100%;
+}
+
+.config-inputs-container {
+  flex: 1;
+}
+
+.config-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.agent-generator {
+  margin-bottom: 20px;
+}
+
+.agent-input {
+  margin-bottom: 10px;
+}
+
+.insert-button {
+  min-width: 60px;
+}
+
+.admin-title {
+  color: #1a1a1a;
+  font-weight: 600;
+  margin: 0;
+  line-height: 32px;
+}
+
+.input-with-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.add-input-button,
+.add-prompt-button {
+  margin-bottom: 20px;
+}
+
+.prompt-container {
+  margin-top: 20px;
+}
+
+.prompt-input-group {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.prompt-input-wrapper {
+  flex: 1;
+  display: flex;
+  gap: 10px;
+}
+
+.prompt-input {
+  flex: 1;
+}
+
+.prompt-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* 预览区域样式 */
+.preview-section {
+  margin-top: 20px;
+  border-top: 1px solid #dcdfe6;
+  padding-top: 16px;
+  height: 300px;
+}
+
+.preview-title {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.preview-content {
+  height: calc(100% - 40px);
+  background-color: #ffffff;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.messages {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.message {
+  margin-bottom: 15px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: #f4f4f5;
+  color: #333333;
+  border: 1px solid #e4e7ed;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.assistant-message {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.loading-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Markdown内容样式 */
+.markdown-content {
+  flex: 1;
+  line-height: 1.6;
+  font-size: 14px;
+  text-align: left;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.markdown-content :deep(*) {
+  white-space: pre-wrap;
+}
+
+.markdown-content :deep(pre) {
+  background-color: #f8f9fa;
+  padding: 1em;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.markdown-content :deep(code) {
+  background-color: #f8f9fa;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.markdown-content :deep(p) {
+  margin: 1em 0;
+}
+
+.markdown-content :deep(ul),
+.markdown-content :deep(ol) {
+  padding-left: 2em;
+  margin: 1em 0;
+}
+
+.markdown-content :deep(h1),
+.markdown-content :deep(h2),
+.markdown-content :deep(h3),
+.markdown-content :deep(h4) {
+  margin-top: 1.5em;
+  margin-bottom: 1em;
+  font-weight: 600;
+}
+
+.markdown-content :deep(blockquote) {
+  margin: 1em 0;
+  padding-left: 1em;
+  border-left: 4px solid #dcdfe6;
+  color: #666;
+}
+
+.markdown-content :deep(table) {
+  border-collapse: collapse;
+  margin: 1em 0;
+  width: 100%;
+}
+
+.markdown-content :deep(th),
+.markdown-content :deep(td) {
+  border: 1px solid #dcdfe6;
+  padding: 0.6em 1em;
+}
+
+.markdown-content :deep(th) {
+  background-color: #f8f9fa;
+}
+
+/* 拖动分隔条样式 */
+.resize-handle {
+  width: 6px;
+  background-color: #dcdfe6;
+  cursor: col-resize;
+  transition: background-color 0.2s;
+  position: relative;
+}
+
+.resize-handle:hover,
+.resize-handle:active {
+  background-color: #409eff;
+}
+
+.resize-handle::after {
+  content: "⋮";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #909399;
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* 拖动时禁止选择文本 */
+:global(.resizing) {
+  user-select: none;
+  cursor: col-resize;
+}
+
+/* 无效提示词块样式 */
+:deep(.invalid-prompt textarea) {
+  color: red !important;
+}
+
+.preview-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 动画相关样式 */
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading {
+  animation: rotate 1s linear infinite;
+  fill: #409eff;
+}
