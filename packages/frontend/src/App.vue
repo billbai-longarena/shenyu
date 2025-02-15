@@ -204,6 +204,7 @@ interface ModelOption {
 const modelOptions = ref<ModelOption[]>([
   { label: 'kimi-8k', value: 'kimi', speed: { status: 'none' } },  
   { label: '火山DeepseekV3', value: 'volcesDeepseek', speed: { status: 'none' } },
+  { label: '火山DeepseekR1', value: 'volcesDeepseekR1', speed: { status: 'none' } },
   { label: 'Ali DeepSeekV3', value: 'alideepseekv3', speed: { status: 'none' } },
   { label: '腾讯云DeepseekV3', value: 'tencentDeepseek', speed: { status: 'none' } },
   { label: 'deepseek V3', value: 'deepseek', speed: { status: 'none' } },
@@ -346,7 +347,7 @@ watch(selectedModel, (newValue) => {
     selectedTemperature.value = 0.5  // kimi使用平衡的temperature
   } else if (newValue === 'deepseek' || newValue === 'siliconDeepseek' || 
       newValue === 'baiduDeepseek' || newValue === 'alideepseekv3' || 
-      newValue === 'alideepseekr1' ) {
+      newValue === 'alideepseekr1' || newValue === 'volcesDeepseekR1' ) {
     selectedTemperature.value = 1  // deepseek系列使用通用对话模式
   } else {
     selectedTemperature.value = 0.5  // 其他模型使用较保守的temperature

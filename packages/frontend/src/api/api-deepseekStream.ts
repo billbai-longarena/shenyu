@@ -1,6 +1,6 @@
 import type { Message } from '../types/chat';
 
-export type ModelType = 'deepseek' | 'kimi' | 'yiwan' | 'siliconDeepseek' | 'baiduDeepseek' | 'qwen-turbo-latest' | 'alideepseekv3' | 'alideepseekr1' | 'volcesDeepseek' | 'tencentDeepseek';
+export type ModelType = 'deepseek' | 'kimi' | 'yiwan' | 'siliconDeepseek' | 'baiduDeepseek' | 'qwen-turbo-latest' | 'alideepseekv3' | 'alideepseekr1' | 'volcesDeepseek' | 'volcesDeepseekR1' | 'tencentDeepseek';
 
 import { SpeedTestButtonWebSocket } from '../services/speedTestButton.websocket.js';
 import { ExecuteButtonWebSocket } from '../services/executeButton.websocket.js';

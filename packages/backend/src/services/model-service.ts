@@ -118,6 +118,16 @@ function createConfigs(): Record<ModelType, ModelConfig> {
                 max: 1.0
             }
         },
+        'volcesDeepseekR1': {
+            apiKey: process.env.VOLCES_API_KEY || '',
+            url: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
+            model: 'ep-20250215224020-9nkj4',
+            maxTokens: 8096,
+            temperatureRange: {
+                min: 0,
+                max: 1.0
+            }
+        },
         'tencentDeepseek': {
             apiKey: process.env.TENCENT_API_KEY || '',
             url: 'https://api.lkeap.cloud.tencent.com/v1/chat/completions',
@@ -223,6 +233,7 @@ class ModelService {
                 headers['Authorization'] = `Bearer ${config.apiKey}`;
                 break;
             case 'volcesDeepseek':
+            case 'volcesDeepseekR1':
                 // 火山API使用原始格式
                 headers['Authorization'] = `Bearer ${config.apiKey}`;
                 break;
