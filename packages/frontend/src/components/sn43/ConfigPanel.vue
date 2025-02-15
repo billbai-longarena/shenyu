@@ -281,6 +281,9 @@ const generateAIAgent = async () => {
         )
       }
       
+      // 打印替换后的内容
+     // console.log(`Template ${i + 1} 替换后的内容:`, currentPrompt)
+      
       // 是否是最后一个prompt
       const isLastPrompt = i === prompts.length - 1
       
@@ -364,6 +367,15 @@ const generateFromText = async () => {
     // 清理并解析JSON
     const cleanedJson = cleanJsonString(matches[0])
     const config = JSON.parse(cleanedJson)
+
+    // 修复连续的def标签
+    if (config.adminInputs) {
+      Object.keys(config.adminInputs).forEach(key => {
+        const value = config.adminInputs[key];
+        // 修复错误的def标签格式
+        config.adminInputs[key] = value.replace(/<def>(.*?)<def>/g, '<def>$1</def>');
+      });
+    }
     
     // 验证json结构
     if (!config.adminInputs || !config.promptBlocks) {

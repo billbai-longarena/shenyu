@@ -51,6 +51,13 @@ cp .env.example .env
 # Edit .env file with your API keys
 ```
 
+Note: The project uses an OpenAI API-compatible approach to call models. You only need to:
+1. Configure any model's API key in the .env file
+2. Select the corresponding model in the interface
+3. If you encounter header format issues, adjust the header format in the modelservice
+
+Since the author doesn't have OpenAI API access, OpenAI compatibility hasn't been fully tested.
+
 ### Troubleshooting
 
 1. Dependency Installation Issues
@@ -189,6 +196,22 @@ npm run preview
 cd packages/backend
 npm start
 ```
+
+## AI Agent Generator
+
+To create a complex AI agent with 10 prompt blocks:
+
+1. Go to the SN43 page backend configuration panel
+2. In the AI agent textarea, input: "deep research with output 10 promptblocks"
+3. Click the "Generate AI Agent" button
+4. Switch to the user interface
+5. Click the "Execute" button to experience the agent's capabilities
+
+![AI Agent Configuration](images/ai-agent-config.png)
+*AI Agent Configuration Panel*
+
+![AI Agent Execution](images/ai-agent-execution.png)
+*AI Agent Execution Interface*
 
 ## Project Structure
 

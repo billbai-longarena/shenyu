@@ -51,6 +51,13 @@ cp .env.example .env
 # 编辑 .env 文件，填入您的 API 密钥
 ```
 
+注意：项目采用与OpenAI API兼容的方式调用模型。您只需要：
+1. 在.env文件中配置任意模型的API密钥
+2. 在界面中选择相应的模型
+3. 如果遇到header格式问题，可以在modelservice中调整header格式
+
+由于作者没有OpenAI的API访问权限，OpenAI的兼容性尚未完全测试。
+
 ### 故障排除
 
 1. 依赖安装问题
@@ -189,6 +196,22 @@ npm run preview
 cd packages/backend
 npm start
 ```
+
+## AI Agent 生成器
+
+创建包含10个prompt blocks的深度研究智能体：
+
+1. 进入SN43页面的后台配置页面
+2. 在AI agent文本框中输入："deep research with output 10 promptblocks"
+3. 点击"生成AI智能体"按钮
+4. 切换到用户界面
+5. 点击"执行"按钮即可体验智能体的效果
+
+![AI智能体配置](images/ai-agent-config.png)
+*AI智能体配置面板*
+
+![AI智能体执行](images/ai-agent-execution.png)
+*AI智能体执行界面*
 
 ## 项目结构
 

@@ -203,15 +203,18 @@ interface ModelOption {
 // 模型和参数选项
 const modelOptions = ref<ModelOption[]>([
   { label: 'kimi-8k', value: 'kimi', speed: { status: 'none' } },  
+  { label: '火山DeepseekV3', value: 'volcesDeepseek', speed: { status: 'none' } },
+  { label: 'Ali DeepSeekV3', value: 'alideepseekv3', speed: { status: 'none' } },
+  { label: '腾讯云DeepseekV3', value: 'tencentDeepseek', speed: { status: 'none' } },
   { label: 'deepseek V3', value: 'deepseek', speed: { status: 'none' } },
   { label: '零一万物', value: 'yiwan', speed: { status: 'none' } },
+  
   //{ label: '硅基流动DeepseekV3', value: 'siliconDeepseek', speed: { status: 'none' } },
  // { label: '百度DeepSeekV3', value: 'baiduDeepseek', speed: { status: 'none' } },
   { label: 'Qwen 2.5 Plus', value: 'qwen-turbo-latest', speed: { status: 'none' } },
-  { label: 'Ali DeepSeekV3', value: 'alideepseekv3', speed: { status: 'none' } },
-  { label: 'Ali DeepSeek R1', value: 'alideepseekr1', speed: { status: 'none' } },
-  { label: '火山DeepseekV3', value: 'volcesDeepseek', speed: { status: 'none' } },
-  { label: '腾讯云DeepseekV3', value: 'tencentDeepseek', speed: { status: 'none' } }
+  
+  
+  { label: 'Ali DeepSeek R1', value: 'alideepseekr1', speed: { status: 'none' } }
 ])
 
 //后端会根据模型的temperatureRange自动处理temperature范围
