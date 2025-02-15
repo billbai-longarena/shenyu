@@ -17,6 +17,8 @@
             type="primary"
             class="generate-button"
             @click="generateAIAgent"
+            :disabled="isGenerating"
+            :loading="isGenerating"
           >
             {{ t('configPanel.generateAgentButton') }}
           </el-button>
@@ -225,6 +227,7 @@ import { setTemperature } from '../../api/api-deepseekStream'
 
 // AI智能体生成相关
 const textareaGenerateAgent = ref('')
+const isGenerating = ref(false)
 const { handleStreamResponse } = useStreamResponse()
 const selectedTemperature = inject('selectedTemperature') as any
 
@@ -235,25 +238,26 @@ const generateAIAgent = async () => {
     return
   }
 
-  // 设置为保守模式
-  setTemperature(0.1)
-  selectedTemperature.value = 0.1
-
-  // 获取所有prompt模板
-  const prompts: string[] = []
-  let i = 1
-  while (true) {
-    const key = `configPanel.agentPromptTemplate${i}`
-    const template = t(key)
-    // 如果template是undefined或者等于key本身，说明没有这个模板了
-    if (!template || template === key) {
-      break
-    }
-    prompts.push(template.replace('${input}', textareaGenerateAgent.value))
-    i++
-  }
-
+  isGenerating.value = true
   try {
+    // 设置为保守模式
+    setTemperature(0.1)
+    selectedTemperature.value = 0.1
+
+    // 获取所有prompt模板
+    const prompts: string[] = []
+    let i = 1
+    while (true) {
+      const key = `configPanel.agentPromptTemplate${i}`
+      const template = t(key)
+      // 如果template是undefined或者等于key本身，说明没有这个模板了
+      if (!template || template === key) {
+        break
+      }
+      prompts.push(template.replace('${input}', textareaGenerateAgent.value))
+      i++
+    }
+
     // 清空所有现有配置
     emit('update:adminInputs', {})
     emit('update:promptBlocks', [])
@@ -302,6 +306,8 @@ const generateAIAgent = async () => {
   } catch (error) {
     console.error('生成AI智能体失败:', error)
     ElMessage.error(t('configPanel.generateAgentError'))
+  } finally {
+    isGenerating.value = false
   }
 }
 
