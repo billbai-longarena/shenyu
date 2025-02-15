@@ -10,6 +10,22 @@ AI Agent的配置也是公开展示的，方便prompt调优
 http://139.224.248.148/sn43
 丐中丐服务器
 
+## AI Agent 生成器 功能指南
+
+创建包含10个prompt blocks的深度研究智能体：
+
+1. 进入SN43页面的后台配置页面
+2. 在AI agent文本框中输入："有10个promptblock输出的深度研究agent"
+3. 点击"生成AI智能体"按钮
+4. 切换到用户界面
+5. 点击"执行"按钮即可体验智能体的效果
+
+![AI智能体配置](images/ai-agent-config.png)
+*AI智能体配置面板*
+
+![AI智能体执行](images/ai-agent-execution.png)
+*AI智能体执行界面*
+
 ## 特性
 
 - 🚀 支持多种 AI 模型（DeepSeek、Kimi、阿里云等）
@@ -197,21 +213,7 @@ cd packages/backend
 npm start
 ```
 
-## AI Agent 生成器
 
-创建包含10个prompt blocks的深度研究智能体：
-
-1. 进入SN43页面的后台配置页面
-2. 在AI agent文本框中输入："deep research with output 10 promptblocks"
-3. 点击"生成AI智能体"按钮
-4. 切换到用户界面
-5. 点击"执行"按钮即可体验智能体的效果
-
-![AI智能体配置](images/ai-agent-config.png)
-*AI智能体配置面板*
-
-![AI智能体执行](images/ai-agent-execution.png)
-*AI智能体执行界面*
 
 ## 项目结构
 
