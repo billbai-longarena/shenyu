@@ -1,4 +1,4 @@
-export type ModelType = 'deepseek' | 'kimi' | 'yiwan' | 'siliconDeepseek' | 'baiduDeepseek' | 'qwen-turbo-latest' | 'alideepseekv3' | 'alideepseekr1' | 'volcesDeepseek' | 'volcesDeepseekR1' | 'tencentDeepseek';
+export type ModelType = 'deepseek' | 'kimi' | 'yiwan' | 'siliconDeepseek' | 'baiduDeepseek' | 'qwen-turbo-latest' | 'alideepseekv3' | 'alideepseekr1' | 'volcesDeepseek' | 'volcesDeepseekR1' | 'tencentDeepseek' | 'minimax-text';
 
 export interface Message {
     role: 'system' | 'user' | 'assistant' | 'tool';

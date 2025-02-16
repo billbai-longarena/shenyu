@@ -1,6 +1,6 @@
 import type { Message } from '../types/chat';
 
-export type ModelType = 'deepseek' | 'kimi' | 'yiwan' | 'siliconDeepseek' | 'baiduDeepseek' | 'qwen-turbo-latest' | 'alideepseekv3' | 'alideepseekr1' | 'volcesDeepseek' | 'volcesDeepseekR1' | 'tencentDeepseek';
+export type ModelType = 'deepseek' | 'kimi' | 'yiwan' | 'siliconDeepseek' | 'baiduDeepseek' | 'qwen-turbo-latest' | 'alideepseekv3' | 'alideepseekr1' | 'volcesDeepseek' | 'volcesDeepseekR1' | 'tencentDeepseek' | 'minimax-text';
 
 import { SpeedTestButtonWebSocket } from '../services/speedTestButton.websocket.js';
 import { ExecuteButtonWebSocket } from '../services/executeButton.websocket.js';
@@ -64,9 +64,27 @@ export async function RequestAI(
                         return;
                     }
 
-                    const messages: Message[] = [
-                        { role: 'user', content: prompt }
-                    ];
+                    let messages: Message[] = [];
+
+                    // 对于 minimax-text 模型，添加特殊的 system 消息和 name 字段
+                    if (model === 'minimax-text') {
+                        messages = [
+                            {
+                                role: 'system',
+                                name: 'MM智能助理',
+                                content: 'MM智能助理是一款由MiniMax自研的，没有调用其他产品的接口的大型语言模型。MiniMax是一家中国科技公司，一直致力于进行大模型相关的研究。'
+                            },
+                            {
+                                role: 'user',
+                                name: '用户',
+                                content: prompt
+                            }
+                        ];
+                    } else {
+                        messages = [
+                            { role: 'user', content: prompt }
+                        ];
+                    }
 
                     // 获取max_tokens
                     const max_tokens = await getModelMaxTokens(model);

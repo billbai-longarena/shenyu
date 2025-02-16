@@ -584,7 +584,7 @@ const handleFileUpload = (event: Event) => {
     try {
       const jsonStr = cleanJsonString(e.target?.result as string)
       const config = JSON.parse(jsonStr)
-      importConfig(config)
+      importConfig(config, 30) // 文件上传时使用30ms的延时
       // 触发配置修改事件
       emit('config-modified')
     } catch (error) {

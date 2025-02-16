@@ -20,7 +20,8 @@ console.log('[ModelService] Environment variables status:', {
     BAIDU_API_KEY: process.env.BAIDU_API_KEY ? 'exists' : 'missing',
     ALIYUN_API_KEY: process.env.ALIYUN_API_KEY ? 'exists' : 'missing',
     VOLCES_API_KEY: process.env.VOLCES_API_KEY ? 'exists' : 'missing',
-    TENCENT_API_KEY: process.env.TENCENT_API_KEY ? 'exists' : 'missing'
+    TENCENT_API_KEY: process.env.TENCENT_API_KEY ? 'exists' : 'missing',
+    MINIMAX_API_KEY: process.env.MINIMAX_API_KEY ? 'exists' : 'missing'
 });
 
 // API配置
@@ -137,6 +138,16 @@ function createConfigs(): Record<ModelType, ModelConfig> {
                 min: 0,
                 max: 1.0
             }
+        },
+        'minimax-text': {
+            apiKey: process.env.MINIMAX_API_KEY || '',
+            url: 'https://api.minimax.chat/v1/text/chatcompletion_v2',
+            model: 'abab5.5-chat',
+            maxTokens: 8096,
+            temperatureRange: {
+                min: 0,
+                max: 1.0
+            }
         }
     };
 }
@@ -163,7 +174,8 @@ class ModelService {
             BAIDU_API_KEY: process.env.BAIDU_API_KEY ? 'exists' : 'missing',
             ALIYUN_API_KEY: process.env.ALIYUN_API_KEY ? 'exists' : 'missing',
             VOLCES_API_KEY: process.env.VOLCES_API_KEY ? 'exists' : 'missing',
-            TENCENT_API_KEY: process.env.TENCENT_API_KEY ? 'exists' : 'missing'
+            TENCENT_API_KEY: process.env.TENCENT_API_KEY ? 'exists' : 'missing',
+            MINIMAX_API_KEY: process.env.MINIMAX_API_KEY ? 'exists' : 'missing'
         });
         API_CONFIGS = createConfigs();
     }
@@ -239,6 +251,10 @@ class ModelService {
                 break;
             case 'tencentDeepseek':
                 // 腾讯云API使用原始格式
+                headers['Authorization'] = `Bearer ${config.apiKey}`;
+                break;
+            case 'minimax-text':
+                // MiniMax API使用原始格式
                 headers['Authorization'] = `Bearer ${config.apiKey}`;
                 break;
             default:

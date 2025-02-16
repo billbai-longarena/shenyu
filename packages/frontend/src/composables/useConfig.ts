@@ -101,155 +101,159 @@ export function useConfig(props: ConfigProps, emit: ConfigEmits) {
     }
 
     // 导入配置
-    const importConfig = async (config: any) => {
-        try {
-            // 验证配置
-            if (!validateConfig(config)) {
-                return;
-            }
-
-            // 清空现有配置
-            emit('update:adminInputs', {})
-            emit('update:promptBlocks', [])
-            emit('update:userInputs', {})
-
-            const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-            const charDelay = 120; // 每个字符的延迟时间（毫秒）
-            const blockDelay = 200; // 每个块的延迟时间（毫秒）
-
-            // 创建一个函数来处理文本的流式渲染
-            const streamText = async (text: string, currentText: string = ''): Promise<string> => {
-                if (text === currentText) return text;
-
-                // 找到下一个完整的行或段落
-                let nextLength = currentText.length;
-                const remainingText = text.slice(currentText.length);
-
-                // 如果当前位置是换行符，直接返回整个文本
-                if (remainingText.startsWith('\n')) {
-                    return text;
+    const importConfig = async (config: any, charDelay: number = 120): Promise<void> => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                // 验证配置
+                if (!validateConfig(config)) {
+                    reject(new Error('配置验证失败'));
+                    return;
                 }
 
-                // 找到下一个换行符
-                const nextNewline = remainingText.indexOf('\n');
-                if (nextNewline !== -1) {
-                    // 如果找到换行符，处理整个段落
-                    nextLength = currentText.length + nextNewline + 1;
+                // 清空现有配置
+                emit('update:adminInputs', {})
+                emit('update:promptBlocks', [])
+                emit('update:userInputs', {})
+
+                const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+                const blockDelay = 200; // 每个块的延迟时间（毫秒）
+
+                // 创建一个函数来处理文本的流式渲染
+                const streamText = async (text: string, currentText: string = ''): Promise<string> => {
+                    if (text === currentText) return text;
+
+                    // 找到下一个完整的行或段落
+                    let nextLength = currentText.length;
+                    const remainingText = text.slice(currentText.length);
+
+                    // 如果当前位置是换行符，直接返回整个文本
+                    if (remainingText.startsWith('\n')) {
+                        return text;
+                    }
+
+                    // 找到下一个换行符
+                    const nextNewline = remainingText.indexOf('\n');
+                    if (nextNewline !== -1) {
+                        // 如果找到换行符，处理整个段落
+                        nextLength = currentText.length + nextNewline + 1;
+                        await delay(charDelay);
+                        return text.slice(0, nextLength);
+                    }
+
+                    // 如果没有换行符，处理剩余的所有文本
                     await delay(charDelay);
-                    return text.slice(0, nextLength);
-                }
+                    return text;
+                };
 
-                // 如果没有换行符，处理剩余的所有文本
-                await delay(charDelay);
-                return text;
-            };
+                // 导入新配置
+                if (config.adminInputs) {
+                    const newAdminInputs: { [key: string]: string } = {};
+                    const newUserInputs: { [key: string]: string } = {};
 
-            // 导入新配置
-            if (config.adminInputs) {
-                const newAdminInputs: { [key: string]: string } = {};
-                const newUserInputs: { [key: string]: string } = {};
+                    // 按顺序处理每个adminInput
+                    for (const [key, value] of Object.entries(config.adminInputs)) {
+                        let currentText = '';
+                        newAdminInputs[key] = '';
 
-                // 按顺序处理每个adminInput
-                for (const [key, value] of Object.entries(config.adminInputs)) {
-                    let currentText = '';
-                    newAdminInputs[key] = '';
+                        // 流式渲染文本
+                        while (currentText !== value) {
+                            currentText = await streamText(value as string, currentText);
+                            newAdminInputs[key] = currentText;
+                            emit('update:adminInputs', { ...newAdminInputs });
+                        }
 
-                    // 流式渲染文本
-                    while (currentText !== value) {
-                        currentText = await streamText(value as string, currentText);
-                        newAdminInputs[key] = currentText;
-                        emit('update:adminInputs', { ...newAdminInputs });
-                    }
+                        // 同步创建用户输入框
+                        const num = key.replace('inputB', '');
+                        const userKey = `inputA${num}`;
+                        newUserInputs[userKey] = '';
 
-                    // 同步创建用户输入框
-                    const num = key.replace('inputB', '');
-                    const userKey = `inputA${num}`;
-                    newUserInputs[userKey] = '';
+                        // 如果有默认值（<def>标签中的内容），提取并设置
+                        try {
+                            // 使用更健壮的正则表达式来匹配<def>标签
+                            const match = (value as string).match(/<def>([\s\S]*?)<\/def>/);
+                            if (match) {
+                                // 验证标签的完整性
+                                const fullText = value as string;
+                                const openTags = (fullText.match(/<def>/g) || []).length;
+                                const closeTags = (fullText.match(/<\/def>/g) || []).length;
 
-                    // 如果有默认值（<def>标签中的内容），提取并设置
-                    try {
-                        // 使用更健壮的正则表达式来匹配<def>标签
-                        const match = (value as string).match(/<def>([\s\S]*?)<\/def>/);
-                        if (match) {
-                            // 验证标签的完整性
-                            const fullText = value as string;
-                            const openTags = (fullText.match(/<def>/g) || []).length;
-                            const closeTags = (fullText.match(/<\/def>/g) || []).length;
+                                if (openTags !== closeTags) {
+                                    console.warn(`警告：输入 ${key} 中的<def>标签不匹配`);
+                                }
 
-                            if (openTags !== closeTags) {
-                                console.warn(`警告：输入 ${key} 中的<def>标签不匹配`);
+                                // 提取并清理默认值
+                                const defaultValue = match[1].trim();
+                                newUserInputs[userKey] = defaultValue;
                             }
-
-                            // 提取并清理默认值
-                            const defaultValue = match[1].trim();
-                            newUserInputs[userKey] = defaultValue;
+                        } catch (error) {
+                            console.error(`解析输入 ${key} 的默认值时出错:`, error);
+                            ElMessage.warning(`解析输入 ${key} 的默认值时出错`);
                         }
-                    } catch (error) {
-                        console.error(`解析输入 ${key} 的默认值时出错:`, error);
-                        ElMessage.warning(`解析输入 ${key} 的默认值时出错`);
                     }
+
+                    emit('update:userInputs', newUserInputs);
+
+                    // 更新计数器
+                    const maxNumber = Math.max(
+                        ...Object.keys(config.adminInputs)
+                            .map(key => parseInt(key.replace('inputB', '')))
+                            .filter(num => !isNaN(num)),
+                        0
+                    );
+                    emit('update:inputCounter', maxNumber);
                 }
 
-                emit('update:userInputs', newUserInputs);
+                if (config.promptBlocks) {
+                    const texts: string[] = [];
+                    const allBlocks: { text: string }[] = [];
 
-                // 更新计数器
-                const maxNumber = Math.max(
-                    ...Object.keys(config.adminInputs)
-                        .map(key => parseInt(key.replace('inputB', '')))
-                        .filter(num => !isNaN(num)),
-                    0
-                );
-                emit('update:inputCounter', maxNumber);
-            }
+                    // 首先收集所有文本
+                    if (Array.isArray(config.promptBlocks)) {
+                        texts.push(...config.promptBlocks);
+                    } else {
+                        // 按照promptBlock1, promptBlock2...的顺序排序
+                        const sortedKeys = Object.keys(config.promptBlocks)
+                            .sort((a, b) => {
+                                const numA = parseInt(a.replace('promptBlock', ''));
+                                const numB = parseInt(b.replace('promptBlock', ''));
+                                return numA - numB;
+                            });
+                        texts.push(...sortedKeys.map(key => config.promptBlocks[key]));
+                    }
 
-            if (config.promptBlocks) {
-                const texts: string[] = [];
-                const allBlocks: { text: string }[] = [];
+                    // 初始化所有块的内容
+                    texts.forEach((text) => allBlocks.push({ text: '' }));
+                    emit('update:promptBlocks', allBlocks);
 
-                // 首先收集所有文本
-                if (Array.isArray(config.promptBlocks)) {
-                    texts.push(...config.promptBlocks);
-                } else {
-                    // 按照promptBlock1, promptBlock2...的顺序排序
-                    const sortedKeys = Object.keys(config.promptBlocks)
-                        .sort((a, b) => {
-                            const numA = parseInt(a.replace('promptBlock', ''));
-                            const numB = parseInt(b.replace('promptBlock', ''));
-                            return numA - numB;
-                        });
-                    texts.push(...sortedKeys.map(key => config.promptBlocks[key]));
-                }
+                    // 逐个更新块的内容
+                    for (let i = 0; i < texts.length; i++) {
+                        let currentText = '';
+                        const text = texts[i];
 
-                // 初始化所有块的内容
-                texts.forEach((text) => allBlocks.push({ text: '' }));
-                emit('update:promptBlocks', allBlocks);
+                        while (currentText !== text) {
+                            currentText = await streamText(text, currentText);
+                            // 更新当前块，保持其他块的内容不变
+                            allBlocks[i] = { text: currentText };
+                            // 创建新数组以触发响应式更新
+                            emit('update:promptBlocks', [...allBlocks]);
 
-                // 逐个更新块的内容
-                for (let i = 0; i < texts.length; i++) {
-                    let currentText = '';
-                    const text = texts[i];
-
-                    while (currentText !== text) {
-                        currentText = await streamText(text, currentText);
-                        // 更新当前块，保持其他块的内容不变
-                        allBlocks[i] = { text: currentText };
-                        // 创建新数组以触发响应式更新
-                        emit('update:promptBlocks', [...allBlocks]);
-
-                        if (currentText === text) {
-                            await delay(blockDelay);
-                        } else {
-                            await delay(charDelay);
+                            if (currentText === text) {
+                                await delay(blockDelay);
+                            } else {
+                                await delay(charDelay);
+                            }
                         }
                     }
                 }
-            }
 
-            ElMessage.success('配置导入成功');
-        } catch (error) {
-            console.error('导入配置失败:', error)
-            ElMessage.error('配置文件格式错误')
-        }
+                ElMessage.success('配置导入成功');
+                resolve();
+            } catch (error) {
+                console.error('导入配置失败:', error)
+                ElMessage.error('配置文件格式错误')
+                reject(error);
+            }
+        });
     }
 
     // 恢复默认配置

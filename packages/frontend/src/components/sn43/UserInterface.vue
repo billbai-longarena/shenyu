@@ -12,6 +12,7 @@
           :prompt-blocks="promptBlocks"
           :input-counter="inputCounter"
           @config-loaded="onConfigLoaded"
+          @loading-state-change="onLoadingStateChange"
           @update:admin-inputs="$emit('update:adminInputs', $event)"
           @update:user-inputs="$emit('update:userInputs', $event)"
           @update:prompt-blocks="$emit('update:promptBlocks', $event)"
@@ -32,6 +33,8 @@
           :has-user-inputs="Object.keys(userInputs).length > 0"
           :is-executing="isExecuting"
           :prompt-blocks="promptBlocks"
+          :is-config-loading="isConfigLoading"
+          :is-config-fully-loaded="isConfigFullyLoaded"
           @execute="executeUserInputs"
         />
       </div>
@@ -115,9 +118,21 @@ watch(() => props.outputResult, (newValue) => {
   }
 }, { immediate: true })
 
+// 配置加载状态
+const isConfigLoading = ref(false)
+const isConfigFullyLoaded = ref(false)
+
+// 配置加载状态变化处理
+const onLoadingStateChange = (state: boolean) => {
+  isConfigLoading.value = state
+  if (state) {
+    isConfigFullyLoaded.value = false
+  }
+}
+
 // 配置加载完成的处理
 const onConfigLoaded = () => {
-  // 可以在这里添加额外的处理逻辑
+  isConfigFullyLoaded.value = true
 }
 
 // 执行用户输入

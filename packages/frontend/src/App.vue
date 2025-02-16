@@ -215,7 +215,8 @@ const modelOptions = ref<ModelOption[]>([
   { label: 'Qwen 2.5 Plus', value: 'qwen-turbo-latest', speed: { status: 'none' } },
   
   
-  { label: 'Ali DeepSeek R1', value: 'alideepseekr1', speed: { status: 'none' } }
+  { label: 'Ali DeepSeek R1', value: 'alideepseekr1', speed: { status: 'none' } },
+  { label: 'MiniMax-Text-01', value: 'minimax-text', speed: { status: 'none' } }
 ])
 
 //后端会根据模型的temperatureRange自动处理temperature范围
@@ -347,7 +348,8 @@ watch(selectedModel, (newValue) => {
     selectedTemperature.value = 0.5  // kimi使用平衡的temperature
   } else if (newValue === 'deepseek' || newValue === 'siliconDeepseek' || 
       newValue === 'baiduDeepseek' || newValue === 'alideepseekv3' || 
-      newValue === 'alideepseekr1' || newValue === 'volcesDeepseekR1' ) {
+      newValue === 'alideepseekr1' || newValue === 'volcesDeepseekR1' ||
+      newValue === 'minimax-text') {
     selectedTemperature.value = 1  // deepseek系列使用通用对话模式
   } else {
     selectedTemperature.value = 0.5  // 其他模型使用较保守的temperature

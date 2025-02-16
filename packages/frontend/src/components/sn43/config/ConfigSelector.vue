@@ -52,7 +52,11 @@ const emit = defineEmits<{
   (e: 'update:userInputs', value: { [key: string]: string }): void
   (e: 'update:promptBlocks', value: { text: string }[]): void
   (e: 'update:inputCounter', value: number): void
+  (e: 'loading-state-change', value: boolean): void
 }>()
+
+// 加载状态
+const isLoading = ref(false)
 
 // 配置相关
 const { jsonFiles, fetchJsonFiles } = useJsonFiles()
@@ -175,6 +179,9 @@ const loadConfig = async () => {
     return
   }
 
+  isLoading.value = true
+  emit('loading-state-change', true)
+
   try {
     const file = jsonFiles.value.find((f: JsonFile) => f.filename === selectedFilename.value)
     if (!file) {
@@ -193,12 +200,15 @@ const loadConfig = async () => {
     }
 
     const config = await response.json()
-    importConfig(config)
+    await importConfig(config, 1) // 等待导入完成
     ElMessage.success(t('configSelector.loadSuccess'))
-    emit('config-loaded')
+    emit('config-loaded') // 只在完全加载后触发
   } catch (error) {
     console.error('加载配置失败:', error)
     ElMessage.error(t('configSelector.loadError'))
+  } finally {
+    isLoading.value = false
+    emit('loading-state-change', false)
   }
 }
 </script>

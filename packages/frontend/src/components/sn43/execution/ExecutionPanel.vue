@@ -52,6 +52,8 @@ const props = defineProps<{
   hasUserInputs: boolean
   isExecuting: boolean
   promptBlocks: { text: string }[]
+  isConfigLoading: boolean
+  isConfigFullyLoaded: boolean
 }>()
 
 const emit = defineEmits<{
@@ -67,6 +69,10 @@ const hasPlaceholder = (text: string): boolean => {
 
 // 检查所有提示词块是否有效
 const isAllBlocksValid = computed(() => {
+  // 只有在配置完全加载完成后才检查
+  if (!props.isConfigFullyLoaded) {
+    return true;
+  }
   return props.promptBlocks.every(block => !block.text || hasPlaceholder(block.text));
 })
 
@@ -86,22 +92,17 @@ const buttonText = computed(() => {
 
 // 计算按钮是否禁用
 const isDisabled = computed(() => {
-  // 如果没有用户输入，禁用按钮
-  if (!props.hasUserInputs) {
-    return true;
-  }
-  
-  // 如果正在执行中，禁用按钮
-  if (props.isExecuting) {
+  // 如果配置正在加载中，直接返回true，不检查其他条件
+  if (props.isConfigLoading) {
     return true;
   }
 
-  // 如果有无效的提示词块，禁用按钮
-  if (!isAllBlocksValid.value) {
-    return true;
-  }
-
-  return false;
+  // 只有当不在加载状态时，才检查其他条件
+  return (
+    !props.hasUserInputs ||
+    props.isExecuting ||
+    !isAllBlocksValid.value
+  );
 })
 
 // 获取状态类型

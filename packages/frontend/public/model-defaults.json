@@ -1,4 +1,4 @@
 {
-    "defaultModel": "kimi",
-    "defaultTemperature": 0.5
+    "defaultModel": "minimax-text",
+    "defaultTemperature": 1
 }
