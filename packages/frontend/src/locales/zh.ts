@@ -91,10 +91,10 @@ export const messages: LocaleMessages = {
         title: '输入区域',
         selectPlaceholder: '选择配置文件',
         loadButton: '载入',
-        loadSuccess: '配置加载成功',
         loadError: '加载配置失败',
         selectFirst: '请先选择配置文件',
-        fileNotFound: '找不到选中的文件'
+        fileNotFound: '找不到选中的文件',
+        importSuccess: '配置导入成功'
     },
     menu: {
         chat: '对话',
@@ -120,5 +120,8 @@ export const messages: LocaleMessages = {
     github: {
         viewOnGithub: '在GitHub上查看',
         tooltip: '查看源代码'
+    },
+    language: {
+        switchSuccess: '语言切换成功'
     }
 }

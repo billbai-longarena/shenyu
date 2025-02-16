@@ -123,7 +123,9 @@ export function useLanguage() {
                 throw new Error(errorMessage)
             }
 
-            ElMessage.success('语言切换成功')
+            // 先更新语言值，这样可以使用新语言显示消息
+            globalLanguageState.current = lang
+            ElMessage.success(t('language.switchSuccess'))
             return true
         } catch (error) {
             console.error('[useLanguage] 保存默认语言配置失败:', error)

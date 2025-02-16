@@ -201,7 +201,6 @@ const loadConfig = async () => {
 
     const config = await response.json()
     await importConfig(config, 1) // 等待导入完成
-    ElMessage.success(t('configSelector.loadSuccess'))
     emit('config-loaded') // 只在完全加载后触发
   } catch (error) {
     console.error('加载配置失败:', error)

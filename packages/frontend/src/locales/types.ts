@@ -90,10 +90,10 @@ export interface LocaleMessages {
         title: string
         selectPlaceholder: string
         loadButton: string
-        loadSuccess: string
         loadError: string
         selectFirst: string
         fileNotFound: string
+        importSuccess: string
     }
     menu: {
         chat: string
@@ -119,5 +119,8 @@ export interface LocaleMessages {
     github: {
         viewOnGithub: string
         tooltip: string
+    }
+    language: {
+        switchSuccess: string
     }
 }

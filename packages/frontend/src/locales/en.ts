@@ -91,10 +91,10 @@ export const messages: LocaleMessages = {
         title: 'Input Area',
         selectPlaceholder: 'Select Configuration',
         loadButton: 'Load',
-        loadSuccess: 'Configuration loaded successfully',
         loadError: 'Failed to load configuration',
         selectFirst: 'Please select a configuration file first',
-        fileNotFound: 'Selected file not found'
+        fileNotFound: 'Selected file not found',
+        importSuccess: 'Configuration imported successfully'
     },
     menu: {
         chat: 'Chat',
@@ -120,5 +120,8 @@ export const messages: LocaleMessages = {
     github: {
         viewOnGithub: 'View on GitHub',
         tooltip: 'View source code'
+    },
+    language: {
+        switchSuccess: 'Language switched successfully'
     }
 }

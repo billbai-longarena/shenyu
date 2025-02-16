@@ -1,4 +1,5 @@
 import { ElMessage } from 'element-plus'
+import { useLanguage } from '../composables/useLanguage'
 
 interface ConfigProps {
     adminInputs: { [key: string]: string }
@@ -15,6 +16,7 @@ interface ConfigEmits {
 }
 
 export function useConfig(props: ConfigProps, emit: ConfigEmits) {
+    const { t } = useLanguage()
     // 导出配置到JSON文件
     const exportConfig = () => {
         const config = {
@@ -246,7 +248,7 @@ export function useConfig(props: ConfigProps, emit: ConfigEmits) {
                     }
                 }
 
-                ElMessage.success('配置导入成功');
+                ElMessage.success(t('configSelector.importSuccess'));
                 resolve();
             } catch (error) {
                 console.error('导入配置失败:', error)
