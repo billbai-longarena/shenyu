@@ -210,8 +210,8 @@ const modelOptions = ref<ModelOption[]>([
   { label: 'deepseek V3', value: 'deepseek', speed: { status: 'none' } },
   { label: '零一万物', value: 'yiwan', speed: { status: 'none' } },
   
-  //{ label: '硅基流动DeepseekV3', value: 'siliconDeepseek', speed: { status: 'none' } },
- // { label: '百度DeepSeekV3', value: 'baiduDeepseek', speed: { status: 'none' } },
+  { label: '硅基流动DeepseekV3', value: 'siliconDeepseek', speed: { status: 'none' } },
+ { label: '百度DeepSeekV3', value: 'baiduDeepseek', speed: { status: 'none' } },
   { label: 'Qwen 2.5 Plus', value: 'qwen-turbo-latest', speed: { status: 'none' } },
   
   
@@ -222,7 +222,7 @@ const modelOptions = ref<ModelOption[]>([
 //后端会根据模型的temperatureRange自动处理temperature范围
 const temperatureOptions = computed(() => {
   return [
-    { label: t('modelParams.conservative'), value: 0.1 },
+    { label: t('modelParams.conservative'), value: 0 },
     { label: t('modelParams.balanced'), value: 0.5 },
     { label: t('modelParams.creative'), value: 0.9 }
   ]
