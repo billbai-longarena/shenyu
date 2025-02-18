@@ -10,6 +10,10 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 1000, // 增加chunk大小警告限制到1000kb
     rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        'pdf.worker': 'node_modules/pdfjs-dist/build/pdf.worker.min.js'
+      },
       output: {
         manualChunks(id) {
           // 只按模块分割视图代码

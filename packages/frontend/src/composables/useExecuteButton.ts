@@ -46,20 +46,22 @@ export function useExecuteButton() {
     // block管理器
     let blockManager: BlockManager | null = null
 
-    // 替换基础占位符（inputB）
-    const replaceBasicPlaceholders = (text: string, userInputs: { [key: string]: string }): string => {
-        return text.replace(/\${inputB(\d+)}/g, (match, num) => {
-            const userKey = `inputA${num}`
+    // 替换基础占位符（inputB和inputpdfB）
+    const replaceBasicPlaceholders = async (text: string, userInputs: { [key: string]: string }): Promise<string> => {
+        // 替换所有占位符（包括PDF和普通输入）
+        let result = text.replace(/\${(inputB|inputpdfB)(\d+)}/g, (match, type, num) => {
+            const userKey = `input${type === 'inputB' ? 'A' : 'pdfA'}${num}`
             return userInputs[userKey] || match
         })
+        return result
     }
 
-    // 替换所有占位符（包括promptBlock和inputB）
+    // 替换所有占位符（包括promptBlock、inputB和inputpdfB）
     const replaceAllPlaceholders = async (text: string, userInputs: { [key: string]: string }, promptBlocks: { text: string }[]): Promise<string> => {
         console.log('开始替换占位符:', text)
 
-        // 首先替换inputB占位符
-        let result = replaceBasicPlaceholders(text, userInputs)
+        // 首先替换inputB和inputpdfB占位符
+        let result = await replaceBasicPlaceholders(text, userInputs)
         console.log('替换基础占位符后:', result)
 
         // 收集所有需要处理的promptBlock

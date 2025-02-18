@@ -12,6 +12,10 @@ http://139.224.248.148/sn43
 
 ## AI Agent 生成器 功能指南
 
+中文视频：
+https://flowus.cn/long-arena/share/0e914d6b-d9c8-48c9-bcdd-564d0f34eaee?code=Z97DJQ
+
+
 创建包含10个prompt blocks的深度研究智能体：
 
 1. 进入SN43页面的后台配置页面

@@ -23,6 +23,7 @@
           :user-inputs="userInputs"
           :admin-inputs="adminInputs"
           @update:user-inputs="$emit('update:userInputs', $event)"
+          @pdfParsingStatus="handlePdfParsingStatus"
         />
         
         <ExecutionPanel
@@ -31,7 +32,7 @@
           :block-statuses="blockStatuses"
           :is-all-blocks-completed="isAllBlocksCompleted"
           :has-user-inputs="Object.keys(userInputs).length > 0"
-          :is-executing="isExecuting"
+          :is-executing="isExecuting || isPdfParsing"
           :prompt-blocks="promptBlocks"
           :is-config-loading="isConfigLoading"
           :is-config-fully-loaded="isConfigFullyLoaded"
@@ -87,6 +88,14 @@ const emit = defineEmits<{
 
 // 获取翻译函数
 const { t } = useLanguage()
+
+// PDF解析状态
+const isPdfParsing = ref(false)
+
+// 处理PDF解析状态变化
+const handlePdfParsingStatus = (status: boolean) => {
+  isPdfParsing.value = status
+}
 
 // 执行相关
 const { 

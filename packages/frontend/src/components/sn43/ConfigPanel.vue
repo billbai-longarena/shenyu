@@ -110,15 +110,28 @@
             </div>
           </div>
            <!-- 增加用户输入按钮 -->
-           <el-button 
-            type="primary" 
-            class="add-input-button"
-            @click="addUserInput"
-          >
-            {{ t('configPanel.addUserInput') }}
-          </el-button>
-
+           <div class="button-group">
+             <el-button 
+              type="primary" 
+              class="add-input-button"
+              @click="addUserInput"
+            >
+              {{ t('configPanel.addUserInput') }}
+            </el-button>
+            <!-- 
+            <el-button 
+              type="primary" 
+              class="add-input-button"
+              @click="addPdfInput"
+            >
+              增加上传pdf
+            </el-button>
+           
+            -->
+          </div>
           <!-- 预览区域 -->
+
+        
           <div class="preview-section">
             <h3 class="preview-title">{{ t('configPanel.previewTitle') }}</h3>
             <div class="preview-content" ref="previewContent">
@@ -322,6 +335,9 @@ interface Props {
   previewText: string
   isPreviewLoading: boolean
 }
+
+// PDF输入计数器
+const pdfInputCounter = ref(0)
 
 const props = defineProps<Props>()
 
@@ -554,6 +570,24 @@ const handleAdminInput = (key: string, value: string) => {
   emit('config-modified')
 }
 
+// 添加PDF输入
+const addPdfInput = () => {
+  pdfInputCounter.value += 1
+  const adminKey = `inputpdfB${pdfInputCounter.value}`
+  const newAdminInputs = { ...props.adminInputs }
+  newAdminInputs[adminKey] = ''
+  emit('update:adminInputs', newAdminInputs)
+  
+  // 同时创建用户界面的PDF上传控件
+  const userKey = `inputpdfA${pdfInputCounter.value}`
+  const newUserInputs = { ...props.userInputs }
+  newUserInputs[userKey] = ''
+  emit('update:userInputs', newUserInputs)
+
+  // 触发配置修改事件
+  emit('config-modified')
+}
+
 // 添加用户输入
 const addUserInput = () => {
   const newCounter = props.inputCounter + 1
@@ -637,13 +671,9 @@ const insertPromptBlock = (index: number) => {
     return
   }
 
-  const scrollPosition = saveScrollPosition()
-  insertPlaceholder(getPromptBlockPlaceholder(index), true)
+  insertPlaceholder(getPromptBlockPlaceholder(index))
   // 触发配置修改事件
   emit('config-modified')
-  nextTick(() => {
-    restoreScrollPosition(scrollPosition)
-  })
 }
 
 // 删除管理员输入框

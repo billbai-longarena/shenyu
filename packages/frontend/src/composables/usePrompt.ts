@@ -19,7 +19,7 @@ export function usePrompt(props: PromptProps, emit: PromptEmits) {
 
     // 检查文本是否包含有效的占位符
     const hasPlaceholder = (text: string): boolean => {
-        return /\${(inputB\d+|promptBlock\d+)}/.test(text);
+        return /\${(inputB\d+|promptBlock\d+|inputpdfB\d+)}/.test(text);
     }
 
     // 提示词块焦点处理
@@ -53,9 +53,9 @@ export function usePrompt(props: PromptProps, emit: PromptEmits) {
         promptBlockContent: string,
         afterPromptBlock: string
     }> => {
-        // 首先替换inputB占位符
-        let result = text.replace(/\${inputB(\d+)}/g, (match, num) => {
-            const userKey = `inputA${num}`
+        // 首先替换inputB和inputpdfB占位符
+        let result = text.replace(/\${(input(?:pdf)?B)(\d+)}/g, (match, type, num) => {
+            const userKey = `${type.replace('B', 'A')}${num}`
             return props.userInputs[userKey] || match
         })
 

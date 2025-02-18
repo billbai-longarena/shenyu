@@ -79,3 +79,34 @@ export interface ErrorResponse {
         code?: string;
     };
 }
+
+export interface PageInfo {
+    pageNumber: number;
+    totalPages: number;
+}
+
+export interface ParseDocumentRequest {
+    type: 'parseDocument';
+    fileData: string;
+    fileName: string;
+    useLocalOcr?: boolean;
+    pageInfo?: PageInfo;
+}
+
+export interface ParseProgressResponse {
+    type: 'parseProgress';
+    status: string;
+}
+
+export interface ParseResultResponse {
+    type: 'parseResult';
+    content: string;
+    pageInfo?: PageInfo;
+}
+
+export interface ParseErrorResponse {
+    type: 'parseError';
+    error: string;
+}
+
+export type DocumentParseResponse = ParseProgressResponse | ParseResultResponse | ParseErrorResponse;

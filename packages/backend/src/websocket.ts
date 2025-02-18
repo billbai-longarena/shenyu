@@ -3,7 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 import AIService from './services/ai-service.js';
 import SessionService from './services/session-service.js';
 import ModelService from './services/model-service.js';
-import { Message, ModelType } from './types/api.js';
+import DocumentService from './services/document-service.js';
+import { Message, ModelType, ParseDocumentRequest, DocumentParseResponse } from './types/api.js';
 
 interface WebSocketClient extends WebSocket {
     id: string;
@@ -32,7 +33,7 @@ interface GetClientCountRequest {
     type: 'getClientCount';
 }
 
-type WebSocketRequest = StreamRequest | ControlRequest | GetClientCountRequest;
+type WebSocketRequest = StreamRequest | ControlRequest | GetClientCountRequest | ParseDocumentRequest;
 
 export class WebSocketServer {
     private wss: WSServer;
@@ -41,6 +42,7 @@ export class WebSocketServer {
     private aiService: AIService;
     private sessionService: SessionService;
     private modelService: ModelService;
+    private documentService: DocumentService;
     private pingInterval: NodeJS.Timeout | null = null;
 
     // 请求队列相关
@@ -67,6 +69,7 @@ export class WebSocketServer {
         this.aiService = AIService.getInstance();
         this.sessionService = SessionService.getInstance();
         this.modelService = ModelService.getInstance();
+        this.documentService = DocumentService.getInstance();
 
         this.setupWebSocketServer();
         this.setupPingInterval();
@@ -298,6 +301,45 @@ export class WebSocketServer {
                 client.send(JSON.stringify({
                     type: 'connectionCount',
                     count: this.getConnectedClientsCount()
+                }));
+            }
+        } else if (request.type === 'parseDocument') {
+            // 文档解析请求直接处理，不进队列
+            await this.handleDocumentParseRequest(client, request);
+        }
+    }
+
+    private async handleDocumentParseRequest(client: WebSocketClient, request: ParseDocumentRequest) {
+        try {
+            const sendResponse = (response: DocumentParseResponse) => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify(response));
+                }
+            };
+
+            const result = await this.documentService.parseDocument(
+                request.fileData,
+                request.fileName,
+                (status) => sendResponse({ type: 'parseProgress', status }),
+                request.useLocalOcr
+            );
+
+            // 返回结果时包含页面信息
+            sendResponse({
+                type: 'parseResult',
+                content: result,
+                pageInfo: request.pageInfo
+            });
+        } catch (error) {
+            console.error('[Document] 解析错误:', {
+                clientId: client.id,
+                error,
+                timestamp: new Date().toISOString()
+            });
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(JSON.stringify({
+                    type: 'parseError',
+                    error: error instanceof Error ? error.message : '未知错误'
                 }));
             }
         }

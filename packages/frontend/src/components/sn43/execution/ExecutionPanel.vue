@@ -64,7 +64,7 @@ const { t } = useLanguage()
 
 // 检查提示词块是否包含占位符
 const hasPlaceholder = (text: string): boolean => {
-  return /\${(inputB\d+|promptBlock\d+)}/.test(text);
+  return /\${(inputB\d+|inputpdfB\d+|promptBlock\d+)}/.test(text);
 }
 
 // 检查所有提示词块是否有效
