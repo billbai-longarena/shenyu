@@ -280,8 +280,8 @@ const generateAIAgent = async () => {
 
   isGenerating.value = true
   try {
-    setTemperature(0.1)
-    selectedTemperature.value = 0.1
+    setTemperature(0)
+    selectedTemperature.value = 0
 
     const prompts: string[] = []
     let i = 1
@@ -396,18 +396,23 @@ const generateFromText = async () => {
     
     // 检查是否是旧格式（直接包含adminInputs和promptBlocks）
     if (config.adminInputs && config.promptBlocks && !config.currentVersion) {
+      // 将 promptBlocks 对象转换为数组格式
+      const promptBlocksArray = Object.values(config.promptBlocks).map((text: any) => ({
+        text: typeof text === 'string' ? text : text.text
+      }));
+
       // 转换为新格式
       configToImport = {
         currentVersion: {
           adminInputs: config.adminInputs,
-          promptBlocks: config.promptBlocks
+          promptBlocks: promptBlocksArray
         },
         versionHistory: [{
           version: Date.now().toString(),
           description: '导入旧版本配置',
           timestamp: new Date().toISOString(),
           adminInputs: config.adminInputs,
-          promptBlocks: config.promptBlocks
+          promptBlocks: promptBlocksArray
         }]
       }
     }
@@ -595,6 +600,15 @@ const handleFileUpload = async (event: Event) => {
 
 // 处理导出配置
 const handleExportConfig = async () => {
+  // 如果版本描述为空，自动生成一个包含日期的版本描述
+  if (!versionDescription.value.trim()) {
+    const now = new Date()
+    const year = now.getFullYear()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const day = String(now.getDate()).padStart(2, '0')
+    versionDescription.value = `配置_${year}${month}${day}`
+  }
+
   const result = await exportConfig()
   if (result.success) {
     ElMessage.success(result.message)

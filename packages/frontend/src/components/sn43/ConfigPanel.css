@@ -85,6 +85,7 @@
   padding: 15px;
   max-height: 300px;
   overflow-y: auto;
+  color: #565454;
 }
 
 .prompt-container {
