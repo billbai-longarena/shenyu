@@ -59,7 +59,17 @@ export const messages: LocaleMessages = {
         noValidJsonFound: '未找到有效的json内容',
         generateError: '生成控件失败',
         controlsGenerated: '控件生成成功',
-        invalidJsonStructure: 'json结构不正确，必须包含adminInputs和promptBlocks'
+        invalidJsonStructure: 'json结构不正确，必须包含adminInputs和promptBlocks',
+        versionManagement: {
+            inputPlaceholder: '请输入版本说明',
+            historyTitle: '版本历史',
+            loadVersion: '载入此版本',
+            exportSuccess: '配置已导出',
+            importSuccess: '配置已导入',
+            importError: '导入失败',
+            versionDescriptionRequired: '请输入版本说明',
+            initialImport: '初始导入'
+        }
     },
     historyPanel: {
         syncing: '同步中...',
@@ -122,6 +132,7 @@ export const messages: LocaleMessages = {
         tooltip: '查看源代码'
     },
     language: {
-        switchSuccess: '语言切换成功'
+        switchSuccess: '语言切换成功',
+        code: 'zh'
     }
 }

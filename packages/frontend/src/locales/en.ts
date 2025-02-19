@@ -59,7 +59,17 @@ export const messages: LocaleMessages = {
         noValidJsonFound: 'No valid json content found',
         generateError: 'Failed to generate controls',
         controlsGenerated: 'Controls generated successfully',
-        invalidJsonStructure: 'Invalid json structure, must contain adminInputs and promptBlocks'
+        invalidJsonStructure: 'Invalid json structure, must contain adminInputs and promptBlocks',
+        versionManagement: {
+            inputPlaceholder: 'Enter version description',
+            historyTitle: 'Version History',
+            loadVersion: 'Load This Version',
+            exportSuccess: 'Configuration exported',
+            importSuccess: 'Configuration imported',
+            importError: 'Import failed',
+            versionDescriptionRequired: 'Please enter version description',
+            initialImport: 'Initial Import'
+        }
     },
     historyPanel: {
         syncing: 'Syncing...',
@@ -122,6 +132,7 @@ export const messages: LocaleMessages = {
         tooltip: 'View source code'
     },
     language: {
-        switchSuccess: 'Language switched successfully'
+        switchSuccess: 'Language switched successfully',
+        code: 'en'
     }
 }

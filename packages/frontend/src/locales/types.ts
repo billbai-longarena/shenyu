@@ -59,6 +59,16 @@ export interface LocaleMessages {
         generateError: string
         controlsGenerated: string
         invalidJsonStructure: string
+        versionManagement: {
+            inputPlaceholder: string
+            historyTitle: string
+            loadVersion: string
+            exportSuccess: string
+            importSuccess: string
+            importError: string
+            versionDescriptionRequired: string
+            initialImport: string
+        }
     }
     historyPanel: {
         syncing: string
@@ -122,5 +132,6 @@ export interface LocaleMessages {
     }
     language: {
         switchSuccess: string
+        code: string
     }
 }

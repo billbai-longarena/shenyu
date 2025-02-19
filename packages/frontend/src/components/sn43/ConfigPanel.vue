@@ -60,9 +60,14 @@
           
           <!-- 配置操作按钮 -->
           <div class="config-actions">
+            <el-input
+              v-model="versionDescription"
+              :placeholder="t('configPanel.versionManagement.inputPlaceholder')"
+              class="version-input"
+            />
             <el-button 
               type="danger"
-              @click="exportConfig"
+              @click="handleExportConfig"
             >
               {{ t('configPanel.saveExport') }}
             </el-button>
@@ -118,20 +123,33 @@
             >
               {{ t('configPanel.addUserInput') }}
             </el-button>
-            <!-- 
-            <el-button 
-              type="primary" 
-              class="add-input-button"
-              @click="addPdfInput"
-            >
-              增加上传pdf
-            </el-button>
-           
-            -->
           </div>
-          <!-- 预览区域 -->
 
-        
+          <!-- 版本历史列表 -->
+          <div class="version-history" v-if="versionHistory.length">
+            <h3>{{ t('configPanel.versionManagement.historyTitle') }}</h3>
+            <el-card v-for="(version, index) in versionHistory" 
+                     :key="version.version"
+                     :class="{ 'current-version': currentVersionIndex === index }"
+                     class="version-card">
+              <div class="version-item">
+                <div class="version-info">
+                  <span class="version-time">{{ formatTimestamp(version.timestamp) }}</span>
+                  <span class="version-desc">{{ version.description }}</span>
+                </div>
+                <el-button 
+                  type="primary" 
+                  size="small" 
+                  style="padding: 4px 8px; height: 24px"
+                  @click="loadVersion(index)"
+                >
+                  {{ t('configPanel.versionManagement.loadVersion') }}
+                </el-button>
+              </div>
+            </el-card>
+          </div>
+
+          <!-- 预览区域 -->
           <div class="preview-section">
             <h3 class="preview-title">{{ t('configPanel.previewTitle') }}</h3>
             <div class="preview-content" ref="previewContent">
@@ -232,11 +250,20 @@ import { ref, onMounted, onUnmounted, computed, watch, nextTick, inject } from '
 import { marked } from 'marked'
 import { Loading } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { useConfig } from '../../composables/useConfig'
+import { useVersionConfig } from '../../composables/useVersionConfig'
 import { usePrompt } from '../../composables/usePrompt'
 import { useLanguage } from '../../composables/useLanguage'
 import { useStreamResponse } from '../../composables/useStreamResponse'
 import { setTemperature } from '../../api/api-deepseekStream'
+
+interface Props {
+  adminInputs: { [key: string]: string }
+  userInputs: { [key: string]: string }
+  promptBlocks: { text: string }[]
+  inputCounter: number
+  previewText: string
+  isPreviewLoading: boolean
+}
 
 // AI智能体生成相关
 const textareaGenerateAgent = ref('')
@@ -253,17 +280,14 @@ const generateAIAgent = async () => {
 
   isGenerating.value = true
   try {
-    // 设置为保守模式
     setTemperature(0.1)
     selectedTemperature.value = 0.1
 
-    // 获取所有prompt模板
     const prompts: string[] = []
     let i = 1
     while (true) {
       const key = `configPanel.agentPromptTemplate${i}`
       const template = t(key)
-      // 如果template是undefined或者等于key本身，说明没有这个模板了
       if (!template || template === key) {
         break
       }
@@ -271,22 +295,17 @@ const generateAIAgent = async () => {
       i++
     }
 
-    // 清空所有现有配置
     emit('update:adminInputs', {})
     emit('update:promptBlocks', [])
     emit('update:inputCounter', 0)
     
-    // 清空现有内容
     pathInput.value = ''
     
-    // 存储每个prompt的结果
     const promptResults: string[] = []
     
-    // 顺序处理每个prompt
     for (let i = 0; i < prompts.length; i++) {
       let currentPrompt = prompts[i]
       
-      // 替换之前结果的占位符
       for (let j = 0; j < promptResults.length; j++) {
         currentPrompt = currentPrompt.replace(
           `\${promptResults${j + 1}}`,
@@ -294,14 +313,9 @@ const generateAIAgent = async () => {
         )
       }
       
-      // 打印替换后的内容
-     // console.log(`Template ${i + 1} 替换后的内容:`, currentPrompt)
-      
-      // 是否是最后一个prompt
       const isLastPrompt = i === prompts.length - 1
       
       if (isLastPrompt) {
-        // 最后一个prompt使用流式响应
         await handleStreamResponse(
           currentPrompt,
           async (chunk: string, processedChunk: string) => {
@@ -311,13 +325,11 @@ const generateAIAgent = async () => {
           }
         )
       } else {
-        // 非最后一个prompt等待完整响应
         const response = await handleStreamResponse(currentPrompt)
         promptResults.push(response.content)
       }
     }
 
-    // 自动点击生成按钮
     await generateFromText()
   } catch (error) {
     console.error('生成AI智能体失败:', error)
@@ -325,15 +337,6 @@ const generateAIAgent = async () => {
   } finally {
     isGenerating.value = false
   }
-}
-
-interface Props {
-  adminInputs: { [key: string]: string }
-  userInputs: { [key: string]: string }
-  promptBlocks: { text: string }[]
-  inputCounter: number
-  previewText: string
-  isPreviewLoading: boolean
 }
 
 // PDF输入计数器
@@ -362,8 +365,8 @@ const pathInput = ref('')
 // 清理JSON字符串中的控制字符
 const cleanJsonString = (str: string) => {
   return str
-    .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // 移除控制字符
-    .replace(/\n\s*\n/g, '\n') // 移除多余的空行
+    .replace(/[\u0000-\u001F\u007F-\u009F]/g, '')
+    .replace(/\n\s*\n/g, '\n')
     .trim();
 }
 
@@ -371,7 +374,6 @@ const cleanJsonString = (str: string) => {
 const generateFromText = async () => {
   const input = pathInput.value
   try {
-    // 首先尝试提取JSON内容
     const jsonRegex = /{[\s\S]*"adminInputs"[\s\S]*"promptBlocks"[\s\S]*}/g
     const matches = input.match(jsonRegex)
     
@@ -380,31 +382,43 @@ const generateFromText = async () => {
       return
     }
 
-    // 清理并解析JSON
     const cleanedJson = cleanJsonString(matches[0])
     const config = JSON.parse(cleanedJson)
 
-    // 修复连续的def标签
     if (config.adminInputs) {
       Object.keys(config.adminInputs).forEach(key => {
         const value = config.adminInputs[key];
-        // 修复错误的def标签格式
         config.adminInputs[key] = value.replace(/<def>(.*?)<def>/g, '<def>$1</def>');
       });
     }
     
-    // 验证json结构
-    if (!config.adminInputs || !config.promptBlocks) {
-      ElMessage.warning(t('configPanel.invalidJsonStructure'))
-      return
+    let configToImport = config;
+    
+    // 检查是否是旧格式（直接包含adminInputs和promptBlocks）
+    if (config.adminInputs && config.promptBlocks && !config.currentVersion) {
+      // 转换为新格式
+      configToImport = {
+        currentVersion: {
+          adminInputs: config.adminInputs,
+          promptBlocks: config.promptBlocks
+        },
+        versionHistory: [{
+          version: Date.now().toString(),
+          description: '导入旧版本配置',
+          timestamp: new Date().toISOString(),
+          adminInputs: config.adminInputs,
+          promptBlocks: config.promptBlocks
+        }]
+      }
     }
     
-    // 导入配置
-    await importConfig(config)
-    // 触发配置修改事件
-    emit('config-modified')
-    
-    ElMessage.success(t('configPanel.controlsGenerated'))
+    const result = await importConfig(configToImport)
+    if (result.success) {
+      emit('config-modified')
+      ElMessage.success(t('configPanel.controlsGenerated'))
+    } else {
+      ElMessage.error(result.message)
+    }
   } catch (error) {
     console.error('生成控件失败:', error)
     ElMessage.error(t('configPanel.generateError'))
@@ -412,11 +426,11 @@ const generateFromText = async () => {
 }
 
 const fileInput = ref<HTMLInputElement | null>(null)
-// 配置marked选项
+
 marked.setOptions({
-  breaks: true,    // 支持GitHub风格的换行符
-  gfm: true,       // 启用GitHub风格的Markdown
-  pedantic: false  // 不要过分严格
+  breaks: true,
+  gfm: true,
+  pedantic: false
 })
 
 const previewContent = ref<HTMLDivElement | null>(null)
@@ -442,9 +456,9 @@ watch(() => props.previewText, () => {
 })
 
 // 区域宽度
-const agentWidth = ref(23) // Agent生成器区域的初始宽度百分比
-const configWidth = ref(33) // 用户输入配置区域的初始宽度百分比
-const promptWidth = computed(() => 100 - agentWidth.value - configWidth.value) // 提示词配置区域的宽度
+const agentWidth = ref(23)
+const configWidth = ref(33)
+const promptWidth = computed(() => 100 - agentWidth.value - configWidth.value)
 
 // 拖动相关的状态
 const isResizing = ref(false)
@@ -485,16 +499,13 @@ const handleResize = (e: MouseEvent) => {
   const containerWidth = container.getBoundingClientRect().width
   const newWidthPercent = startWidth.value + (dx / containerWidth * 100)
   
-  // 限制拖动范围在20%到60%之间
   const limitedWidth = Math.min(Math.max(newWidthPercent, 20), 60)
   
   if (currentResizeTarget.value === 'agent') {
-    // 确保三个区域的总宽度不超过100%
-    const maxWidth = 100 - configWidth.value - 20 // 保留至少20%给提示词区域
+    const maxWidth = 100 - configWidth.value - 20
     agentWidth.value = Math.min(limitedWidth, maxWidth)
   } else {
-    // 确保三个区域的总宽度不超过100%
-    const maxWidth = 100 - agentWidth.value - 20 // 保留至少20%给提示词区域
+    const maxWidth = 100 - agentWidth.value - 20
     configWidth.value = Math.min(limitedWidth, maxWidth)
   }
 }
@@ -521,7 +532,7 @@ onUnmounted(() => {
   document.body.classList.remove('resizing')
 })
 
-// 监听adminInputs的变化，检查是否有默认值需要设置
+// 监听adminInputs的变化
 watch(() => props.adminInputs, (newAdminInputs) => {
   Object.entries(newAdminInputs).forEach(([key, value]) => {
     const match = value.match(/<def>(.*?)<\/def>/)
@@ -536,7 +547,62 @@ watch(() => props.adminInputs, (newAdminInputs) => {
 }, { immediate: true, deep: true })
 
 const promptSection = ref<HTMLElement | null>(null)
-const { exportConfig, importConfig } = useConfig(props, emit)
+
+// 版本管理相关
+const {
+  versionDescription,
+  versionHistory,
+  currentVersionIndex,
+  formatTimestamp,
+  loadVersion,
+  exportConfig: exportVersionConfig,
+  importConfig: importVersionConfig
+} = useVersionConfig(props, emit)
+
+// 导出配置
+const exportConfig = exportVersionConfig
+// 导入配置
+const importConfig = importVersionConfig
+
+// 处理文件上传
+const handleFileUpload = async (event: Event) => {
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  
+  const reader = new FileReader()
+  reader.onload = async (e) => {
+    try {
+      const jsonStr = cleanJsonString(e.target?.result as string)
+      const config = JSON.parse(jsonStr)
+      const result = await importConfig(config)
+      
+      if (result.success) {
+        ElMessage.success(result.message)
+      } else {
+        ElMessage.error(result.message)
+      }
+    } catch (error) {
+      console.error('导入配置失败:', error)
+      ElMessage.error(t('configPanel.importError'))
+    }
+    
+    if (fileInput.value) {
+      fileInput.value.value = ''
+    }
+  }
+  reader.readAsText(file)
+}
+
+// 处理导出配置
+const handleExportConfig = async () => {
+  const result = await exportConfig()
+  if (result.success) {
+    ElMessage.success(result.message)
+  } else {
+    ElMessage.warning(result.message)
+  }
+}
+
 const { 
   lastFocusedIndex,
   promptRefs,
@@ -553,38 +619,14 @@ const {
 
 // 处理管理员输入
 const handleAdminInput = (key: string, value: string) => {
-  // 检查是否包含<def>标签
   const match = value.match(/<def>(.*?)<\/def>/)
   if (match) {
-    // 获取对应的userInput的key (从inputB1转换为inputA1)
     const userKey = `inputA${key.replace('inputB', '')}`
-    // 获取默认值
     const defaultValue = match[1]
-    
-    // 更新对应的userInput
     const newUserInputs = { ...props.userInputs }
     newUserInputs[userKey] = defaultValue
     emit('update:userInputs', newUserInputs)
   }
-  
-  emit('config-modified')
-}
-
-// 添加PDF输入
-const addPdfInput = () => {
-  pdfInputCounter.value += 1
-  const adminKey = `inputpdfB${pdfInputCounter.value}`
-  const newAdminInputs = { ...props.adminInputs }
-  newAdminInputs[adminKey] = ''
-  emit('update:adminInputs', newAdminInputs)
-  
-  // 同时创建用户界面的PDF上传控件
-  const userKey = `inputpdfA${pdfInputCounter.value}`
-  const newUserInputs = { ...props.userInputs }
-  newUserInputs[userKey] = ''
-  emit('update:userInputs', newUserInputs)
-
-  // 触发配置修改事件
   emit('config-modified')
 }
 
@@ -598,40 +640,12 @@ const addUserInput = () => {
   newAdminInputs[adminKey] = ''
   emit('update:adminInputs', newAdminInputs)
   
-  // 同时创建用户界面的输入框
   const userKey = `inputA${newCounter}`
   const newUserInputs = { ...props.userInputs }
   newUserInputs[userKey] = ''
   emit('update:userInputs', newUserInputs)
 
-  // 触发配置修改事件
   emit('config-modified')
-}
-
-// 处理文件上传
-const handleFileUpload = (event: Event) => {
-  const file = (event.target as HTMLInputElement).files?.[0]
-  if (!file) return
-  
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    try {
-      const jsonStr = cleanJsonString(e.target?.result as string)
-      const config = JSON.parse(jsonStr)
-      importConfig(config, 30) // 文件上传时使用30ms的延时
-      // 触发配置修改事件
-      emit('config-modified')
-    } catch (error) {
-      console.error('导入配置失败:', error)
-      ElMessage.error(t('configPanel.importError'))
-    }
-    
-    // 清空文件输入框
-    if (fileInput.value) {
-      fileInput.value.value = ''
-    }
-  }
-  reader.readAsText(file)
 }
 
 // 保存滚动位置
@@ -655,7 +669,6 @@ const updatePromptText = (index: number, value: string) => {
     return { ...block }
   })
   emit('update:promptBlocks', newBlocks)
-  // 触发配置修改事件
   emit('config-modified')
 }
 
@@ -672,7 +685,6 @@ const insertPromptBlock = (index: number) => {
   }
 
   insertPlaceholder(getPromptBlockPlaceholder(index))
-  // 触发配置修改事件
   emit('config-modified')
 }
 
@@ -689,25 +701,21 @@ const deleteAdminInput = async (key: string) => {
       }
     )
 
-    // 删除管理员输入框
     const newAdminInputs = Object.fromEntries(
       Object.entries(props.adminInputs).filter(([k]) => k !== key)
     )
     emit('update:adminInputs', newAdminInputs)
 
-    // 同时删除对应的用户输入框
     const userKey = `inputA${key.replace('inputB', '')}`
     const newUserInputs = Object.fromEntries(
       Object.entries(props.userInputs).filter(([k]) => k !== userKey)
     )
     emit('update:userInputs', newUserInputs)
 
-    // 触发配置修改事件
     emit('config-modified')
 
     ElMessage.success(t('configPanel.deleteSuccess'))
   } catch (error) {
-    // 用户取消删除操作，不做任何处理
     if (error !== 'cancel') {
       console.error('删除输入框时发生错误:', error)
       ElMessage.error(t('configPanel.deleteError') + (error as Error).message)
