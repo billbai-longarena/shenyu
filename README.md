@@ -266,7 +266,7 @@ Thanks to all developers who have contributed to this project!
 
 - Submit Issues
 - Project Discussion
-- Email Contact
+- Email Contact bill.bai@long-arena.com
 
 ## Status Badges
 

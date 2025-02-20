@@ -41,7 +41,6 @@ export class BlockManager {
             if (block.status === 'pending') {
                 block.status = 'streaming';
                 block.startTime = Date.now();
-                console.log(`[BlockManager] Block ${index} started streaming`);
             }
             block.chunks.push(chunk);
             block.content += chunk;
@@ -56,7 +55,6 @@ export class BlockManager {
             block.status = 'completed';
             block.endTime = Date.now();
             this.completedCount.value++;
-            console.log(`[BlockManager] Block ${index} completed. Total completed: ${this.completedCount.value}/${this.totalCount.value}`);
         }
     }
 
@@ -68,7 +66,6 @@ export class BlockManager {
             block.error = error;
             block.endTime = Date.now();
             this.completedCount.value++;
-            console.log(`[BlockManager] Block ${index} errored: ${error}. Total completed: ${this.completedCount.value}/${this.totalCount.value}`);
         }
     }
 
@@ -106,13 +103,11 @@ export class BlockManager {
     // 开始执行
     startExecution(): void {
         this.isExecuting.value = true;
-        console.log('[BlockManager] Execution started');
     }
 
     // 结束执行
     endExecution(): void {
         this.isExecuting.value = false;
-        console.log('[BlockManager] Execution ended');
     }
 
     // 检查是否正在执行
@@ -122,12 +117,7 @@ export class BlockManager {
 
     // 检查是否所有block都已完成
     isAllCompleted(): boolean {
-        const allCompleted = this.completedCount.value === this.totalCount.value;
-        console.log(`[BlockManager] Checking completion status: ${this.completedCount.value}/${this.totalCount.value} completed`);
-        if (allCompleted) {
-            console.log('[BlockManager] All blocks are completed');
-        }
-        return allCompleted;
+        return this.completedCount.value === this.totalCount.value;
     }
 
     // 获取block的内容

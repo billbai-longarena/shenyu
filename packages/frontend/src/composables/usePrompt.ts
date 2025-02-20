@@ -1,10 +1,21 @@
 import { ref, nextTick } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useStreamResponse } from './useStreamResponse'
+import type { ModelType } from '../api/api-deepseekStream'
 
-interface PromptProps {
+export interface PromptBlock {
+    text: string
+    model?: ModelType | 'inherit'
+    temperature?: number | 'inherit'
+}
+
+export interface PromptProps {
     userInputs: { [key: string]: string }
-    promptBlocks: { text: string }[]
+    promptBlocks: {
+        text: string
+        model?: ModelType | 'inherit'
+        temperature?: number | 'inherit'
+    }[]
 }
 
 interface PromptEmits {
@@ -136,7 +147,8 @@ export function usePrompt(props: PromptProps, emit: PromptEmits) {
 
     // 预览提示词
     const previewPrompt = async (index: number) => {
-        const promptText = props.promptBlocks[index].text
+        const currentBlock = props.promptBlocks[index]
+        const promptText = currentBlock.text
         if (!promptText) {
             ElMessage.warning('请先输入提示词')
             return
@@ -156,11 +168,28 @@ export function usePrompt(props: PromptProps, emit: PromptEmits) {
                 console.log('[预览提示词] 输入:', {
                     提示词块索引: index,
                     原始文本: promptText,
-                    处理后文本: promptBlockContent
+                    处理后文本: promptBlockContent,
+                    模型设置: currentBlock.model,
+                    温度设置: currentBlock.temperature
                 })
 
                 // 显示前缀
                 emit('update:previewText', beforePromptBlock)
+
+                // 准备配置
+                const config = {
+                    model: currentBlock.model === 'inherit' ? undefined : currentBlock.model,
+                    temperature: currentBlock.temperature === 'inherit' ? undefined : currentBlock.temperature,
+                    onError: (error: any) => {
+                        console.error('预览提示词时发生错误:', error)
+                        emit('update:previewText',
+                            beforePromptBlock +
+                            `预览失败：${error.message || '未知错误'}` +
+                            afterPromptBlock
+                        )
+                        ElMessage.error('预览失败：' + (error.message || '未知错误'))
+                    }
+                }
 
                 // 使用流式处理显示内容
                 let accumulatedContent = ''
@@ -173,17 +202,7 @@ export function usePrompt(props: PromptProps, emit: PromptEmits) {
                             emit('update:previewText', beforePromptBlock + accumulatedContent)
                         }
                     },
-                    {
-                        onError: (error) => {
-                            console.error('预览提示词时发生错误:', error)
-                            emit('update:previewText',
-                                beforePromptBlock +
-                                `预览失败：${error.message || '未知错误'}` +
-                                afterPromptBlock
-                            )
-                            ElMessage.error('预览失败：' + (error.message || '未知错误'))
-                        }
-                    }
+                    config
                 )
 
                 // 添加后缀，确保换行符被正确处理

@@ -270,7 +270,7 @@ Shenyu 支持通过插件系统扩展 AI 模型支持。查看[插件开发指�
 
 - 提交 Issue
 - 项目讨论区
-- 邮件联系
+- 邮件联系 bill.bai@long-arena.com
 
 ## 状态徽章
 

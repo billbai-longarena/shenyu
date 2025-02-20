@@ -1,30 +1,47 @@
-import { ref } from 'vue'
+import { ref, inject, computed, type Ref, type ComputedRef } from 'vue'
 import { useLanguage } from './useLanguage'
+import type { ModelType } from '../api/api-deepseekStream'
 
 export interface VersionInfo {
     version: string
     description: string
     timestamp: string
     adminInputs: { [key: string]: string }
-    promptBlocks: { text: string }[]
+    promptBlocks: {
+        text: string
+        model?: ModelType | 'inherit'
+        temperature?: number | 'inherit'
+    }[]
 }
 
 export interface ConfigFile {
     currentVersion: {
         adminInputs: { [key: string]: string }
-        promptBlocks: { text: string }[]
+        promptBlocks: {
+            text: string
+            model?: ModelType | 'inherit'
+            temperature?: number | 'inherit'
+        }[]
     }
     versionHistory: VersionInfo[]
 }
 
 interface Props {
     adminInputs: { [key: string]: string }
-    promptBlocks: { text: string }[]
+    promptBlocks: {
+        text: string
+        model?: ModelType | 'inherit'
+        temperature?: number | 'inherit'
+    }[]
 }
 
 interface Emits {
     (e: 'update:adminInputs', value: { [key: string]: string }): void
-    (e: 'update:promptBlocks', value: { text: string }[]): void
+    (e: 'update:promptBlocks', value: {
+        text: string
+        model?: ModelType | 'inherit'
+        temperature?: number | 'inherit'
+    }[]): void
     (e: 'config-modified'): void
 }
 
@@ -33,6 +50,24 @@ export const useVersionConfig = (props: Props, emit: Emits) => {
     const versionDescription = ref('')
     const versionHistory = ref<VersionInfo[]>([])
     const currentVersionIndex = ref<number | null>(null)
+
+    interface ModelOption {
+        label: string
+        value: ModelType
+        speed?: {
+            responseTime?: number
+            status: 'none' | 'fast' | 'medium' | 'slow' | 'error'
+        }
+    }
+
+    interface TemperatureOption {
+        label: string
+        value: number
+    }
+
+    // 在setup中获取注入的值
+    const modelOptions = inject<Ref<ModelOption[]>>('modelOptions', ref([]))
+    const temperatureOptions = inject<ComputedRef<TemperatureOption[]>>('temperatureOptions', computed(() => []))
 
     // 格式化时间戳
     const formatTimestamp = (timestamp: string) => {
@@ -101,20 +136,53 @@ export const useVersionConfig = (props: Props, emit: Emits) => {
     // 导入配置
     const importConfig = async (config: any) => {
         try {
+            // 验证和转换promptBlock
+            const validateAndTransformBlock = (block: any) => {
+                const validModels = modelOptions.value.map((option: ModelOption) => option.value)
+                const validTemperatures = temperatureOptions.value.map((option: TemperatureOption) => option.value)
+
+                const text = typeof block === 'string' ? block : block.text
+                let model = block.model || 'inherit'
+                let temperature = block.temperature || 'inherit'
+
+                // 验证model是否在有效列表中
+                if (model !== 'inherit' && !validModels.includes(model)) {
+                    console.log(`导入的model值 "${model}" 不在有效列表中，设置为inherit`)
+                    model = 'inherit'
+                }
+
+                // 验证temperature是否为有效值
+                if (temperature !== 'inherit' && !validTemperatures.includes(temperature)) {
+                    console.log(`导入的temperature值 "${temperature}" 不在有效范围内，设置为inherit`)
+                    temperature = 'inherit'
+                }
+
+                return { text, model, temperature }
+            }
+
             // 检查是否是新版本格式
             if ('currentVersion' in config && 'versionHistory' in config) {
-                // 加载当前版本
+                // 验证并转换当前版本的promptBlocks
+                const validatedPromptBlocks = config.currentVersion.promptBlocks.map(validateAndTransformBlock)
                 emit('update:adminInputs', { ...config.currentVersion.adminInputs })
-                emit('update:promptBlocks', [...config.currentVersion.promptBlocks])
+                emit('update:promptBlocks', validatedPromptBlocks)
 
-                // 更新版本历史
-                versionHistory.value = config.versionHistory
+                // 验证并转换版本历史中的promptBlocks
+                const validatedHistory = config.versionHistory.map((version: VersionInfo) => ({
+                    ...version,
+                    promptBlocks: version.promptBlocks.map(validateAndTransformBlock)
+                }))
+                versionHistory.value = validatedHistory
                 currentVersionIndex.value = 0
             } else {
                 // 兼容旧版本格式
                 const promptBlocksArray = Array.isArray(config.promptBlocks)
-                    ? config.promptBlocks
-                    : Object.values(config.promptBlocks || {}).map((text: any) => ({ text }));
+                    ? config.promptBlocks.map(validateAndTransformBlock)
+                    : Object.values(config.promptBlocks || {}).map((text: any) => validateAndTransformBlock({
+                        text: typeof text === 'string' ? text : text.text,
+                        model: 'inherit',
+                        temperature: 'inherit'
+                    }));
 
                 emit('update:adminInputs', { ...config.adminInputs })
                 emit('update:promptBlocks', promptBlocksArray)

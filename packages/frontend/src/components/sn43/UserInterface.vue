@@ -60,12 +60,19 @@ import OutputPanel from './output/OutputPanel.vue'
 import { useExecuteButton } from '../../composables/useExecuteButton.js'
 import { useLanguage } from '../../composables/useLanguage'
 import { ElMessage } from 'element-plus'
+import { getCurrentModel, getCurrentTemperature, setTemperature } from '../../api/api-deepseekStream'
+import type { ModelType } from '../../api/api-deepseekStream'
+import { useModelConfig } from '../../composables/useModelConfig'
 
 // Props定义
 const props = withDefaults(defineProps<{
   userInputs: { [key: string]: string }
   adminInputs: { [key: string]: string }
-  promptBlocks: { text: string }[]
+  promptBlocks: { 
+    text: string
+    model?: ModelType | 'inherit'
+    temperature?: number | 'inherit'
+  }[]
   isEditing: boolean
   outputResult?: string
   inputCounter?: number
@@ -145,6 +152,8 @@ const onConfigLoaded = () => {
 }
 
 // 执行用户输入
+const { getModelMaxTokens } = useModelConfig()
+
 const executeUserInputs = async () => {
   try {
     const result = await execUserInputs(
@@ -157,6 +166,20 @@ const executeUserInputs = async () => {
     )
     
     if (result) {
+      // 打印每个promptBlock的参数
+      console.log('所有任务执行完成，打印每个promptBlock的参数：')
+      for (let i = 0; i < props.promptBlocks.length; i++) {
+        const block = props.promptBlocks[i]
+        const model = block.model === 'inherit' || !block.model ? getCurrentModel() : block.model
+        const temperature = block.temperature === 'inherit' || block.temperature === undefined ? getCurrentTemperature() : block.temperature
+        const maxTokens = await getModelMaxTokens(model as ModelType)
+        console.log(`PromptBlock ${i + 1}:`, {
+          model,
+          temperature,
+          maxTokens
+        })
+      }
+      
       emit('execution-complete', result.messages)
     }
   } catch (error) {

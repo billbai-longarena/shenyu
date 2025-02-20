@@ -69,6 +69,21 @@ export interface LocaleMessages {
             versionDescriptionRequired: string
             initialImport: string
         }
+        models: {
+            kimi: string
+            volcesDeepseek: string
+            volcesDeepseekR1: string
+            alideepseekv3: string
+            tencentDeepseek: string
+            deepseek: string
+            yiwan: string
+            siliconDeepseek: string
+            baiduDeepseek: string
+            qwenTurboLatest: string
+            alideepseekr1: string
+            minimaxText: string
+        }
+        inheritGlobal: string
     }
     historyPanel: {
         syncing: string

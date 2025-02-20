@@ -8,6 +8,7 @@ interface QueueItem {
     blockIndex: number;
     prompt: string;
     model: ModelType;
+    temperature: number;
     onChunk: (chunk: string) => void;
     retryCount: number;
     startTime?: number;
@@ -30,10 +31,11 @@ export class ExecuteButtonQueue {
         return ExecuteButtonQueue.instance;
     }
 
-    async enqueue(blockIndex: number, prompt: string, model: ModelType, onChunk: (chunk: string) => void): Promise<void> {
+    async enqueue(blockIndex: number, prompt: string, model: ModelType, onChunk: (chunk: string) => void, temperature: number): Promise<void> {
         console.log(`[Execute Button Queue] Enqueueing block ${blockIndex}:`, {
             promptLength: prompt.length,
             model,
+            temperature,
             activeRequests: this.activeRequests.size,
             maxConcurrent: this.maxConcurrent
         });
@@ -42,6 +44,7 @@ export class ExecuteButtonQueue {
             blockIndex,
             prompt,
             model,
+            temperature,
             onChunk,
             retryCount: 0
         };
@@ -213,7 +216,7 @@ export class ExecuteButtonQueue {
                             type: 'stream',
                             model: request.model,
                             messages: [{ role: 'user', content: request.prompt }],
-                            temperature: 0.7,
+                            temperature: request.temperature,
                             max_tokens
                         };
 

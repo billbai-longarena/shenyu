@@ -232,6 +232,12 @@ const selectedModel = ref<ModelType>('kimi')
 provide('selectedModel', selectedModel)  // 提供给子组件使用
 const selectedTemperature = ref(0.7) // 默认为通用对话和翻译模式
 provide('selectedTemperature', selectedTemperature)  // 提供温度设置给子组件使用
+provide('modelOptions', modelOptions)  // 提供模型选项给子组件使用
+provide('temperatureOptions', computed(() => [
+  { label: t('modelParams.conservative'), value: 0 },
+  { label: t('modelParams.balanced'), value: 0.5 },
+  { label: t('modelParams.creative'), value: 0.9 }
+]))  // 提供温度选项给子组件使用
 const isTesting = ref(false)
 
 // 获取速度对应的颜色

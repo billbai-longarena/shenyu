@@ -87,10 +87,10 @@ export function useJsonFiles(): UseJsonFilesReturn {
             // 更新文件列表，确保文件路径正确
             jsonFiles.value = files.map(file => {
                 const encodedFilename = `${dir}/${encodeURIComponent(file.filename)}`
-                console.log('[useJsonFiles] 处理文件:', {
+                /*console.log('[useJsonFiles] 处理文件:', {
                     原始文件名: file.filename,
                     编码后路径: encodedFilename
-                })
+                })*/
                 return {
                     ...file,
                     encodedFilename

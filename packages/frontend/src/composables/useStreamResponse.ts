@@ -18,6 +18,10 @@ export interface StreamConfig {
     contentProcessor?: (content: string) => string | Promise<string>
     // 错误处理函数
     onError?: (error: Error) => void
+    // 模型选择
+    model?: ModelType
+    // 温度设置
+    temperature?: number
 }
 
 export interface StreamResponse {
@@ -58,17 +62,17 @@ export function useStreamResponse() {
      * @param prompt AI提示词
      * @param onChunkUpdate 每个数据块的更新回调
      * @param config 配置选项
-     * @param model 可选的模型选择
      */
     const handleStreamResponse = async (
         prompt: string,
         onChunkUpdate?: (chunk: string, processedChunk: string) => void | Promise<void>,
-        config: StreamConfig = {},
-        model?: ModelType
+        config: StreamConfig = {}
     ): Promise<StreamResponse> => {
         const {
             contentProcessor,
-            onError
+            onError,
+            model,
+            temperature
         } = config
 
         try {
@@ -83,17 +87,21 @@ export function useStreamResponse() {
                     const isError = chunk.includes('[ERROR]')
 
                     if (!isDone && !isError) {
+                        // 只有非控制消息才添加到内容中
                         fullContent += chunk
                         const processedChunk = await processChunk(chunk, contentProcessor)
                         if (onChunkUpdate) {
                             await onChunkUpdate(chunk, processedChunk)
                         }
                     } else if (isDone || isError) {
+                        // 控制消息只传给回调，不添加到内容中
                         if (onChunkUpdate) {
-                            await onChunkUpdate(chunk, chunk)
+                            await onChunkUpdate(chunk, '')
                         }
                     }
-                }
+                },
+                undefined,
+                temperature
             )
 
             return {
@@ -128,7 +136,6 @@ export function useStreamResponse() {
     ): Promise<StreamResponse[]> => {
         const responses: (StreamResponse | null)[] = new Array(prompts.length).fill(null)
         const requestQueue = (await import('../services/requestQueue')).RequestQueue.getInstance()
-        const model = getCurrentModel()
 
         // 设置并发数为4
         requestQueue.setMaxConcurrent(4);
@@ -150,8 +157,9 @@ export function useStreamResponse() {
                                 await onBlockUpdate(index, chunk, processedChunk)
                             }
                         } else if (isDone || isError) {
+                            // 控制消息只传给回调，不添加到内容中
                             if (onBlockUpdate) {
-                                await onBlockUpdate(index, chunk, chunk)
+                                await onBlockUpdate(index, chunk, '')
                             }
                         }
                     },

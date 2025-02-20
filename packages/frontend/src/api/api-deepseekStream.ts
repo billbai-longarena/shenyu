@@ -14,6 +14,10 @@ export function getCurrentModel(): ModelType {
     return currentModel;
 }
 
+export function getCurrentTemperature(): number {
+    return currentTemperature;
+}
+
 export function setTemperature(temp: number) {
     currentTemperature = temp;
 }
@@ -33,13 +37,15 @@ export async function RequestAI(
     model: ModelType,
     prompt: string,
     onChunk: (chunk: string) => void,
-    mode?: 'speed_test'
+    mode?: 'speed_test',
+    temperature?: number
 ): Promise<void> {
     let messageSequence = 0;
     let receivedSequence = 0;
     console.log('[RequestAI] 开始请求:', {
         model,
         mode,
+        temperature: temperature ?? currentTemperature,
         promptLength: prompt.length,
         tokensEstimate: Math.ceil(prompt.length / 4),
         timestamp: new Date().toISOString()
@@ -142,7 +148,7 @@ export async function RequestAI(
                                     setTimeout(() => {
                                         console.log('[WebSocket] 请求完成:', {
                                             model,
-                                            temperature: currentTemperature,
+                                            temperature: temperature ?? currentTemperature,
                                             totalMessages: receivedSequence,
                                             timestamp: new Date().toISOString()
                                         });
@@ -188,7 +194,7 @@ export async function RequestAI(
                         type: 'stream',
                         model,
                         messages,
-                        temperature: currentTemperature,
+                        temperature: temperature ?? currentTemperature,
                         max_tokens,
                         mode,
                         sequence: messageSequence++
@@ -197,6 +203,7 @@ export async function RequestAI(
                     console.log('[WebSocket] 发送请求:', {
                         model,
                         mode,
+                        temperature: temperature ?? currentTemperature,
                         maxTokens: max_tokens,
                         timestamp: new Date().toISOString()
                     });
@@ -225,6 +232,7 @@ export async function RequestAI(
         console.log('Request Ended:', {
             model,
             mode,
+            temperature: temperature ?? currentTemperature,
             timestamp: new Date().toISOString()
         });
     }
