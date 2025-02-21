@@ -44,6 +44,8 @@
     "dependencies": {
         "@element-plus/icons-vue": "^2.3.1",
         "@types/markdown-it": "^14.1.2",
+        "@vue/runtime-core": "^3.5.13",
+        "@vue/runtime-dom": "^3.5.13",
         "axios": "^1.7.9",
         "element-plus": "^2.9.3",
         "markdown-it": "^14.1.0",
@@ -60,7 +62,7 @@
         "@testing-library/jest-dom": "^6.6.3",
         "@testing-library/vue": "^8.1.0",
         "@tsconfig/node22": "^22.0.0",
-        "@types/node": "^20.10.7",
+        "@types/node": "^20.17.19",
         "@vitejs/plugin-vue": "^4.5.1",
         "@vitest/coverage-v8": "^3.0.5",
         "@vue/tsconfig": "^0.4.0",

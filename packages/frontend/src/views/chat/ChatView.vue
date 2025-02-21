@@ -136,9 +136,9 @@ const sendMessage = async () => {
       {
         onError: (error) => {
           console.error('[ChatView] 聊天错误:', error)
-        }
-      },
-      selectedModel.value
+        },
+        model: selectedModel.value
+      }
     )
     console.log('[ChatView] 流式响应处理完成')
 
