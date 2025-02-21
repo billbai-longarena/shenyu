@@ -34,18 +34,19 @@ router.post('/save', async (req, res) => {
     console.log('[Model Defaults] 收到保存请求体:', JSON.stringify(req.body, null, 2));
 
     try {
-        const { defaultModel, defaultTemperature } = req.body;
-        console.log('[Model Defaults] 解析的数据:', { defaultModel, defaultTemperature });
+        const { defaultModel, defaultTemperature, lastUpdated } = req.body;
+        console.log('[Model Defaults] 解析的数据:', { defaultModel, defaultTemperature, lastUpdated });
 
         // 输入验证
-        if (!defaultModel || typeof defaultTemperature !== 'number') {
-            console.error('[Model Defaults] 输入验证失败:', { defaultModel, defaultTemperature });
+        if (!defaultModel || typeof defaultTemperature !== 'number' || !lastUpdated) {
+            console.error('[Model Defaults] 输入验证失败:', { defaultModel, defaultTemperature, lastUpdated });
             return res.status(400).json({
                 error: {
                     message: '无效的配置数据',
                     details: {
                         defaultModel: defaultModel ? '有效' : '无效或缺失',
-                        defaultTemperature: typeof defaultTemperature === 'number' ? '有效' : '无效或缺失'
+                        defaultTemperature: typeof defaultTemperature === 'number' ? '有效' : '无效或缺失',
+                        lastUpdated: lastUpdated ? '有效' : '无效或缺失'
                     }
                 }
             });
@@ -110,7 +111,8 @@ router.post('/save', async (req, res) => {
         // 准备写入的配置内容
         const configContent = JSON.stringify({
             defaultModel,
-            defaultTemperature
+            defaultTemperature,
+            lastUpdated
         }, null, 4);
         console.log('[Model Defaults] 准备写入的配置内容:', configContent);
 

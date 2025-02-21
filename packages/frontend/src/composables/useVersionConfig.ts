@@ -19,12 +19,16 @@ export interface ConfigFile {
 
 interface Props {
     adminInputs: { [key: string]: string }
+    userInputs: { [key: string]: string }
     promptBlocks: { text: string }[]
+    inputCounter: number
 }
 
 interface Emits {
     (e: 'update:adminInputs', value: { [key: string]: string }): void
+    (e: 'update:userInputs', value: { [key: string]: string }): void
     (e: 'update:promptBlocks', value: { text: string }[]): void
+    (e: 'update:inputCounter', value: number): void
     (e: 'config-modified'): void
 }
 
@@ -53,6 +57,29 @@ export const useVersionConfig = (props: Props, emit: Emits) => {
 
         emit('update:adminInputs', { ...version.adminInputs })
         emit('update:promptBlocks', [...version.promptBlocks])
+
+        // 计算并更新inputCounter
+        const maxCounter = Object.keys(version.adminInputs)
+            .map(key => {
+                const match = key.match(/^inputB(\d+)$/)
+                return match ? parseInt(match[1]) : 0
+            })
+            .reduce((max, current) => Math.max(max, current), 0)
+        emit('update:inputCounter', maxCounter)
+
+        // 同步更新userInputs
+        const newUserInputs: { [key: string]: string } = {}
+        Object.keys(version.adminInputs).forEach(key => {
+            const match = key.match(/^inputB(\d+)$/)
+            if (match) {
+                const userKey = `inputA${match[1]}`
+                const adminValue = version.adminInputs[key]
+                const defMatch = adminValue.match(/<def>(.*?)<\/def>/)
+                newUserInputs[userKey] = defMatch ? defMatch[1] : ''
+            }
+        })
+        emit('update:userInputs', newUserInputs)
+
         currentVersionIndex.value = index
     }
 
@@ -107,6 +134,28 @@ export const useVersionConfig = (props: Props, emit: Emits) => {
                 emit('update:adminInputs', { ...config.currentVersion.adminInputs })
                 emit('update:promptBlocks', [...config.currentVersion.promptBlocks])
 
+                // 计算并更新inputCounter
+                const maxCounter = Object.keys(config.currentVersion.adminInputs)
+                    .map(key => {
+                        const match = key.match(/^inputB(\d+)$/)
+                        return match ? parseInt(match[1]) : 0
+                    })
+                    .reduce((max, current) => Math.max(max, current), 0)
+                emit('update:inputCounter', maxCounter)
+
+                // 同步更新userInputs
+                const newUserInputs: { [key: string]: string } = {}
+                Object.keys(config.currentVersion.adminInputs).forEach(key => {
+                    const match = key.match(/^inputB(\d+)$/)
+                    if (match) {
+                        const userKey = `inputA${match[1]}`
+                        const adminValue = config.currentVersion.adminInputs[key]
+                        const defMatch = adminValue.match(/<def>(.*?)<\/def>/)
+                        newUserInputs[userKey] = defMatch ? defMatch[1] : ''
+                    }
+                })
+                emit('update:userInputs', newUserInputs)
+
                 // 更新版本历史
                 versionHistory.value = config.versionHistory
                 currentVersionIndex.value = 0
@@ -118,6 +167,28 @@ export const useVersionConfig = (props: Props, emit: Emits) => {
 
                 emit('update:adminInputs', { ...config.adminInputs })
                 emit('update:promptBlocks', promptBlocksArray)
+
+                // 计算并更新inputCounter
+                const maxCounter = Object.keys(config.adminInputs)
+                    .map(key => {
+                        const match = key.match(/^inputB(\d+)$/)
+                        return match ? parseInt(match[1]) : 0
+                    })
+                    .reduce((max, current) => Math.max(max, current), 0)
+                emit('update:inputCounter', maxCounter)
+
+                // 同步更新userInputs
+                const newUserInputs: { [key: string]: string } = {}
+                Object.keys(config.adminInputs).forEach(key => {
+                    const match = key.match(/^inputB(\d+)$/)
+                    if (match) {
+                        const userKey = `inputA${match[1]}`
+                        const adminValue = config.adminInputs[key]
+                        const defMatch = adminValue.match(/<def>(.*?)<\/def>/)
+                        newUserInputs[userKey] = defMatch ? defMatch[1] : ''
+                    }
+                })
+                emit('update:userInputs', newUserInputs)
 
                 // 创建初始版本
                 const initialVersion: VersionInfo = {

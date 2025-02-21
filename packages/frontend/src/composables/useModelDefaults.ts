@@ -6,20 +6,39 @@ interface ModelDefaults {
     defaultTemperature: number
 }
 
+interface UserModelDefaults extends ModelDefaults {
+    lastUpdated: number
+}
+
+const LOCAL_STORAGE_KEY = 'user_model_defaults'
+
 export function useModelDefaults() {
     // 读取默认配置
     const loadDefaults = async (): Promise<ModelDefaults | null> => {
         console.log('\n[useModelDefaults] ====== 开始加载默认配置 ======');
-        console.log('[useModelDefaults] 环境信息:', {
-            MODE: import.meta.env.MODE,
-            BASE_URL: import.meta.env.BASE_URL,
-            DEV: import.meta.env.DEV,
-            PROD: import.meta.env.PROD
-        });
 
+        // 先尝试从localStorage读取
+        try {
+            const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (localData) {
+                const parsed = JSON.parse(localData) as UserModelDefaults;
+                // 检查数据是否过期（7天）
+                if (Date.now() - parsed.lastUpdated < 7 * 24 * 60 * 60 * 1000) {
+                    console.log('[useModelDefaults] 从localStorage加载配置:', parsed);
+                    return {
+                        defaultModel: parsed.defaultModel,
+                        defaultTemperature: parsed.defaultTemperature
+                    };
+                }
+            }
+        } catch (error) {
+            console.error('[useModelDefaults] 读取localStorage失败:', error);
+        }
+
+        // 如果没有本地数据或已过期，从服务器加载
         try {
             const url = '/model-defaults.json';
-            console.log('[useModelDefaults] 请求URL:', url);
+            console.log('[useModelDefaults] 从服务器加载配置, URL:', url);
 
             const response = await fetch(url, {
                 headers: {
@@ -29,17 +48,23 @@ export function useModelDefaults() {
                 }
             });
 
-            console.log('[useModelDefaults] 响应状态:', response.status);
-            console.log('[useModelDefaults] 响应头:', Object.fromEntries(response.headers.entries()));
             if (!response.ok) {
                 throw new Error(`加载默认配置失败: HTTP ${response.status}`);
             }
 
             const data = await response.json();
-            console.log('[useModelDefaults] 加载的配置:', data);
+            console.log('[useModelDefaults] 从服务器加载的配置:', data);
+
+            // 保存到localStorage
+            const localData: UserModelDefaults = {
+                ...data,
+                lastUpdated: Date.now()
+            };
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(localData));
+
             return data;
         } catch (error) {
-            console.error('[useModelDefaults] 读取默认配置失败:', error);
+            console.error('[useModelDefaults] 读取服务器配置失败:', error);
             if (error instanceof Error) {
                 console.error('[useModelDefaults] 错误堆栈:', error.stack);
             }
@@ -52,14 +77,18 @@ export function useModelDefaults() {
     const saveDefaults = async (model: ModelType, temperature: number): Promise<boolean> => {
         console.log('[useModelDefaults] 开始保存配置');
         try {
-            const config: ModelDefaults = {
+            const config: UserModelDefaults = {
                 defaultModel: model,
-                defaultTemperature: temperature
+                defaultTemperature: temperature,
+                lastUpdated: Date.now()
             };
 
-            console.log('[useModelDefaults] 准备保存的配置:', config);
-            console.log('[useModelDefaults] 请求URL: /api/model-defaults/save');
+            // 保存到localStorage
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(config));
+            console.log('[useModelDefaults] 配置已保存到localStorage');
 
+            // 保存到服务器
+            console.log('[useModelDefaults] 准备保存配置到服务器');
             const response = await fetch('/api/model-defaults/save', {
                 method: 'POST',
                 headers: {
