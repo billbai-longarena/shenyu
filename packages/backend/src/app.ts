@@ -16,6 +16,7 @@ import modelConfigRouter from './routes/model-config.js';
 import userHistoryRouter from './routes/user-history.js';
 import languageConfigRouter from './routes/language-config.js';
 import modelDefaultsRouter from './routes/model-defaults.js';
+import aiAgentRouter from './routes/ai-agent.js';
 
 // 加载环境变量
 const envPath = join(__dirname, '../.env');
@@ -54,6 +55,7 @@ app.use('/api/model-config', modelConfigRouter);
 app.use('/api', userHistoryRouter);  // 用户历史记录路由
 app.use('/api/language-config', languageConfigRouter);  // 语言配置路由
 app.use('/api/model-defaults', modelDefaultsRouter);  // 模型默认值路由
+app.use('/api/ai-agent', aiAgentRouter);  // AI Agent路由
 
 // 基础健康检查
 app.get('/health', (req, res) => {

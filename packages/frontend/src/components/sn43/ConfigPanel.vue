@@ -6,39 +6,19 @@
         <h2 class="admin-title">{{ t('configPanel.agentTitle') }}</h2>
         <!-- AI智能体生成区域 -->
         <div class="agent-generator">
-          <el-input
-            type="textarea"
-            v-model="textareaGenerateAgent"
-            :rows="3"
-            :placeholder="t('configPanel.agentInputPlaceholder')"
-            class="agent-input"
-          />
-          <el-button 
-            type="primary"
-            class="generate-button"
-            @click="generateAIAgent"
-            :disabled="isGenerating"
-            :loading="isGenerating"
-          >
+          <el-input type="textarea" v-model="textareaGenerateAgent" :rows="3"
+            :placeholder="t('configPanel.agentInputPlaceholder')" class="agent-input" />
+          <el-button type="primary" class="generate-button" @click="generateAIAgent" :disabled="isGenerating"
+            :loading="isGenerating">
             {{ t('configPanel.generateAgentButton') }}
           </el-button>
         </div>
 
         <!-- 路径输入和生成控件区域 -->
         <div class="path-input-section">
-          <el-input
-            type="textarea"
-            v-model="pathInput"
-            :rows="3"
-            :placeholder="t('configPanel.pathInputPlaceholder')"
-            class="path-input"
-          />
-          <el-button 
-            type="primary"
-            class="generate-button"
-            @click="generateFromText"
-            :disabled="!pathInput.trim()"
-          >
+          <el-input type="textarea" v-model="pathInput" :rows="3" :placeholder="t('configPanel.pathInputPlaceholder')"
+            class="path-input" />
+          <el-button type="primary" class="generate-button" @click="generateFromText" :disabled="!pathInput.trim()">
             {{ t('configPanel.generateControls') }}
           </el-button>
         </div>
@@ -46,81 +26,46 @@
     </div>
 
     <!-- 第一个拖动分隔条 -->
-    <div 
-      class="resize-handle"
-      @mousedown="startResizeAgent"
-      @dblclick="resetWidths"
-    ></div>
+    <div class="resize-handle" @mousedown="startResizeAgent" @dblclick="resetWidths"></div>
 
     <!-- 用户输入配置区域 -->
     <div class="config-section" :style="{ width: configWidth + '%' }">
       <div class="config-section-content">
         <div class="config-inputs-container">
           <h2 class="admin-title">{{ t('configPanel.userInputConfig') }}</h2>
-          
+
           <!-- 配置操作按钮 -->
           <div class="config-actions">
-            <el-input
-              v-model="versionDescription"
-              :placeholder="t('configPanel.versionManagement.inputPlaceholder')"
-              class="version-input"
-            />
-            <el-button 
-              type="danger"
-              @click="handleExportConfig"
-            >
+            <el-input v-model="versionDescription" :placeholder="t('configPanel.versionManagement.inputPlaceholder')"
+              class="version-input" />
+            <el-button type="danger" @click="handleExportConfig">
               {{ t('configPanel.saveExport') }}
             </el-button>
-            <el-button 
-              type="primary"
-              @click="fileInput?.click()"
-            >
+            <el-button type="primary" @click="fileInput?.click()">
               {{ t('configPanel.importJson') }}
             </el-button>
           </div>
-          
+
           <!-- 隐藏的文件输入框 -->
-          <input
-            type="file"
-            ref="fileInput"
-            style="display: none"
-            accept=".json"
-            @change="handleFileUpload"
-          />
+          <input type="file" ref="fileInput" style="display: none" accept=".json" @change="handleFileUpload" />
 
           <!-- 动态生成的配置输入框 -->
           <div v-for="(value, key) in adminInputs" :key="key" class="input-group">
             <div class="input-with-label">
-              <el-button 
-                type="primary" 
-                link
-                class="insert-button"
-                @click="insertPlaceholder(String(key))"
-                :disabled="lastFocusedIndex === null"
-              >
+              <el-button type="primary" link class="insert-button" @click="insertPlaceholder(String(key))"
+                :disabled="lastFocusedIndex === null">
                 {{ t('configPanel.insert') }}
               </el-button>
-              <el-input 
-                v-model="adminInputs[key]"
-                :placeholder="t('configPanel.inputPlaceholder') + key"
-                @input="(value: string) => handleAdminInput(String(key), value)"
-              />
-              <el-button
-                type="danger"
-                link
-                @click="deleteAdminInput(String(key))"
-              >
+              <el-input v-model="adminInputs[key]" :placeholder="t('configPanel.inputPlaceholder') + key"
+                @input="(value: string) => handleAdminInput(String(key), value)" />
+              <el-button type="danger" link @click="deleteAdminInput(String(key))">
                 {{ t('configPanel.delete') }}
               </el-button>
             </div>
           </div>
-           <!-- 增加用户输入按钮 -->
-           <div class="button-group">
-             <el-button 
-              type="primary" 
-              class="add-input-button"
-              @click="addUserInput"
-            >
+          <!-- 增加用户输入按钮 -->
+          <div class="button-group">
+            <el-button type="primary" class="add-input-button" @click="addUserInput">
               {{ t('configPanel.addUserInput') }}
             </el-button>
           </div>
@@ -128,21 +73,15 @@
           <!-- 版本历史列表 -->
           <div class="version-history" v-if="versionHistory.length">
             <h3>{{ t('configPanel.versionManagement.historyTitle') }}</h3>
-            <el-card v-for="(version, index) in versionHistory" 
-                     :key="version.version"
-                     :class="{ 'current-version': currentVersionIndex === index }"
-                     class="version-card">
+            <el-card v-for="(version, index) in versionHistory" :key="version.version"
+              :class="{ 'current-version': currentVersionIndex === index }" class="version-card">
               <div class="version-item">
                 <div class="version-info">
                   <span class="version-time">{{ formatTimestamp(version.timestamp) }}</span>
                   <span class="version-desc">{{ version.description }}</span>
                 </div>
-                <el-button 
-                  type="primary" 
-                  size="small" 
-                  style="padding: 4px 8px; height: 24px"
-                  @click="loadVersion(index)"
-                >
+                <el-button type="primary" size="small" style="padding: 4px 8px; height: 24px"
+                  @click="loadVersion(index)">
                   {{ t('configPanel.versionManagement.loadVersion') }}
                 </el-button>
               </div>
@@ -158,7 +97,8 @@
                   <div class="assistant-message">
                     <div class="loading-icon" v-if="isPreviewLoading">
                       <svg viewBox="0 0 1024 1024" class="loading">
-                        <path d="M512 64q14.016 0 23.008 8.992T544 96v192q0 14.016-8.992 23.008T512 320t-23.008-8.992T480 288V96q0-14.016 8.992-23.008T512 64zm0 640q14.016 0 23.008 8.992T544 736v192q0 14.016-8.992 23.008T512 960t-23.008-8.992T480 928V736q0-14.016 8.992-23.008T512 704zm448-192q0 14.016-8.992 23.008T928 544H736q-14.016 0-23.008-8.992T704 512t8.992-23.008T736 480h192q14.016 0 23.008 8.992T960 512zm-640 0q0 14.016-8.992 23.008T288 544H96q-14.016 0-23.008-8.992T64 512t8.992-23.008T96 480h192q14.016 0 23.008 8.992T320 512zM195.008 195.008q10.016-8.992 23.008-8.992t22.016 8.992l136 136q8.992 10.016 8.992 23.008t-8.992 22.016-23.008 8.992-22.016-8.992l-136-136q-8.992-8.992-8.992-22.016t8.992-23.008zm454.016 454.016q10.016-8.992 23.008-8.992t22.016 8.992l136 136q8.992 10.016 8.992 23.008t-8.992 22.016-23.008 8.992-22.016-8.992l-136-136q-8.992-8.992-8.992-22.016t8.992-23.008zM828.992 195.008q8.992 10.016 8.992 23.008t-8.992 22.016l-136 136q-10.016 8.992-22.016 8.992t-23.008-8.992-8.992-22.016 8.992-23.008l136-136q8.992-8.992 22.016-8.992t23.008 8.992zM375.008 649.024q8.992 10.016 8.992 22.016t-8.992 23.008l-136 136q-10.016 8.992-22.016 8.992t-23.008-8.992-8.992-22.016 8.992-23.008l136-136q8.992-8.992 22.016-8.992t23.008 8.992z"/>
+                        <path
+                          d="M512 64q14.016 0 23.008 8.992T544 96v192q0 14.016-8.992 23.008T512 320t-23.008-8.992T480 288V96q0-14.016 8.992-23.008T512 64zm0 640q14.016 0 23.008 8.992T544 736v192q0 14.016-8.992 23.008T512 960t-23.008-8.992T480 928V736q0-14.016 8.992-23.008T512 704zm448-192q0 14.016-8.992 23.008T928 544H736q-14.016 0-23.008-8.992T704 512t8.992-23.008T736 480h192q14.016 0 23.008 8.992T960 512zm-640 0q0 14.016-8.992 23.008T288 544H96q-14.016 0-23.008-8.992T64 512t8.992-23.008T96 480h192q14.016 0 23.008 8.992T320 512zM195.008 195.008q10.016-8.992 23.008-8.992t22.016 8.992l136 136q8.992 10.016 8.992 23.008t-8.992 22.016-23.008 8.992-22.016-8.992l-136-136q-8.992-8.992-8.992-22.016t8.992-23.008zm454.016 454.016q10.016-8.992 23.008-8.992t22.016 8.992l136 136q8.992 10.016 8.992 23.008t-8.992 22.016-23.008 8.992-22.016-8.992l-136-136q-8.992-8.992-8.992-22.016t8.992-23.008zM828.992 195.008q8.992 10.016 8.992 23.008t-8.992 22.016l-136 136q-10.016 8.992-22.016 8.992t-23.008-8.992-8.992-22.016 8.992-23.008l136-136q8.992-8.992 22.016-8.992t23.008 8.992zM375.008 649.024q8.992 10.016 8.992 22.016t-8.992 23.008l-136 136q-10.016 8.992-22.016 8.992t-23.008-8.992-8.992-22.016 8.992-23.008l136-136q8.992-8.992 22.016-8.992t23.008 8.992z" />
                       </svg>
                     </div>
                     <div class="markdown-content" v-html="renderedPreviewText"></div>
@@ -172,72 +112,45 @@
     </div>
 
     <!-- 第二个拖动分隔条 -->
-    <div 
-      class="resize-handle"
-      @mousedown="startResizeConfig"
-      @dblclick="resetWidths"
-    ></div>
+    <div class="resize-handle" @mousedown="startResizeConfig" @dblclick="resetWidths"></div>
 
     <!-- 提示词配置区域 -->
     <div class="prompt-section" ref="promptSection" :style="{ width: promptWidth + '%' }">
       <div class="prompt-config">
         <h2 class="admin-title">{{ t('configPanel.promptConfig') }}</h2>
-        
+
         <!-- 提示词输入区域 -->
         <div v-for="(prompt, index) in promptBlocks" :key="index" class="prompt-container">
           <div class="prompt-input-group">
-            <el-button 
-              type="primary" 
-              link
-              class="insert-button"
-              @click="insertPromptBlock(index)"
-              :disabled="lastFocusedIndex === null || !canInsertPromptBlock(index, lastFocusedIndex)"
-            >
+            <el-button type="primary" link class="insert-button" @click="insertPromptBlock(index)"
+              :disabled="lastFocusedIndex === null || !canInsertPromptBlock(index, lastFocusedIndex)">
               {{ t('configPanel.insert') }}
             </el-button>
             <div class="prompt-input-wrapper">
-              <el-input
-                :model-value="prompt.text"
-                type="textarea"
-                :rows="4"
+              <el-input :model-value="prompt.text" type="textarea" :rows="4"
                 :placeholder="t('configPanel.inputPromptPlaceholder')"
                 :class="['prompt-input', { 'invalid-prompt': prompt.text && !hasPlaceholder(prompt.text) }]"
-                @focus="handlePromptFocus(index)"
-                @input="(value) => {
+                @focus="handlePromptFocus(index)" @input="(value) => {
                   updatePromptText(index, value);
                   nextTick(() => {
                     emit('config-modified');
                   });
-                }"
-                :ref="(el: any) => setPromptRef(el, index)"
-              />
+                }" :ref="(el: any) => setPromptRef(el, index)" />
               <div class="prompt-actions">
-                <el-button 
-                  type="primary"
-                  link
-                  class="preview-button"
-                  @click="previewPrompt(index)"
-                  :disabled="!!(prompt.text && !hasPlaceholder(prompt.text))"
-                >
-                  {{ prompt.text && !hasPlaceholder(prompt.text) ? t('configPanel.invalidPromptBlockPreview') : t('configPanel.preview') }}
+                <el-button type="primary" link class="preview-button" @click="previewPrompt(index)"
+                  :disabled="!!(prompt.text && !hasPlaceholder(prompt.text))">
+                  {{ prompt.text && !hasPlaceholder(prompt.text) ? t('configPanel.invalidPromptBlockPreview') :
+                    t('configPanel.preview') }}
                 </el-button>
-                <el-button
-                  type="danger"
-                  link
-                  @click="deletePromptBlock(index)"
-                >
+                <el-button type="danger" link @click="deletePromptBlock(index)">
                   {{ t('configPanel.delete') }}
                 </el-button>
               </div>
             </div>
           </div>
         </div>
-         <!-- 增加提示词块按钮 -->
-         <el-button 
-          type="primary" 
-          class="add-prompt-button"
-          @click="addPromptBlock"
-        >
+        <!-- 增加提示词块按钮 -->
+        <el-button type="primary" class="add-prompt-button" @click="addPromptBlock">
           {{ t('configPanel.addPromptBlock') }}
         </el-button>
       </div>
@@ -255,6 +168,7 @@ import { usePrompt } from '../../composables/usePrompt'
 import { useLanguage } from '../../composables/useLanguage'
 import { useStreamResponse } from '../../composables/useStreamResponse'
 import { setTemperature } from '../../api/api-deepseekStream'
+import { apiAIAgentService } from '../../services/api-ai-agent'
 
 interface Props {
   adminInputs: { [key: string]: string }
@@ -269,6 +183,7 @@ interface Props {
 const textareaGenerateAgent = ref('')
 const isGenerating = ref(false)
 const { handleStreamResponse } = useStreamResponse()
+const selectedModel = inject('selectedModel') as any
 const selectedTemperature = inject('selectedTemperature') as any
 
 // 生成AI智能体
@@ -279,6 +194,16 @@ const generateAIAgent = async () => {
   }
 
   isGenerating.value = true
+
+  // 确保AI Agent服务已初始化
+  try {
+    await apiAIAgentService.initialize()
+  } catch (error) {
+    console.error('初始化AI Agent服务失败:', error)
+    ElMessage.error(t('configPanel.initializeError'))
+    isGenerating.value = false
+    return
+  }
   try {
     setTemperature(0)
     selectedTemperature.value = 0
@@ -298,23 +223,23 @@ const generateAIAgent = async () => {
     emit('update:adminInputs', {})
     emit('update:promptBlocks', [])
     emit('update:inputCounter', 0)
-    
+
     pathInput.value = ''
-    
+
     const promptResults: string[] = []
-    
+
     for (let i = 0; i < prompts.length; i++) {
       let currentPrompt = prompts[i]
-      
+
       for (let j = 0; j < promptResults.length; j++) {
         currentPrompt = currentPrompt.replace(
           `\${promptResults${j + 1}}`,
           promptResults[j]
         )
       }
-      
+
       const isLastPrompt = i === prompts.length - 1
-      
+
       if (isLastPrompt) {
         await handleStreamResponse(
           currentPrompt,
@@ -331,6 +256,14 @@ const generateAIAgent = async () => {
     }
 
     await generateFromText()
+
+    // 保存AI Agent配置
+    await apiAIAgentService.saveAgent(
+      textareaGenerateAgent.value,
+      pathInput.value,
+      selectedModel.value,
+      selectedTemperature.value
+    )
   } catch (error) {
     console.error('生成AI智能体失败:', error)
     ElMessage.error(t('configPanel.generateAgentError'))
@@ -376,7 +309,7 @@ const generateFromText = async () => {
   try {
     const jsonRegex = /{[\s\S]*"adminInputs"[\s\S]*"promptBlocks"[\s\S]*}/g
     const matches = input.match(jsonRegex)
-    
+
     if (!matches || matches.length === 0) {
       ElMessage.warning(t('configPanel.noValidJsonFound'))
       return
@@ -391,9 +324,9 @@ const generateFromText = async () => {
         config.adminInputs[key] = value.replace(/<def>(.*?)<def>/g, '<def>$1</def>');
       });
     }
-    
+
     let configToImport = config;
-    
+
     // 检查是否是旧格式（直接包含adminInputs和promptBlocks）
     if (config.adminInputs && config.promptBlocks && !config.currentVersion) {
       // 将 promptBlocks 对象转换为数组格式
@@ -416,7 +349,7 @@ const generateFromText = async () => {
         }]
       }
     }
-    
+
     const result = await importConfig(configToImport)
     if (result.success) {
       emit('config-modified')
@@ -496,16 +429,16 @@ const startResizeConfig = (e: MouseEvent) => {
 // 处理拖动
 const handleResize = (e: MouseEvent) => {
   if (!isResizing.value || !currentResizeTarget.value) return
-  
+
   const container = document.querySelector('.admin-interface-container')
   if (!container) return
-  
+
   const dx = e.clientX - startX.value
   const containerWidth = container.getBoundingClientRect().width
   const newWidthPercent = startWidth.value + (dx / containerWidth * 100)
-  
+
   const limitedWidth = Math.min(Math.max(newWidthPercent, 20), 60)
-  
+
   if (currentResizeTarget.value === 'agent') {
     const maxWidth = 100 - configWidth.value - 20
     agentWidth.value = Math.min(limitedWidth, maxWidth)
@@ -573,14 +506,14 @@ const importConfig = importVersionConfig
 const handleFileUpload = async (event: Event) => {
   const file = (event.target as HTMLInputElement).files?.[0]
   if (!file) return
-  
+
   const reader = new FileReader()
   reader.onload = async (e) => {
     try {
       const jsonStr = cleanJsonString(e.target?.result as string)
       const config = JSON.parse(jsonStr)
       const result = await importConfig(config)
-      
+
       if (result.success) {
         ElMessage.success(result.message)
       } else {
@@ -590,7 +523,7 @@ const handleFileUpload = async (event: Event) => {
       console.error('导入配置失败:', error)
       ElMessage.error(t('configPanel.importError'))
     }
-    
+
     if (fileInput.value) {
       fileInput.value.value = ''
     }
@@ -617,7 +550,7 @@ const handleExportConfig = async () => {
   }
 }
 
-const { 
+const {
   lastFocusedIndex,
   promptRefs,
   handlePromptFocus,
@@ -648,12 +581,12 @@ const handleAdminInput = (key: string, value: string) => {
 const addUserInput = () => {
   const newCounter = props.inputCounter + 1
   emit('update:inputCounter', newCounter)
-  
+
   const adminKey = `inputB${newCounter}`
   const newAdminInputs = { ...props.adminInputs }
   newAdminInputs[adminKey] = ''
   emit('update:adminInputs', newAdminInputs)
-  
+
   const userKey = `inputA${newCounter}`
   const newUserInputs = { ...props.userInputs }
   newUserInputs[userKey] = ''

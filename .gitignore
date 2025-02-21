@@ -22,6 +22,7 @@ coverage
 # Backend specific
 packages/backend/.env
 packages/backend/data/
+packages/backend/data/**/*
 
 # Build files
 /build
@@ -53,4 +54,5 @@ Thumbs.db
 
 # Deployment scripts
 deploy.sh
-packages/backend/data/users/43f3a65f793a91e55d8c8d07bd6a810e666a636c04cac3de44ea4484cebf9748.json
+packages/backend/data/users/*.*
+scripts/sync-data.sh
