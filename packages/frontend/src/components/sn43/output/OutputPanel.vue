@@ -96,14 +96,15 @@ watch(() => props.blockContents, () => {
 
     // 如果找到了正在streaming的block
     if (streamingIndex !== -1 && blocks[streamingIndex] && outputContent) {
-      const streamingBlock = blocks[streamingIndex]
+      const streamingBlock = blocks[streamingIndex] as HTMLElement
+      const outputContentEl = outputContent as HTMLElement
 
       // 计算需要滚动的位置：streaming block的底部
       const blockBottom = streamingBlock.offsetTop + streamingBlock.offsetHeight
 
       // 滚动到block底部，确保显示最新内容
       // 将block底部位置减去容器高度的一半，这样block底部会在视图中央偏上的位置
-      outputContent.scrollTop = blockBottom - outputContent.clientHeight / 2
+      outputContentEl.scrollTop = blockBottom - outputContentEl.clientHeight / 2
     }
   })
 }, { deep: true })

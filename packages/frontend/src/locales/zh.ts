@@ -56,6 +56,8 @@ export const messages: LocaleMessages = {
         inputPlaceholder: '请输入',
         pathInputPlaceholder: '请输入包含json配置的文本',
         generateControls: '生成控件',
+        modifyRequest: '请输入修改要求',
+        modifyButton: '修改',
         noValidJsonFound: '未找到有效的json内容',
         generateError: '生成控件失败',
         controlsGenerated: '控件生成成功',

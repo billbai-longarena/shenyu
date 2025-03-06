@@ -40,8 +40,19 @@
 }
 
 .agent-input,
-.path-input {
+.path-input,
+.modify-input {
   margin-bottom: 10px;
+}
+
+.separator {
+  height: 1px;
+  background-color: var(--el-border-color);
+  margin: 15px 0;
+}
+
+.modify-button {
+  margin-top: 5px;
 }
 
 .config-actions {

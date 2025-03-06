@@ -21,6 +21,16 @@
           <el-button type="primary" class="generate-button" @click="generateFromText" :disabled="!pathInput.trim()">
             {{ t('configPanel.generateControls') }}
           </el-button>
+          
+          <!-- 分隔符 -->
+          <div class="separator"></div>
+          
+          <!-- 修改区域 -->
+          <el-input type="textarea" v-model="modifyRequestInput" :rows="2" :placeholder="t('configPanel.modifyRequest')"
+            class="modify-input" />
+          <el-button type="primary" class="modify-button" @click="modifyJson" :disabled="!modifyRequestInput.trim() || !pathInput.trim()">
+            {{ t('configPanel.modifyButton') }}
+          </el-button>
         </div>
       </div>
     </div>
@@ -292,8 +302,46 @@ const emit = defineEmits<Emits>()
 // 获取翻译函数
 const { t } = useLanguage()
 
-// 路径输入
+// 路径输入和修改请求
 const pathInput = ref('')
+const modifyRequestInput = ref('')
+
+// 修改JSON
+const modifyJson = async () => {
+  if (!modifyRequestInput.value.trim() || !pathInput.value.trim()) {
+    ElMessage.warning(t('configPanel.modifyRequest'))
+    return
+  }
+
+  try {
+    // 组合预设prompt和用户输入
+    const prompt = `按照以下的用户要求修改以下json，最终只输出json文件，不要输出其他任何无关的信息。用户要求：${modifyRequestInput.value}， Json：${pathInput.value}`
+    
+    // 清空pathInput，准备接收新的内容
+    pathInput.value = ''
+    
+    // 发送请求并处理流式响应
+    await handleStreamResponse(
+      prompt,
+      async (chunk: string, processedChunk: string) => {
+        if (!chunk.includes('[DONE]') && !chunk.includes('[ERROR]')) {
+          pathInput.value += processedChunk
+        }
+      }
+    )
+    
+    // 触发生成控件功能
+    await generateFromText()
+    
+    // 清空修改请求输入
+    modifyRequestInput.value = ''
+    
+    ElMessage.success(t('configPanel.controlsGenerated'))
+  } catch (error) {
+    console.error('修改JSON失败:', error)
+    ElMessage.error(t('configPanel.generateError'))
+  }
+}
 
 // 清理JSON字符串中的控制字符
 const cleanJsonString = (str: string) => {

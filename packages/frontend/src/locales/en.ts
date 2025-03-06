@@ -56,6 +56,8 @@ export const messages: LocaleMessages = {
         inputPlaceholder: 'Please enter',
         pathInputPlaceholder: 'Please enter text containing json configuration',
         generateControls: 'Generate Controls',
+        modifyRequest: 'Please enter modification request',
+        modifyButton: 'Modify',
         noValidJsonFound: 'No valid json content found',
         generateError: 'Failed to generate controls',
         controlsGenerated: 'Controls generated successfully',

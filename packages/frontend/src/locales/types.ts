@@ -55,6 +55,8 @@ export interface LocaleMessages {
         inputPlaceholder: string
         pathInputPlaceholder: string
         generateControls: string
+        modifyRequest: string
+        modifyButton: string
         noValidJsonFound: string
         generateError: string
         controlsGenerated: string
