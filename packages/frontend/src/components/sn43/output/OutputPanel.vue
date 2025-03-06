@@ -2,13 +2,8 @@
   <div class="output-panel">
     <div class="output-header">
       <h2 class="output-title">{{ t('outputPanel.title') }}</h2>
-      <el-button
-        v-if="renderedBlocks.length > 0"
-        type="primary"
-        link
-        :icon="CopyDocumentIcon"
-        @click="copyOutputResult"
-      >
+      <el-button v-if="renderedBlocks.length > 0" type="primary" link :icon="CopyDocumentIcon"
+        @click="copyOutputResult">
         {{ t('outputPanel.copyResult') }}
       </el-button>
     </div>
@@ -17,7 +12,8 @@
         <div v-for="(block, index) in renderedBlocks" :key="index" class="result-block">
           <div class="loading-icon" v-if="blockStatuses[index]?.status === 'streaming'">
             <svg viewBox="0 0 1024 1024" class="loading">
-              <path d="M512 64q14.016 0 23.008 8.992T544 96v192q0 14.016-8.992 23.008T512 320t-23.008-8.992T480 288V96q0-14.016 8.992-23.008T512 64zm0 640q14.016 0 23.008 8.992T544 736v192q0 14.016-8.992 23.008T512 960t-23.008-8.992T480 928V736q0-14.016 8.992-23.008T512 704zm448-192q0 14.016-8.992 23.008T928 544H736q-14.016 0-23.008-8.992T704 512t8.992-23.008T736 480h192q14.016 0 23.008 8.992T960 512zm-640 0q0 14.016-8.992 23.008T288 544H96q-14.016 0-23.008-8.992T64 512t8.992-23.008T96 480h192q14.016 0 23.008 8.992T320 512zM195.008 195.008q10.016-8.992 23.008-8.992t22.016 8.992l136 136q8.992 10.016 8.992 23.008t-8.992 22.016-23.008 8.992-22.016-8.992l-136-136q-8.992-8.992-8.992-22.016t8.992-23.008zm454.016 454.016q10.016-8.992 23.008-8.992t22.016 8.992l136 136q8.992 10.016 8.992 23.008t-8.992 22.016-23.008 8.992-22.016-8.992l-136-136q-8.992-8.992-8.992-22.016t8.992-23.008zM828.992 195.008q8.992 10.016 8.992 23.008t-8.992 22.016l-136 136q-10.016 8.992-22.016 8.992t-23.008-8.992-8.992-22.016 8.992-23.008l136-136q8.992-8.992 22.016-8.992t23.008 8.992zM375.008 649.024q8.992 10.016 8.992 22.016t-8.992 23.008l-136 136q-10.016 8.992-22.016 8.992t-23.008-8.992-8.992-22.016 8.992-23.008l136-136q8.992-8.992 22.016-8.992t23.008 8.992z"/>
+              <path
+                d="M512 64q14.016 0 23.008 8.992T544 96v192q0 14.016-8.992 23.008T512 320t-23.008-8.992T480 288V96q0-14.016 8.992-23.008T512 64zm0 640q14.016 0 23.008 8.992T544 736v192q0 14.016-8.992 23.008T512 960t-23.008-8.992T480 928V736q0-14.016 8.992-23.008T512 704zm448-192q0 14.016-8.992 23.008T928 544H736q-14.016 0-23.008-8.992T704 512t8.992-23.008T736 480h192q14.016 0 23.008 8.992T960 512zm-640 0q0 14.016-8.992 23.008T288 544H96q-14.016 0-23.008-8.992T64 512t8.992-23.008T96 480h192q14.016 0 23.008 8.992T320 512zM195.008 195.008q10.016-8.992 23.008-8.992t22.016 8.992l136 136q8.992 10.016 8.992 23.008t-8.992 22.016-23.008 8.992-22.016-8.992l-136-136q-8.992-8.992-8.992-22.016t8.992-23.008zm454.016 454.016q10.016-8.992 23.008-8.992t22.016 8.992l136 136q8.992 10.016 8.992 23.008t-8.992 22.016-23.008 8.992-22.016-8.992l-136-136q-8.992-8.992-8.992-22.016t8.992-23.008zM828.992 195.008q8.992 10.016 8.992 23.008t-8.992 22.016l-136 136q-10.016 8.992-22.016 8.992t-23.008-8.992-8.992-22.016 8.992-23.008l136-136q8.992-8.992 22.016-8.992t23.008 8.992zM375.008 649.024q8.992 10.016 8.992 22.016t-8.992 23.008l-136 136q-10.016 8.992-22.016 8.992t-23.008-8.992-8.992-22.016 8.992-23.008l136-136q8.992-8.992 22.016-8.992t23.008 8.992z" />
             </svg>
           </div>
           <div v-html="block"></div>
@@ -59,7 +55,7 @@ const copyOutputResult = async () => {
     const tempDiv = document.createElement('div')
     tempDiv.innerHTML = props.blockContents.join('\n')
     const textContent = tempDiv.textContent || tempDiv.innerText || ''
-    
+
     // 尝试使用 Clipboard API
     if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(textContent)
@@ -71,7 +67,7 @@ const copyOutputResult = async () => {
       textarea.style.opacity = '0'
       document.body.appendChild(textarea)
       textarea.select()
-      
+
       try {
         // 执行复制命令
         document.execCommand('copy')
@@ -81,7 +77,7 @@ const copyOutputResult = async () => {
         throw new Error(t('outputPanel.copyError'))
       }
     }
-    
+
     ElMessage.success(t('outputPanel.copySuccess'))
   } catch (error) {
     console.error('复制失败:', error)
@@ -89,27 +85,25 @@ const copyOutputResult = async () => {
   }
 }
 
-// 自动滚动到当前更新的block
+// 自动滚动到正在streaming的block的底部
 watch(() => props.blockContents, () => {
   nextTick(() => {
     const outputContent = document.querySelector('.output-content')
     const blocks = document.querySelectorAll('.result-block')
-    const lastBlock = blocks[blocks.length - 1]
-    
-    if (outputContent && lastBlock) {
-      const blockRect = lastBlock.getBoundingClientRect()
-      const containerRect = outputContent.getBoundingClientRect()
-      
-      // 检查block底部是否在可视区域内
-      const isBottomVisible = blockRect.bottom <= containerRect.bottom
-      
-      if (!isBottomVisible) {
-        // 滚动到最新的block
-        outputContent.scrollTo({
-          top: outputContent.scrollHeight,
-          behavior: 'smooth'
-        })
-      }
+
+    // 找到正在streaming的block的索引
+    const streamingIndex = props.blockStatuses.findIndex(status => status.status === 'streaming')
+
+    // 如果找到了正在streaming的block
+    if (streamingIndex !== -1 && blocks[streamingIndex] && outputContent) {
+      const streamingBlock = blocks[streamingIndex]
+
+      // 计算需要滚动的位置：streaming block的底部
+      const blockBottom = streamingBlock.offsetTop + streamingBlock.offsetHeight
+
+      // 滚动到block底部，确保显示最新内容
+      // 将block底部位置减去容器高度的一半，这样block底部会在视图中央偏上的位置
+      outputContent.scrollTop = blockBottom - outputContent.clientHeight / 2
     }
   })
 }, { deep: true })
@@ -175,6 +169,7 @@ watch(() => props.blockContents, () => {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
