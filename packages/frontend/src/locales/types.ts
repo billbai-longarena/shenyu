@@ -55,11 +55,14 @@ export interface LocaleMessages {
         inputPlaceholder: string
         pathInputPlaceholder: string
         generateControls: string
+        readControls: string
         modifyRequest: string
         modifyButton: string
         noValidJsonFound: string
         generateError: string
         controlsGenerated: string
+        controlsRead: string
+        readError: string
         invalidJsonStructure: string
         versionManagement: {
             inputPlaceholder: string

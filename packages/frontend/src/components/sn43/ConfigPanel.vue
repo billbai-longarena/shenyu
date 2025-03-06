@@ -21,6 +21,9 @@
           <el-button type="primary" class="generate-button" @click="generateFromText" :disabled="!pathInput.trim()">
             {{ t('configPanel.generateControls') }}
           </el-button>
+          <el-button type="primary" class="generate-button" @click="readControls">
+            {{ t('configPanel.readControls') }}
+          </el-button>
           
           <!-- 分隔符 -->
           <div class="separator"></div>
@@ -305,6 +308,28 @@ const { t } = useLanguage()
 // 路径输入和修改请求
 const pathInput = ref('')
 const modifyRequestInput = ref('')
+
+// 读取控件
+const readControls = () => {
+  try {
+    // 构建JSON对象
+    const controlsData = {
+      adminInputs: { ...props.adminInputs },
+      promptBlocks: props.promptBlocks.map(block => ({ text: block.text }))
+    };
+    
+    // 转换为JSON字符串并格式化
+    const jsonString = JSON.stringify(controlsData, null, 2);
+    
+    // 输出到path-input文本框
+    pathInput.value = jsonString;
+    
+    ElMessage.success(t('configPanel.controlsRead'));
+  } catch (error) {
+    console.error('读取控件失败:', error);
+    ElMessage.error(t('configPanel.readError'));
+  }
+}
 
 // 修改JSON
 const modifyJson = async () => {
