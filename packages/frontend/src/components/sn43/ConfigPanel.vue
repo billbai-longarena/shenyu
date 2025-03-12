@@ -340,7 +340,7 @@ const modifyJson = async () => {
 
   try {
     // 组合预设prompt和用户输入
-    const prompt = `按照以下的用户要求修改以下json，最终只输出json文件，不要输出其他任何无关的信息。用户要求：${modifyRequestInput.value}， Json：${pathInput.value}`
+    const prompt = `按照以下的用户要求修改以下json，最终只输出json文件，不要输出其他任何无关的信息。用户要求：${modifyRequestInput.value}， Json：${pathInput.value}。输出的格式要严格按照输入的json格式，admininputs，inputB1-n，promptblocks, promptblock1-n这些都不能变。范例如下： {\n "adminInputs": {\n "inputB1": " 动物 1 <def>猫</def>",\n"inputB2":" 动物 2 <def>狗</def>",\n"inputB3":" 动物 3 <def>鸡</def>"\n },\n"promptBlocks": {\n"promptBlock1":" 以下动物各列一个品种，只输出品种名称，不输出其他不相关的信息。 \${inputB1} \${inputB2} \${inputB3}",\n"promptBlock2":" 你最喜欢哪个：\${promptBlock1} 直接输出结果，不需要解释 "\n }\n}`
     
     // 清空pathInput，准备接收新的内容
     pathInput.value = ''
