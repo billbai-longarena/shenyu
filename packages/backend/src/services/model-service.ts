@@ -112,7 +112,7 @@ function createConfigs(): Record<ModelType, ModelConfig> {
         'volcesDeepseek': {
             apiKey: process.env.VOLCES_API_KEY || '',
             url: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
-            model: 'ep-20250212110141-mvgts',
+            model: 'ep-20250328100701-2rxzs',
             maxTokens: 8096,
             temperatureRange: {
                 min: 0,

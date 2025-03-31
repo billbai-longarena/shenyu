@@ -552,8 +552,11 @@ watch(() => props.adminInputs, (newAdminInputs) => {
       const userKey = `inputA${key.replace('inputB', '')}`
       const defaultValue = match[1]
       const newUserInputs = { ...props.userInputs }
-      newUserInputs[userKey] = defaultValue
-      emit('update:userInputs', newUserInputs)
+      // 只有当userInputs中没有该key或值为空时才设置默认值
+      if (!newUserInputs[userKey]) {
+        newUserInputs[userKey] = defaultValue
+        emit('update:userInputs', newUserInputs)
+      }
     }
   })
 }, { immediate: true, deep: true })
