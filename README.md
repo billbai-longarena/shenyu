@@ -7,7 +7,7 @@ The key innovation is its questionnaire-style interaction approach for creating 
 The AI Agent configurations are publicly displayed for easy prompt optimization.
 
 ## Demo
-http://139.224.248.148/sn43
+Shenyu on LongArena(https://prototype.long-arena.com/sn43)
 Basic demo server
 
 ## AI Agent Generator Guide
