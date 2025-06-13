@@ -7,7 +7,7 @@ Shenyu 是一个强大的 AI 对话平台，支持多种 AI 模型和可扩展�
 AI Agent的配置也是公开展示的，方便prompt调优
 
 ## Demo
-http://139.224.248.148/sn43
+https://prototype.long-arena.com/sn43
 丐中丐服务器
 
 ## AI Agent 生成器 功能指南
